@@ -225,16 +225,16 @@
       text-align: right;
     }
     .report-student-item .label {
-      font-size: 0.58rem; font-weight: 700; color: var(--text3);
+      font-size: 0.72rem; font-weight: 700; color: var(--text3);
       letter-spacing: 0.2px;
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.12rem;
     }
     .report-student-item .value {
-      font-size: 0.82rem; font-weight: 800; color: var(--text); margin-top: 1px;
+      font-size: 0.95rem; font-weight: 800; color: var(--text); margin-top: 1px;
       word-break: break-word;
     }
     .report-student-item .value.ltr {
-      direction: ltr; font-family: monospace; letter-spacing: 0.4px; font-size: 0.78rem;
+      direction: ltr; font-family: monospace; letter-spacing: 0.4px; font-size: 0.9rem;
       text-align: left;
     }
     /* الصورة رأسية 3:4 — عرضها ≈ عرض كارت، وارتفاعها يحدد ارتفاع الصفوف الثلاثة */
@@ -417,8 +417,8 @@
       display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);
       gap: 0.35rem; min-width: 0;
     }
-    .grade-name { font-weight: 600; font-size: 0.72rem; color: var(--text2); min-width: 0; }
-    .grade-score { font-weight: 800; padding: 0.14rem 0.5rem; border-radius: 30px; font-size: 0.68rem; flex-shrink: 0; }
+    .grade-name { font-weight: 600; font-size: 0.95rem; color: var(--text2); min-width: 0; }
+    .grade-score { font-weight: 800; padding: 0.22rem 0.6rem; border-radius: 30px; font-size: 0.9rem; flex-shrink: 0; }
     .score-high { background: var(--success-light); color: var(--success); }
     .score-mid { background: var(--warning-light); color: var(--warning); }
     .score-low { background: var(--danger-light); color: var(--danger); }
@@ -432,10 +432,10 @@
       justify-content: center;
       gap: 0.55rem;
       margin: 0.55rem 0.9rem 0.35rem;
-      padding: 0.7rem 1rem;
+      padding: 0.85rem 1.1rem;
       border-radius: 14px;
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 1.1rem;
       line-height: 1.45;
       text-align: center;
       border: 1.5px solid transparent;
@@ -708,15 +708,15 @@
       .result-header-emblem img { padding: 1px !important; }
       .result-title-group { gap: 0.6mm !important; }
       .result-school-name {
-        font-size: 12pt !important; font-weight: 900 !important;
+        font-size: 14pt !important; font-weight: 900 !important;
         color: #0f5b7a !important; line-height: 1.2 !important;
       }
       .result-school-sub {
-        font-size: 9pt !important; font-weight: 700 !important;
+        font-size: 10.5pt !important; font-weight: 700 !important;
         color: #b8863a !important; line-height: 1.2 !important;
       }
       .result-term-line {
-        font-size: 9.5pt !important; font-weight: 800 !important;
+        font-size: 11pt !important; font-weight: 800 !important;
         color: #0f5b7a !important; line-height: 1.2 !important;
         display: block !important;
       }
@@ -801,8 +801,8 @@
         grid-template-columns: 1fr 1fr !important;
         height: 52mm !important;
       }
-      .report-student-item .label { font-size: 0.5rem !important; color: #7a8a9e !important; margin-bottom: 0.3mm !important; }
-      .report-student-item .value { font-size: 0.72rem !important; font-weight: 800 !important; color: #1e2a3a !important; }
+      .report-student-item .label { font-size: 8pt !important; color: #7a8a9e !important; margin-bottom: 0.3mm !important; }
+      .report-student-item .value { font-size: 11pt !important; font-weight: 800 !important; color: #1e2a3a !important; }
 
       .status-badge, .report-status {
         border: 1px solid rgba(0,0,0,0.08) !important;
@@ -828,26 +828,26 @@
       .grades-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        column-gap: 5mm !important;
-        row-gap: 4mm !important;
+        column-gap: 4mm !important;
+        row-gap: 3.5mm !important;
         width: 100% !important;
       }
       .grade-item {
         background: #fff !important;
         border: 1.3px solid #c5ced9 !important;
         border-radius: 8px !important;
-        padding: 1.5mm 2.5mm !important;
-        min-height: 14mm !important;
-        height: 14mm !important;
-        max-height: 14mm !important;
+        padding: 2.2mm 3mm !important;
+        min-height: 16mm !important;
+        height: auto !important;
+        max-height: none !important;
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        gap: 1.5mm !important;
+        gap: 2mm !important;
         box-sizing: border-box !important;
       }
-      .grade-name { font-size: 0.68rem !important; font-weight: 600 !important; color: #3d4b5c !important; }
-      .grade-score { font-size: 0.68rem !important; font-weight: 800 !important; padding: 0.08rem 0.38rem !important; border-radius: 20px !important; }
+      .grade-name { font-size: 12.5pt !important; font-weight: 700 !important; color: #1e2a3a !important; }
+      .grade-score { font-size: 12.5pt !important; font-weight: 800 !important; padding: 0.2rem 0.55rem !important; border-radius: 20px !important; }
 
       .score-high, .score-mid, .score-low, .score-text, .score-empty,
       .status-available, .status-not-available {
@@ -857,11 +857,11 @@
       /* كارت حالة النتيجة في الطباعة — مضغوط للحفاظ على صفحة واحدة */
       .result-outcome-banner {
         margin: 1.5mm 0 2mm 0 !important;
-        padding: 2mm 3mm !important;
+        padding: 2.5mm 3.5mm !important;
         border-radius: 8px !important;
-        font-size: 0.78rem !important;
+        font-size: 12pt !important;
         font-weight: 800 !important;
-        line-height: 1.3 !important;
+        line-height: 1.35 !important;
         gap: 1.5mm !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -869,7 +869,7 @@
         page-break-inside: avoid !important;
         flex: 0 0 auto !important;
       }
-      .result-outcome-banner i { font-size: 0.85rem !important; }
+      .result-outcome-banner i { font-size: 12pt !important; }
       .result-outcome-banner.outcome-pass {
         background: #e6f4ef !important;
         color: #2e7d64 !important;
@@ -1064,7 +1064,7 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" integrity="sha384-qafw21c/iciq0VXsi9FzkfoQv5I/V0iqE4lSNcKXPnW9/UTJLnv5CcN4FHxVLnKg" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 'use strict';
@@ -1518,21 +1518,59 @@ function extractSubjectMaxFromHeader(header) {
 }
 
 // تصنيف نص نتيجة الفترة: نجاح (أخضر) / دور ثانٍ (أحمر) / محايد
-// statusLabel: نص مختصر للعرض في كارت الحالة (ناجح / دور ثانٍ)
-// label: النص الأصلي من ملف الإكسيل (يُعرض معه إن اختلف)
+// لا نعرض عناوين الفترات/السنوات (مثل "آخر العام (2025/2026)") كحالة نتيجة.
 function classifyResultOutcome(text) {
   const t = String(text || "").trim();
-  if (!t) return { kind: "neutral", label: "", statusLabel: "" };
+  if (!t) return { kind: "neutral", label: "" };
+  // تجاهل نصوص تعريف الفترة/العام الدراسي فقط
+  if (/^(آخر\s*العام|نهاية\s*العام|الفصل\s*الدراسي|شهر\s*\S+|term|final)\b/i.test(t)
+      || /^\(?\s*20\d{2}\s*[\/\-]\s*20\d{2}\s*\)?$/.test(t)
+      || /آخر\s*العام\s*\(?\s*20\d{2}/.test(t)) {
+    return { kind: "neutral", label: "" };
+  }
   const low = t.toLowerCase();
-  // دور ثانٍ / رسوب — أحمر (يُفحص أولًا لأنه قد يحتوي كلمات مختلطة)
-  if (/دور\s*ثان|دورثان|رسوب|راسب|لم\s*ينجح|لم\s*يجتز|إعادة|اعادة/.test(low)) {
-    return { kind: "second", label: t, statusLabel: "دور ثانٍ" };
+  // دور ثانٍ / رسوب — أحمر (يُفحص أولًا)
+  if (/دور\s*ثان|دورثان|رسوب|راسب|لم\s*ينجح|لم\s*يجتز|إعادة|اعادة|له\s*دور/.test(low)) {
+    return { kind: "second", label: t };
   }
   // نجاح / منقول — أخضر
   if (/ناجح|نجاح|منقول|اجتاز|مقبول|passed|promoted/.test(low)) {
-    return { kind: "pass", label: t, statusLabel: "ناجح" };
+    return { kind: "pass", label: t };
   }
-  return { kind: "neutral", label: t, statusLabel: t };
+  return { kind: "neutral", label: "" };
+}
+
+// هل اسم العمود يشير لحالة النتيجة الإجمالية (وليست مادة)؟
+function isOutcomeSubjectKey(key) {
+  const k = String(key || "").trim();
+  return /^(الحالة|حالة\s*النتيجة|النتيجة|نتيجة\s*الطالب|القرار|التقدير\s*العام|ملاحظات\s*النتيجة)$/i.test(k)
+    || /ناجح|منقول|دور\s*ثان|رسوب|راسب/.test(k);
+}
+
+// يستخرج حالة النتيجة من result_column1 أو من أعمدة المواد النصية،
+// ويرجع مفاتيح الأعمدة التي يجب إخفاؤها من شبكة الدرجات.
+function resolveOutcomeFromRow(row) {
+  const hideKeys = new Set();
+  let best = classifyResultOutcome(row && row.result_column1);
+
+  const subjects = (row && row.subjects) || {};
+  for (const [key, val] of Object.entries(subjects)) {
+    const display = val && val.display != null ? String(val.display).trim() : "";
+    const fromVal = classifyResultOutcome(display);
+    const fromKey = isOutcomeSubjectKey(key) ? classifyResultOutcome(display || key) : { kind: "neutral", label: "" };
+
+    if (fromVal.kind === "pass" || fromVal.kind === "second") {
+      if (best.kind === "neutral") best = fromVal;
+      if (val && val.type !== "number") hideKeys.add(key);
+    } else if (fromKey.kind === "pass" || fromKey.kind === "second") {
+      if (best.kind === "neutral") best = fromKey;
+      hideKeys.add(key);
+    } else if (isOutcomeSubjectKey(key) && val && val.type !== "number") {
+      hideKeys.add(key);
+      if (best.kind === "neutral" && display) best = { kind: "neutral", label: display };
+    }
+  }
+  return { outcome: best, hideKeys };
 }
 
 function getScoreClass(val) {
@@ -1951,14 +1989,16 @@ function infoCard(label, value) {
 }
 
 function renderFullData(nationalId, row) {
-  // نرتّب المواد دائمًا حسب ترتيب أعمدتها الأصلي في ملف الإكسيل المرفوع
-  // (المخزَّن داخل كل مادة كحقل order)، وليس حسب ترتيب مفاتيح الكائن.
-  const entries = getSortedSubjectEntries(row);
+  // نستخرج حالة النتيجة (ناجح/دور ثانٍ) ونخفي أعمدتها من شبكة المواد
+  const { outcome, hideKeys } = resolveOutcomeFromRow(row);
+
+  // نرتّب المواد حسب ترتيب أعمدتها الأصلي، مع استبعاد أعمدة الحالة
+  const entries = getSortedSubjectEntries(row).filter(([sub]) => !hideKeys.has(sub));
   const gradesHtml = entries.map(([sub, val]) =>
     `<div class="grade-item"><span class="grade-name">${esc(sub)}</span><span class="grade-score ${getScoreClass(val)}">${esc(val.display)}</span></div>`
   ).join("");
 
-  // الرسم البياني يشمل المواد ذات الدرجات الرقمية فقط (وليس مثل "اجتاز/راسب")
+  // الرسم البياني: درجات رقمية فقط
   const numericEntries = entries.filter(([, val]) => val.type === "number");
   const chartSectionHtml = numericEntries.length ? `
       <div class="result-details-section subjects-chart-section">
@@ -1967,30 +2007,26 @@ function renderFullData(nationalId, row) {
         <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
       </div>` : "";
 
-  // كارت حالة النتيجة (ناجح / دور ثانٍ) — بعد المواد وقبل الرسم البياني
-  const outcome = classifyResultOutcome(row.result_column1);
+  // بانر الحالة قبل الرسم — فقط عند ناجح أو دور ثانٍ (بدون عناوين الفترات)
   let outcomeBannerHtml = "";
-  if (outcome.statusLabel || outcome.label) {
-    const icon = outcome.kind === "pass" ? "fa-circle-check"
-      : outcome.kind === "second" ? "fa-circle-exclamation"
-      : "fa-circle-info";
-    const mainText = outcome.statusLabel || outcome.label;
-    // إن كان النص الأصلي أطول/أوضح من المختصر، نعرضه معه
-    const detailHtml = (outcome.label && outcome.statusLabel && outcome.label !== outcome.statusLabel)
-      ? ` <span style="font-weight:600;opacity:0.9;">— ${esc(outcome.label)}</span>`
-      : "";
+  if (outcome.label && (outcome.kind === "pass" || outcome.kind === "second")) {
+    const icon = outcome.kind === "pass" ? "fa-circle-check" : "fa-circle-exclamation";
     outcomeBannerHtml = `
       <div class="result-outcome-banner outcome-${outcome.kind}" role="status">
         <i class="fas ${icon}"></i>
-        <span>${esc(mainText)}${detailHtml}</span>
+        <span>${esc(outcome.label)}</span>
       </div>`;
   }
 
-  // شارة حالة النتيجة داخل كروت بيانات الطالب (ناجح / دور ثانٍ)
+  // شارة حالة النتيجة في كروت بيانات الطالب
   let outcomeStatusCardHtml = "—";
-  if (outcome.statusLabel || outcome.label) {
-    const badgeClass = outcome.kind === "second" ? "status-not-available" : "status-available";
-    outcomeStatusCardHtml = `<span class="status-badge ${badgeClass}">${esc(outcome.statusLabel || outcome.label)}</span>`;
+  if (outcome.label && (outcome.kind === "pass" || outcome.kind === "second")) {
+    const badgeClass = outcome.kind === "pass" ? "status-available" : "status-not-available";
+    outcomeStatusCardHtml = `<span class="status-badge ${badgeClass}">${esc(outcome.label)}</span>`;
+  } else if (row.result_column1) {
+    // لا نعرض نص السنة كحالة — يُترك فارغًا إن لم توجد حالة حقيقية
+    const rawOut = classifyResultOutcome(row.result_column1);
+    outcomeStatusCardHtml = rawOut.label ? esc(rawOut.label) : "—";
   }
 
   const printDate = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
@@ -2257,7 +2293,10 @@ async function searchStudent() {
       if (area) area.classList.add("has-photo");
     }
     if (row.is_visible) {
-      const numericEntries = getSortedSubjectEntries(row).filter(([, val]) => val.type === "number");
+      const { hideKeys } = resolveOutcomeFromRow(row);
+      const numericEntries = getSortedSubjectEntries(row)
+        .filter(([sub]) => !hideKeys.has(sub))
+        .filter(([, val]) => val.type === "number");
       drawSubjectsChart(numericEntries);
     }
     setTimeout(() => resDiv.scrollIntoView({ behavior: "smooth", block: "nearest" }), 150);
@@ -2276,9 +2315,13 @@ window.shareWhatsApp = function() {
   msg += `📌 *نتيجة الطالب عن الفترة:* ${termNames[row.term_key]}\n`;
   msg += `👤 *اسم الطالب:* ${row.name}\n`;
   msg += `📚 *الصف:* ${row.grade || "—"}\n`;
-  msg += `📊 *النتيجة:* ${row.result_column1 || "—"}\n`;
+  const { outcome, hideKeys } = resolveOutcomeFromRow(row);
+  const statusText = (outcome.label && (outcome.kind === "pass" || outcome.kind === "second"))
+    ? outcome.label
+    : "—";
+  msg += `📊 *حالة النتيجة:* ${statusText}\n`;
 
-  const subjectEntries = getSortedSubjectEntries(row);
+  const subjectEntries = getSortedSubjectEntries(row).filter(([sub]) => !hideKeys.has(sub));
   if (subjectEntries.length) {
     msg += `\n📝 *تفاصيل الدرجات:*\n`;
     subjectEntries.forEach(([sub, val]) => {
