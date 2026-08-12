@@ -1518,19 +1518,21 @@ function extractSubjectMaxFromHeader(header) {
 }
 
 // تصنيف نص نتيجة الفترة: نجاح (أخضر) / دور ثانٍ (أحمر) / محايد
+// statusLabel: نص مختصر للعرض في كارت الحالة (ناجح / دور ثانٍ)
+// label: النص الأصلي من ملف الإكسيل (يُعرض معه إن اختلف)
 function classifyResultOutcome(text) {
   const t = String(text || "").trim();
-  if (!t) return { kind: "neutral", label: "" };
+  if (!t) return { kind: "neutral", label: "", statusLabel: "" };
   const low = t.toLowerCase();
   // دور ثانٍ / رسوب — أحمر (يُفحص أولًا لأنه قد يحتوي كلمات مختلطة)
   if (/دور\s*ثان|دورثان|رسوب|راسب|لم\s*ينجح|لم\s*يجتز|إعادة|اعادة/.test(low)) {
-    return { kind: "second", label: t };
+    return { kind: "second", label: t, statusLabel: "دور ثانٍ" };
   }
   // نجاح / منقول — أخضر
   if (/ناجح|نجاح|منقول|اجتاز|مقبول|passed|promoted/.test(low)) {
-    return { kind: "pass", label: t };
+    return { kind: "pass", label: t, statusLabel: "ناجح" };
   }
-  return { kind: "neutral", label: t };
+  return { kind: "neutral", label: t, statusLabel: t };
 }
 
 function getScoreClass(val) {
@@ -1965,18 +1967,30 @@ function renderFullData(nationalId, row) {
         <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
       </div>` : "";
 
-  // كارت حالة النتيجة (ناجح ومنقول… / له دور ثانٍ…) بعد المواد وقبل الرسم
+  // كارت حالة النتيجة (ناجح / دور ثانٍ) — بعد المواد وقبل الرسم البياني
   const outcome = classifyResultOutcome(row.result_column1);
   let outcomeBannerHtml = "";
-  if (outcome.label) {
+  if (outcome.statusLabel || outcome.label) {
     const icon = outcome.kind === "pass" ? "fa-circle-check"
       : outcome.kind === "second" ? "fa-circle-exclamation"
       : "fa-circle-info";
+    const mainText = outcome.statusLabel || outcome.label;
+    // إن كان النص الأصلي أطول/أوضح من المختصر، نعرضه معه
+    const detailHtml = (outcome.label && outcome.statusLabel && outcome.label !== outcome.statusLabel)
+      ? ` <span style="font-weight:600;opacity:0.9;">— ${esc(outcome.label)}</span>`
+      : "";
     outcomeBannerHtml = `
       <div class="result-outcome-banner outcome-${outcome.kind}" role="status">
         <i class="fas ${icon}"></i>
-        <span>${esc(outcome.label)}</span>
+        <span>${esc(mainText)}${detailHtml}</span>
       </div>`;
+  }
+
+  // شارة حالة النتيجة داخل كروت بيانات الطالب (ناجح / دور ثانٍ)
+  let outcomeStatusCardHtml = "—";
+  if (outcome.statusLabel || outcome.label) {
+    const badgeClass = outcome.kind === "second" ? "status-not-available" : "status-available";
+    outcomeStatusCardHtml = `<span class="status-badge ${badgeClass}">${esc(outcome.statusLabel || outcome.label)}</span>`;
   }
 
   const printDate = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
@@ -2023,8 +2037,8 @@ function renderFullData(nationalId, row) {
             <span class="value">${esc(row.seat_number || "—")}</span>
           </div>
           <div class="report-student-item">
-            <span class="label">📊 نتيجة الفترة</span>
-            <span class="value">${esc(row.result_column1 || "—")}</span>
+            <span class="label">📊 حالة النتيجة</span>
+            <span class="value">${outcomeStatusCardHtml}</span>
           </div>
           <div class="report-student-item">
             <span class="label">📋 الحالة</span>
