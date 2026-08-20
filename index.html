@@ -472,6 +472,8 @@
     .grade-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.45rem 1rem; margin: 0.35rem 0 0.7rem; }
     .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 600; color: var(--text2); }
     .legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+    .legend-action { font-size: 0.72rem; font-weight: 500; color: var(--text3); }
+    .grade-level-action { line-height: 1.25; }
     .chart-wrap {
       position: relative;
       width: 100%;
@@ -1229,20 +1231,28 @@ async function parseExcelRecords(file) {
           nid = String(nid).trim().replace(/[^0-9]/g, "");
           if (nid.length < 10) continue;
 
-          const resultColumn1 = row[1] ? String(row[1]).trim() : "";
+          // هيكل الأعمدة:
+          // 1 الرقم القومي | 2 الحالة (موقف النشر) | 3 الصف | 4 الاسم | 5 رقم الجلوس | 6 نوع النتيجة
+          // ثم المواد … ثم العمود الأخير = نتيجة (للبانر: ناجح ومنقول… / دور ثانٍ…)
+          const statusCol = row[1] ? String(row[1]).trim() : "";
           const grade = row[2] ? String(row[2]).trim() : "";
           const name = row[3] ? String(row[3]).trim() : "طالب";
           const seatNumber = row[4] ? String(row[4]).trim() : "";
           const resultType = row[5] ? String(row[5]).trim() : "";
-          const isAvailable = resultType === "متاح" || resultType === "متاحة";
+          const lastIdx = headers.length - 1;
+          // العمود الأخير = نتيجة (نص البانر) — لا يُحسب ضمن المواد
+          const resultColumn1 = lastIdx >= 6
+            ? String(row[lastIdx] != null ? row[lastIdx] : "").trim()
+            : "";
+          const isAvailable = statusCol === "متاح" || statusCol === "متاحة"
+            || resultType === "متاح" || resultType === "متاحة";
 
-          // نُخزّن ترتيب العمود الأصلي بملف الإكسيل (order) داخل كل مادة نفسها،
-          // وليس فقط كترتيب مفاتيح الكائن — لأن ترتيب مفاتيح JSON/JSONB قد لا
-          // يُحفَظ دائمًا كما هو عبر قاعدة البيانات السحابية. وبذلك نضمن أن
-          // العرض عند البحث يكون دائمًا بنفس ترتيب أعمدة ملف الإكسيل المرفوع.
+          // نُخزّن ترتيب العمود الأصلي بملف الإكسيل (order) داخل كل مادة نفسها
+          // المواد: من العمود 7 حتى قبل العمود الأخير (نتيجة)
           const subjects = {};
           let subjectOrder = 0;
-          for (let ci = 6; ci < headers.length; ci++) {
+          const subjectEnd = lastIdx >= 6 ? lastIdx : headers.length;
+          for (let ci = 6; ci < subjectEnd; ci++) {
             const h = headers[ci];
             if (h && h.trim() && row[ci] !== undefined && row[ci] !== null && String(row[ci]).trim() !== "") {
               const cell = parseCellValue(row[ci]);
@@ -1541,8 +1551,10 @@ function getScoreClass(val) {
     // من 5 فقط.
     const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
     const pct = (val.raw / max) * 100;
+    // وفق معايير الابتدائي: ممتاز ≥85 | جيد جدا/جيد ≥65 | مقبول ≥50 | دون المستوى <50
     if (pct >= 85) return "score-high";
-    if (pct >= 60) return "score-mid";
+    if (pct >= 65) return "score-mid";
+    if (pct >= 50) return "score-mid";
     return "score-low";
   }
   let low = val.display.toLowerCase();
@@ -1808,22 +1820,37 @@ window.printReport = async function () {
 window.addEventListener("beforeprint", fitReportToOnePage);
 window.addEventListener("afterprint", () => { resetPrintScale(); restorePageTitle(); });
 
-// ===== نطاقات تقدير الدرجات للرسم البياني (مثبّتة باتفاق مع الإدارة) =====
+// ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
+// النسبة المئوية → المستوى → الإجراء المقترح
 const GRADE_BANDS = [
-  { min: 85, label: "ممتاز", color: "#2563eb" },
-  { min: 75, label: "جيد جدًا", color: "#16a34a" },
-  { min: 65, label: "جيد", color: "#f97316" },
-  { min: 50, label: "مقبول", color: "#eab308" },
-  { min: -Infinity, label: "أقل من المتوقع", color: "#dc2626" },
+  { min: 85, label: "ممتاز",       action: "أنشطة إثرائية",  color: "#2563eb" },
+  { min: 75, label: "جيد جدا",     action: "رعاية وتحفيز",   color: "#16a34a" },
+  { min: 65, label: "جيد",         action: "رفع كفاءة",      color: "#f97316" },
+  { min: 50, label: "مقبول",       action: "رفع مستوى",      color: "#eab308" },
+  { min: -Infinity, label: "دون المستوى", action: "أنشطة علاجية", color: "#dc2626" },
 ];
 
 function getGradeBand(score) {
   return GRADE_BANDS.find((b) => score >= b.min) || GRADE_BANDS[GRADE_BANDS.length - 1];
 }
 
-function gradeLegendHtml() {
+/** هل الصف ينتمي للمرحلة الابتدائية (عربي أو لغات)؟ */
+function isElementaryStage(grade) {
+  const g = String(grade || "").trim().toLowerCase();
+  if (!g) return false;
+  if (/ابتدائ|primary|elementary/.test(g)) return true;
+  if (/[1-6١-٦]/.test(g) && /عربي|لغات/.test(g) && !/إعداد|اعداد|ثانوي|متوسط/.test(g)) return true;
+  return false;
+}
+
+function gradeLegendHtml(showActions) {
   return `<div class="grade-legend">${GRADE_BANDS.map(
-    (b) => `<span class="legend-item"><span class="legend-swatch" style="background:${b.color}"></span>${esc(b.label)}</span>`
+    (b) => {
+      const actionPart = showActions && b.action
+        ? ` <span class="legend-action">(${esc(b.action)})</span>`
+        : "";
+      return `<span class="legend-item"><span class="legend-swatch" style="background:${b.color}"></span>${esc(b.label)}${actionPart}</span>`;
+    }
   ).join("")}</div>`;
 }
 
@@ -1952,30 +1979,62 @@ function renderFullData(nationalId, row) {
   // نرتّب المواد دائمًا حسب ترتيب أعمدتها الأصلي في ملف الإكسيل المرفوع
   // (المخزَّن داخل كل مادة كحقل order)، وليس حسب ترتيب مفاتيح الكائن.
   const entries = getSortedSubjectEntries(row);
-  const gradesHtml = entries.map(([sub, val]) =>
-    `<div class="grade-item"><span class="grade-name">${esc(sub)}</span><span class="grade-score ${getScoreClass(val)}">${esc(val.display)}</span></div>`
-  ).join("");
+  const isElem = isElementaryStage(row.grade);
+
+  // للمرحلة الابتدائية (عربي/لغات): نعرض بجانب الدرجة المستوى + الإجراء المقترح
+  const gradesHtml = entries.map(([sub, val]) => {
+    let extra = "";
+    if (isElem && val.type === "number") {
+      const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
+      const pct = (val.raw / max) * 100;
+      const band = getGradeBand(pct);
+      extra = `<span class="grade-level-action" style="font-size:0.62rem;font-weight:600;color:var(--text2);margin-top:2px;display:block;">${esc(band.label)} — ${esc(band.action)}</span>`;
+    }
+    return `<div class="grade-item" style="flex-direction:column;align-items:flex-start;gap:0.15rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:0.35rem;">
+        <span class="grade-name">${esc(sub)}</span>
+        <span class="grade-score ${getScoreClass(val)}">${esc(val.display)}</span>
+      </div>${extra}
+    </div>`;
+  }).join("");
 
   // الرسم البياني يشمل المواد ذات الدرجات الرقمية فقط (وليس مثل "اجتاز/راسب")
   const numericEntries = entries.filter(([, val]) => val.type === "number");
   const chartSectionHtml = numericEntries.length ? `
       <div class="result-details-section subjects-chart-section">
         <div class="section-heading"><i class="fas fa-chart-bar"></i><span>الرسم البياني للدرجات</span></div>
-        ${gradeLegendHtml()}
+        ${gradeLegendHtml(isElem)}
         <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
       </div>` : "";
 
-  // كارت حالة النتيجة (ناجح ومنقول… / له دور ثانٍ…) بعد المواد وقبل الرسم
+  // بانر بعرض الصفحة بعد المواد وقبل الرسم:
+  // من عمود «نتيجة» — ناجح ومنقول… / له دور ثانٍ… / ولو فارغ → تهنئة افتراضية
+  const DEFAULT_OUTCOME_MSG = "مع أطيب الأمنيات بالنجاح والتوفيق";
   const outcome = classifyResultOutcome(row.result_column1);
-  let outcomeBannerHtml = "";
-  if (outcome.label) {
-    const icon = outcome.kind === "pass" ? "fa-circle-check"
-      : outcome.kind === "second" ? "fa-circle-exclamation"
-      : "fa-circle-info";
-    outcomeBannerHtml = `
-      <div class="result-outcome-banner outcome-${outcome.kind}" role="status">
+  const outcomeLabel = outcome.label || DEFAULT_OUTCOME_MSG;
+  const outcomeKind = outcome.label ? outcome.kind : "neutral";
+  const icon = outcomeKind === "pass" ? "fa-circle-check"
+    : outcomeKind === "second" ? "fa-circle-exclamation"
+    : "fa-heart";
+  const outcomeBannerHtml = `
+      <div class="result-outcome-banner outcome-${outcomeKind}" role="status">
         <i class="fas ${icon}"></i>
-        <span>${esc(outcome.label)}</span>
+        <span>${esc(outcomeLabel)}</span>
+      </div>`;
+
+  // ملخص مستوى الأداء العام للمرحلة الابتدائية
+  let elemSummaryHtml = "";
+  if (isElem && numericEntries.length) {
+    const pcts = numericEntries.map(([, val]) => {
+      const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
+      return Math.max(0, Math.min(100, (val.raw / max) * 100));
+    });
+    const avg = pcts.reduce((a, b) => a + b, 0) / pcts.length;
+    const band = getGradeBand(avg);
+    elemSummaryHtml = `
+      <div class="result-outcome-banner outcome-neutral" style="margin-top:0.35rem;flex-direction:column;gap:0.25rem;" role="status">
+        <span style="font-size:0.88rem;"><i class="fas fa-chart-line" style="margin-left:0.35rem;"></i>متوسط الأداء: <strong>${avg.toFixed(1)}%</strong> — المستوى: <strong style="color:${band.color}">${esc(band.label)}</strong></span>
+        <span style="font-size:0.78rem;font-weight:600;color:var(--text2);">الإجراء المقترح: ${esc(band.action)}</span>
       </div>`;
   }
 
@@ -2023,11 +2082,7 @@ function renderFullData(nationalId, row) {
             <span class="value">${esc(row.seat_number || "—")}</span>
           </div>
           <div class="report-student-item">
-            <span class="label">📊 نتيجة الفترة</span>
-            <span class="value">${esc(row.result_column1 || "—")}</span>
-          </div>
-          <div class="report-student-item">
-            <span class="label">📋 الحالة</span>
+            <span class="label">📋 موقف النشر</span>
             <span class="value"><span class="status-badge status-available">متاحة</span></span>
           </div>
         </div>
@@ -2065,7 +2120,7 @@ function renderFullData(nationalId, row) {
       <div class="result-details-section" style="padding:0.6rem 1rem;">
         <div class="section-heading"><i class="fas fa-chart-simple"></i><span>تفاصيل المواد والدرجات (${esc(termNames[row.term_key] || "")})</span></div>
         <div class="grades-grid">${gradesHtml || '<div style="text-align:center;padding:1rem;color:var(--text3);">لا توجد مواد مسجلة لهذه الفترة</div>'}</div>
-      </div>${outcomeBannerHtml}${chartSectionHtml}
+      </div>${outcomeBannerHtml}${elemSummaryHtml}${chartSectionHtml}
       <div class="print-footer">
         <div class="pf-stamp-circle">
           <div class="pf-line">يُعتمد</div>
@@ -2126,11 +2181,10 @@ function renderBasicDataOnly(nationalId, row) {
         <div class="section-heading"><i class="fas fa-address-card"></i><span>البيانات الأساسية</span></div>
         <div class="basic-info-grid">
           ${infoCard("🆔 الرقم القومي", `<span dir="ltr">${esc(nationalId)}</span>`)}
-          ${infoCard("📊 نتيجة الفترة", "—")}
           ${infoCard("📚 الصف", esc(row.grade||"—"))}
           ${infoCard("👤 اسم الطالب", esc(row.name))}
           ${infoCard("🎫 رقم الجلوس", esc(row.seat_number||"—"))}
-          ${infoCard("📋 الحالة", `<span class="status-badge status-not-available">غير متاحة</span>`)}
+          ${infoCard("📋 موقف النشر", `<span class="status-badge status-not-available">غير متاحة</span>`)}
         </div>
       </div>
       <div class="not-available-message">${noteHtml}</div>
@@ -2298,16 +2352,23 @@ async function processExcelFile(file, targetTerm) {
           nid = String(nid).trim().replace(/[^0-9]/g, "");
           if (nid.length < 10) continue;
           
-          const resultColumn1 = row[1] ? String(row[1]).trim() : "";
+          // 1 الرقم القومي | 2 الحالة | 3 الصف | 4 الاسم | 5 رقم الجلوس | 6 نوع النتيجة | مواد… | الأخير = نتيجة
+          const statusCol = row[1] ? String(row[1]).trim() : "";
           const grade = row[2] ? String(row[2]).trim() : "";
           const name = row[3] ? String(row[3]).trim() : "طالب";
           const seatNumber = row[4] ? String(row[4]).trim() : "";
           const resultType = row[5] ? String(row[5]).trim() : "";
-          const isAvailable = (resultType === "متاح" || resultType === "متاحة");
+          const lastIdx = headers.length - 1;
+          const resultColumn1 = lastIdx >= 6
+            ? String(row[lastIdx] != null ? row[lastIdx] : "").trim()
+            : "";
+          const isAvailable = statusCol === "متاح" || statusCol === "متاحة"
+            || resultType === "متاح" || resultType === "متاحة";
           
           const allData = {};
           let allDataOrder = 0;
-          for (let ci = 6; ci < headers.length; ci++) {
+          const subjectEnd = lastIdx >= 6 ? lastIdx : headers.length;
+          for (let ci = 6; ci < subjectEnd; ci++) {
             const h = headers[ci];
             if (h && h.trim() && row[ci] !== undefined && row[ci] !== null && String(row[ci]).trim() !== "") {
               const cell = parseCellValue(row[ci]);
@@ -2460,8 +2521,9 @@ async function buildUploadPreview(files, targetTerm) {
           message: `⚠️ هذا الرقم القومي مسجَّل بالفعل باسم "${studentsDB[nid].name}"، والملف بيحاول رفعه باسم "${name}" — تأكد إنه مش رقم غلط بيخص طالب تاني قبل ما تكمل` });
       }
 
-      // فحص الدرجات (من العمود السابع فصاعدًا) خارج النطاق المنطقي
-      for (let ci = 6; ci < headers.length; ci++) {
+      // فحص الدرجات (من العمود السابع حتى قبل العمود الأخير = نتيجة)
+      const gradeEnd = headers.length > 6 ? headers.length - 1 : headers.length;
+      for (let ci = 6; ci < gradeEnd; ci++) {
         const h = headers[ci];
         const cellRaw = row[ci];
         if (!h || !h.trim() || cellRaw === undefined || cellRaw === null || String(cellRaw).trim() === "") continue;
@@ -3100,7 +3162,7 @@ window.exportTermData = async function(term) {
     if (t && t.allData) Object.keys(t.allData).forEach(k => extraColsSet.add(k));
   });
   const extraCols = Array.from(extraColsSet);
-  const headers = ["الرقم القومي", "نتيجة الفترة", "الصف", "اسم الطالب", "رقم الجلوس", "الحالة", ...extraCols];
+  const headers = ["الرقم القومي", "الحالة", "الصف", "اسم الطالب", "رقم الجلوس", "نوع النتيجة", ...extraCols, "نتيجة"];
   const rows = [headers];
 
   Object.values(studentsDB).forEach(s => {
@@ -3108,13 +3170,14 @@ window.exportTermData = async function(term) {
     if (!t) return;
     const row = [
       s.nationalId || "",
-      t.resultColumn1 || "",
+      t.isAvailable ? "متاح" : "غير متاح",
       s.grade || "",
       s.name || "",
       s.seatNumber || "",
-      t.resultType || (t.isAvailable ? "متاح" : "غير متاح")
+      t.resultType || ""
     ];
     extraCols.forEach(col => row.push(t.allData && t.allData[col] ? t.allData[col].display : ""));
+    row.push(t.resultColumn1 || "");
     rows.push(row);
   });
 
