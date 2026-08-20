@@ -474,45 +474,272 @@
     .legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
     .legend-action { font-size: 0.72rem; font-weight: 500; color: var(--text3); }
     .grade-level-action { line-height: 1.25; }
+
+    /* ========== بيان درجات رسمي (rpt-*) ========== */
+    .rpt-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      max-width: 780px;
+      margin: 1.5rem auto 0;
+      direction: rtl;
+    }
+    .rpt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-bottom: none;
+      background: linear-gradient(135deg, #0f5b7a 0%, #0a3d54 100%);
+      color: #fff;
+    }
+    .rpt-header-emblem {
+      width: 58px; height: 58px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .rpt-header-emblem img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+    .rpt-header-emblem i { font-size: 1.5rem; color: var(--accent); }
+    .rpt-header-text { text-align: center; flex: 1; min-width: 0; }
+    .rpt-school-name {
+      font-size: clamp(1.05rem, 2.6vw, 1.28rem);
+      font-weight: 900; color: #fff; line-height: 1.35;
+    }
+    .rpt-school-motto {
+      font-size: 0.88rem; font-weight: 800; color: #f0d9a8; margin-top: 0.12rem;
+    }
+    .rpt-term-title {
+      font-size: 0.92rem; font-weight: 900; color: #e8f4fa; margin-top: 0.22rem;
+    }
+
+    /* صورة + 6 كروت — الصورة دائمًا في اليسار البصري */
+    .rpt-student {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0.65rem;
+      padding: 0.85rem 1rem;
+      align-items: start;
+      direction: ltr;
+    }
+    .rpt-student > .rpt-photo-col { order: 1; }
+    .rpt-student > .rpt-cards-grid { order: 2; }
+    .rpt-photo-col {
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    }
+    .rpt-photo-frame {
+      width: 110px; aspect-ratio: 3/4;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      background: var(--surface2);
+      overflow: hidden; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rpt-photo-frame .photo-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      color: var(--text3); font-size: 0.62rem; font-weight: 600;
+    }
+    .rpt-photo-frame .photo-placeholder i { font-size: 1.6rem; }
+    .rpt-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(3, auto);
+      gap: 0.4rem;
+      direction: rtl;
+    }
+    .rpt-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.4rem 0.55rem;
+      display: flex; flex-direction: column; justify-content: center;
+      min-height: 48px;
+    }
+    .rpt-card-label {
+      font-size: 0.72rem; font-weight: 800; color: var(--text3);
+      margin-bottom: 0.14rem;
+    }
+    .rpt-card-value {
+      font-size: 0.92rem; font-weight: 900; color: var(--text);
+      word-break: break-word; line-height: 1.35;
+    }
+    .rpt-card-value.ltr { direction: ltr; font-family: monospace; letter-spacing: 0.4px; text-align: left; font-size: 0.88rem; }
+    .rpt-card-result { font-size: 0.85rem; }
+
+    /* جدول المواد */
+    .rpt-subjects { padding: 0.35rem 1rem 0.55rem; }
+    .rpt-section-title {
+      display: flex; align-items: center; gap: 0.45rem;
+      font-weight: 900; font-size: 1rem; color: var(--primary);
+      margin-bottom: 0.45rem;
+    }
+    .rpt-section-title i { color: var(--accent); }
+    .rpt-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .rpt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .rpt-table thead th {
+      background: var(--surface3);
+      color: var(--text2);
+      font-weight: 900;
+      padding: 0.5rem 0.55rem;
+      border-bottom: 1.5px solid var(--border2);
+      text-align: center;
+      white-space: nowrap;
+      font-size: 0.88rem;
+    }
+    .rpt-table tbody td {
+      padding: 0.42rem 0.55rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      font-weight: 700;
+    }
+    .rpt-table tbody tr:last-child td { border-bottom: none; }
+    .rpt-table tbody tr:nth-child(even) { background: var(--surface2); }
+    .rpt-table .col-subject { text-align: right; font-weight: 700; color: var(--text); width: 42%; }
+    .rpt-table .col-max { text-align: center; font-weight: 600; color: var(--text2); width: 14%; }
+    .rpt-table .col-score { text-align: center; width: 18%; }
+    .rpt-table .col-est { text-align: center; width: 26%; }
+    .score-pill {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 900;
+      font-size: 0.88rem;
+      letter-spacing: normal;
+      font-family: 'Cairo', sans-serif;
+    }
+    .est-label {
+      font-weight: 900; font-size: 0.88rem;
+      letter-spacing: normal !important;
+      font-family: 'Cairo', sans-serif;
+      white-space: nowrap;
+    }
+    .est-action { display: block; font-size: 0.72rem; font-weight: 700; color: var(--text3); margin-top: 1px; letter-spacing: normal; }
+    .rpt-sum-value, .rpt-status, .rpt-card-value, .rpt-table td, .rpt-table th {
+      letter-spacing: normal !important;
+      font-family: 'Cairo', sans-serif;
+    }
+    .rpt-empty { text-align: center; color: var(--text3); padding: 1rem !important; }
+    .row-exempt td { color: var(--text3); font-style: italic; }
+
+    /* الملخص والحالة */
+    .rpt-summary {
+      margin: 0.35rem 1rem 0.55rem;
+      padding: 0.7rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface2);
+    }
+    .rpt-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.55rem;
+    }
+    .rpt-sum-item {
+      text-align: center;
+      padding: 0.35rem 0.25rem;
+      background: var(--surface);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .rpt-sum-label {
+      display: block;
+      font-size: 0.75rem; font-weight: 800; color: var(--text3);
+      margin-bottom: 0.15rem;
+    }
+    .rpt-sum-value {
+      display: block;
+      font-size: 1.08rem; font-weight: 900; color: var(--text);
+    }
+    .rpt-status {
+      display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 10px;
+      font-weight: 900; font-size: 1rem;
+      text-align: center;
+      border: 1.5px solid transparent;
+    }
+    .rpt-status.outcome-pass {
+      background: var(--success-light); color: var(--success);
+      border-color: rgba(46, 125, 100, 0.3);
+    }
+    .rpt-status.outcome-second {
+      background: var(--danger-light); color: var(--danger);
+      border-color: rgba(196, 69, 54, 0.3);
+    }
+    .rpt-status.outcome-neutral {
+      background: var(--surface); color: var(--text2);
+      border-color: var(--border);
+    }
+    .rpt-elem-note {
+      text-align: center; font-size: 0.75rem; font-weight: 600;
+      color: var(--text2); margin-top: 0.4rem;
+    }
+
+    /* الرسم البياني */
+    .rpt-chart.chart-container {
+      margin: 0.35rem 1rem 0.55rem;
+      padding: 0.7rem 0.85rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface2);
+    }
     .chart-wrap {
       position: relative;
       width: 100%;
-      max-width: 920px;
       margin: 0 auto;
-      height: 380px;
+      height: 280px;
       direction: ltr;
     }
-    @media (max-width: 600px) {
-      .chart-wrap { height: 320px; max-width: 100%; }
-    }
-    @media (min-width: 900px) {
-      .chart-wrap { height: 420px; max-width: 980px; }
-    }
 
-    .print-footer {
+    /* التوقيع والختم — الختم والاعتماد في اليسار */
+    .rpt-signature.signature-section {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: flex-end;
       gap: 1rem;
-      margin: 0.6rem 0.9rem 0.4rem;
+      margin: 0.4rem 1rem 0.5rem;
       padding-top: 0.5rem;
+      direction: ltr; /* الختم يسار، التاريخ يمين */
+    }
+    .rpt-stamp-block { display: none; } /* شاشة فقط — يظهر في الطباعة */
+    .rpt-stamp-circle {
+      width: 78px; height: 78px; border-radius: 50%;
+      border: 2px dashed var(--primary);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--primary);
+    }
+    .rpt-stamp-line { font-weight: 900; font-size: 0.88rem; }
+    .rpt-stamp-sub { font-weight: 700; font-size: 0.72rem; margin-top: 2px; }
+    .rpt-print-date {
+      font-size: 0.88rem; font-weight: 700; color: var(--text3);
+      margin: 0;
       direction: rtl;
     }
-    .print-footer .pf-date {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text3);
-      text-align: right;
-      margin: 0;
-      margin-right: 0;
-      margin-left: auto;
-    }
-    /* شاشة العرض فقط: إخفاء الختم — يبقى ظاهرًا في @media print */
-    .print-footer .pf-stamp-block,
-    .print-footer .pf-stamp-circle,
-    .print-footer .pf-stamp-circle .pf-line,
-    .print-footer .pf-stamp-circle .pf-sub {
-      display: none !important;
+
+    @media (max-width: 560px) {
+      .rpt-student {
+        grid-template-columns: 1fr;
+        direction: rtl;
+      }
+      .rpt-photo-col { order: -1; margin: 0 auto 0.4rem; }
+      .rpt-photo-frame { width: 100px; }
+      .rpt-cards-grid { grid-template-columns: 1fr 1fr; }
+      .rpt-summary-grid { grid-template-columns: 1fr; }
+      .rpt-table { font-size: 0.72rem; }
+      .rpt-table .col-est { width: 22%; }
     }
 
     .not-available-message {
@@ -597,9 +824,9 @@
     :root { --print-scale: 1; }
 
     @media print {
-      /* هوامش مطابقة لنموذج A4 الاسترشادي (~2.15سم جانبي، ~1.3سم أعلى/أسفل) */
-      @page { size: A4 portrait; margin: 12mm; }
-      @page { size: 210mm 297mm; margin: 12mm; } /* تأكيد A4 صراحةً — بعض متصفحات الموبايل تتجاهل الاسم فقط */
+      /* هوامش مضغوطة لضمان صفحة واحدة A4 */
+      @page { size: A4 portrait; margin: 8mm; }
+      @page { size: 210mm 297mm; margin: 8mm; }
 
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
@@ -611,6 +838,11 @@
       .section-heading, .info-value, .print-footer .pf-stamp .pf-line,
       .result-school-name, .report-student-item .value, .report-subject-item .score {
         font-family: 'PT Bold Heading', 'Cairo', sans-serif !important;
+      }
+      /* بيان الدرجات الرسمي: Cairo ثقيل وواضح في PDF (يتجنب تقطّع الحروف) */
+      .rpt-sheet, .rpt-sheet * {
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
       }
 
       html, body {
@@ -637,7 +869,194 @@
         margin: 0 !important; padding: 0 !important;
       }
 
-      /* مقياس التصغير التلقائي لملء صفحة A4 بعد خصم الهوامش */
+      /* ===== بيان الدرجات الرسمي (rpt) — طباعة A4 ===== */
+      .rpt-sheet.result-card {
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        background: #fff !important;
+      }
+      .rpt-header {
+        background: linear-gradient(135deg, #0f5b7a 0%, #0a3d54 100%) !important;
+        border-bottom: none !important;
+        padding: 2.5mm 2mm !important;
+        margin-bottom: 2mm !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .rpt-header-emblem {
+        width: 18mm !important; height: 18mm !important;
+        border: 1px solid rgba(255,255,255,0.5) !important; background: #fff !important;
+      }
+      .rpt-school-name {
+        font-size: 16pt !important; font-weight: 900 !important; color: #ffffff !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
+        -webkit-text-stroke: 0.15pt #ffffff;
+      }
+      .rpt-school-motto {
+        font-size: 11pt !important; font-weight: 800 !important; color: #f0d9a8 !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+      .rpt-term-title {
+        font-size: 12.5pt !important; font-weight: 900 !important; color: #e8f4fa !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+        -webkit-text-stroke: 0.1pt #e8f4fa;
+      }
+
+      .rpt-student {
+        grid-template-columns: 28mm 1fr !important;
+        gap: 2mm !important;
+        padding: 0 0 2mm !important;
+        page-break-inside: avoid;
+        direction: ltr !important; /* الصورة يسار */
+      }
+      .rpt-student > .rpt-photo-col { order: 1 !important; }
+      .rpt-student > .rpt-cards-grid { order: 2 !important; }
+      .rpt-photo-frame {
+        width: 26mm !important; height: 34mm !important;
+        aspect-ratio: auto !important;
+        border: 1.5pt solid #0f5b7a !important;
+        border-radius: 2mm !important;
+      }
+      .rpt-cards-grid { gap: 1.5mm !important; }
+      .rpt-card {
+        padding: 1.2mm 2mm !important;
+        min-height: 0 !important;
+        border: 0.7pt solid #c5ced9 !important;
+        border-radius: 1.5mm !important;
+        background: #f8fafc !important;
+        -webkit-print-color-adjust: exact !important;
+      }
+      .rpt-card-label {
+        font-size: 9pt !important; font-weight: 800 !important; color: #64748b !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+      .rpt-card-value {
+        font-size: 11pt !important; font-weight: 900 !important; color: #1e2a3a !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+
+      .rpt-subjects { padding: 0 0 1.5mm !important; }
+      .rpt-section-title {
+        font-size: 11pt !important; font-weight: 900 !important; margin-bottom: 1mm !important; color: #0f5b7a !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+      .rpt-table-wrap { border: 0.7pt solid #c5ced9 !important; border-radius: 1.5mm !important; }
+      .rpt-table {
+        font-size: 10.5pt !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
+      }
+      .rpt-table thead th {
+        background: #eef2f7 !important;
+        padding: 1mm 1.5mm !important;
+        font-size: 9pt !important;
+        font-weight: 900 !important;
+        border-bottom: 1pt solid #94a3b8 !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
+        -webkit-print-color-adjust: exact !important;
+      }
+      .rpt-table tbody td {
+        padding: 0.9mm 1.5mm !important;
+        border-bottom: 0.5pt solid #e2e8f0 !important;
+        font-weight: 800 !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
+      }
+      .rpt-table tbody tr:nth-child(even) { background: #f8fafc !important; -webkit-print-color-adjust: exact !important; }
+      .score-pill {
+        padding: 0.6mm 2.2mm !important; font-size: 10pt !important; font-weight: 900 !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+      .est-label {
+        font-size: 10pt !important; font-weight: 900 !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+        white-space: nowrap !important;
+      }
+      .est-action { font-size: 8pt !important; font-weight: 700 !important; letter-spacing: normal !important; }
+
+      .rpt-summary {
+        margin: 0 0 1.5mm !important;
+        padding: 1.5mm !important;
+        border: 1pt solid #c5ced9 !important;
+        border-radius: 2mm !important;
+        background: #f8fafc !important;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact !important;
+      }
+      .rpt-summary-grid { gap: 1.5mm !important; margin-bottom: 1.5mm !important; }
+      .rpt-sum-item {
+        padding: 1mm !important;
+        background: #fff !important;
+        border: 0.6pt solid #e2e8f0 !important;
+      }
+      .rpt-sum-label {
+        font-size: 8pt !important; font-weight: 800 !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+      }
+      .rpt-sum-value {
+        font-size: 11pt !important; font-weight: 900 !important;
+        font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
+        -webkit-text-stroke: 0.12pt currentColor;
+      }
+      .rpt-status {
+        padding: 1.5mm 2.5mm !important;
+        font-size: 11pt !important;
+        font-weight: 900 !important;
+        border-radius: 2mm !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: normal !important;
+        -webkit-text-stroke: 0.1pt currentColor;
+        -webkit-print-color-adjust: exact !important;
+      }
+      .rpt-status.outcome-pass { background: #e6f4ef !important; color: #2e7d64 !important; }
+      .rpt-status.outcome-second { background: #fdefec !important; color: #c44536 !important; }
+      .rpt-elem-note { font-size: 8pt !important; }
+
+      .rpt-chart.chart-container {
+        margin: 0 0 1.5mm !important;
+        padding: 1.5mm !important;
+        border: 1pt solid #c5ced9 !important;
+        border-radius: 2mm !important;
+        background: #f8fafc !important;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+        -webkit-print-color-adjust: exact !important;
+      }
+      .chart-wrap {
+        height: auto !important;
+        min-height: 35mm !important;
+        max-height: 55mm !important;
+        overflow: hidden !important;
+      }
+      .chart-wrap canvas {
+        max-height: 55mm !important;
+      }
+
+      .rpt-signature.signature-section {
+        margin: 1.5mm 0 0 !important;
+        padding-top: 1.5mm !important;
+        page-break-inside: avoid;
+        page-break-before: avoid;
+        direction: ltr !important; /* الختم يسار */
+        justify-content: space-between !important;
+      }
+      .rpt-stamp-block { display: block !important; }
+      .rpt-stamp-circle {
+        width: 18mm !important; height: 18mm !important;
+        border: 1pt dashed #0f5b7a !important;
+        color: #0f5b7a !important;
+      }
+      .rpt-stamp-line { font-size: 9pt !important; font-weight: 900 !important; }
+      .rpt-stamp-sub { font-size: 7.5pt !important; font-weight: 700 !important; }
+      .rpt-print-date { font-size: 9pt !important; font-weight: 700 !important; color: #64748b !important; direction: rtl !important; }
+
+      /* مقياس التصغير التلقائي — صفحة واحدة فقط */
       #printSection {
         zoom: var(--print-scale, 1);
         display: flex !important;
@@ -645,22 +1064,31 @@
         justify-content: flex-start !important;
         visibility: visible !important;
         width: 100% !important;
-        max-width: 100% !important; /* كامل العرض بين هامشي 2سم */
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
         box-sizing: border-box !important;
         color: #1e2a3a !important;
         min-height: 0 !important;
         height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
       }
 
-      /* بديل transform للمتصفحات التي لا تدعم zoom في الطباعة (مثل بعض إصدارات Firefox) */
+      /* بديل transform للمتصفحات التي لا تدعم zoom في الطباعة */
       @supports not (zoom: 1) {
         #printSection {
           transform: scale(var(--print-scale, 1));
           transform-origin: top center;
         }
       }
+
+      /* منع أي فاصل صفحة داخل التقرير */
+      .rpt-sheet, .rpt-sheet * {
+        page-break-inside: avoid !important;
+      }
+      .action-buttons { display: none !important; }
 
       .result-card {
         box-shadow: none !important;
@@ -1599,8 +2027,9 @@ function fitReportToOnePage() {
     n.removeAttribute("data-print-pad");
   });
 
-  // A4 ثابت (210×297مم) + هامش 12مم — نفس الحساب على الموبايل والحاسوب
-  const marginPx = (12 / 25.4) * 96;
+  // A4 (210×297مم) + هامش 8مم — مساحة قابلة للطباعة أكبر لضمان صفحة واحدة
+  const marginMm = 8;
+  const marginPx = (marginMm / 25.4) * 96;
   const a4WidthPx = (210 / 25.4) * 96;
   const a4HeightPx = (297 / 25.4) * 96;
   const availableWidthPx = a4WidthPx - (2 * marginPx);
@@ -1611,22 +2040,28 @@ function fitReportToOnePage() {
   el.style.maxWidth = availableWidthPx + "px";
   el.style.zoom = "1";
 
+  // ضغط ارتفاع الرسم البياني قبل القياس (مهم مع كثرة المواد)
+  const chartWrap = el.querySelector(".chart-wrap");
+  if (chartWrap) {
+    chartWrap.style.height = "55mm";
+    chartWrap.style.maxHeight = "55mm";
+    chartWrap.style.minHeight = "35mm";
+    chartWrap.style.overflow = "hidden";
+  }
+
   if (typeof subjectsChartInstance !== "undefined" && subjectsChartInstance) {
     try {
-      // تكبير خطوط أسماء المواد والنسب لتكون مقروءة في PDF/الطباعة
       const ch = subjectsChartInstance;
       if (ch.options && ch.options.scales) {
         if (ch.options.scales.x && ch.options.scales.x.ticks) {
-          ch.options.scales.x.ticks.font = { family: "Cairo, sans-serif", size: 14, weight: "700" };
-          ch.options.scales.x.ticks.maxRotation = 50;
-          ch.options.scales.x.ticks.minRotation = 25;
+          ch.options.scales.x.ticks.font = { family: "Cairo, sans-serif", size: 11, weight: "700" };
         }
         if (ch.options.scales.y && ch.options.scales.y.ticks) {
-          ch.options.scales.y.ticks.font = { family: "Cairo, sans-serif", size: 12, weight: "600" };
+          ch.options.scales.y.ticks.font = { family: "Cairo, sans-serif", size: 10, weight: "700" };
         }
       }
       if (ch.options && ch.options.layout) {
-        ch.options.layout.padding = { top: 10, bottom: 12, left: 6, right: 6 };
+        ch.options.layout.padding = { top: 4, bottom: 4, left: 4, right: 4 };
       }
       ch.update("none");
       ch.resize();
@@ -1642,11 +2077,13 @@ function fitReportToOnePage() {
 
   const scaleW = realW > 0 ? (availableWidthPx / realW) : 1;
   const scaleH = realH > 0 ? (availableHeightPx / realH) : 1;
-  let scale = Math.min(scaleW, scaleH) * 0.97;
+  // هامش أمان 4% لضمان عدم تجاوز الصفحة
+  let scale = Math.min(scaleW, scaleH, 1) * 0.96;
   if (realH * scale > availableHeightPx && realH > 0) {
-    scale = (availableHeightPx / realH) * 0.97;
+    scale = (availableHeightPx / realH) * 0.96;
   }
-  scale = Math.max(0.45, Math.min(2.5, scale));
+  // لا نكبّر أبدًا فوق 1، ونسمح بتصغير حتى 0.40 عند الحاجة
+  scale = Math.max(0.40, Math.min(1, scale));
 
   el.style.width = prevW;
   el.style.maxWidth = prevMW;
@@ -1730,6 +2167,9 @@ async function ensurePrintFontsReady() {
   if (!("fonts" in document)) return;
   try {
     await Promise.all([
+      document.fonts.load("900 18px Cairo"),
+      document.fonts.load("800 16px Cairo"),
+      document.fonts.load("700 14px Cairo"),
       document.fonts.load("16px 'AdvertisingMedium'"),
       document.fonts.load("16px 'PT Bold Heading'"),
     ]);
@@ -1866,36 +2306,34 @@ function drawSubjectsChart(numericEntries) {
   if (subjectsChartInstance) { subjectsChartInstance.destroy(); subjectsChartInstance = null; }
   if (!numericEntries.length) return;
 
-  // عكس الترتيب البصري بحيث تظهر أول مادة (حسب ملف الإكسيل) على اليمين
-  // فيقرأ المستخدم الأعمدة من اليمين إلى اليسار.
-  const ordered = numericEntries.slice().reverse();
-  const labels = ordered.map(([sub]) => sub);
-  // الدرجة النهائية لكل مادة: إما محدَّدة صراحة في اسم عمودها بالإكسيل (مثل
-  // "الرياضيات (5)")، أو 100 افتراضيًا لو لم تُحدَّد. نحوّل كل درجة إلى نسبة
-  // مئوية من درجتها النهائية الخاصة بها، حتى تبقى كل الأعمدة قابلة للمقارنة
-  // على نفس المقياس البصري رغم اختلاف الدرجة النهائية بين مادة وأخرى (مثلاً
-  // اختبارات الشهر من 5 مقابل امتحان الفصل من 100).
+  // رسم أفقي: اسم المادة فقط (بدون أقواس الدرجات) — أول مادة في الأعلى
+  const ordered = numericEntries.filter(([sub]) => !isAggregateColumn(sub));
+  if (!ordered.length) return;
+  const labels = ordered.map(([sub]) => cleanSubjectLabel(sub));
   const maxScores = ordered.map(([, val]) => (typeof val.max === "number" && val.max > 0) ? val.max : 100);
   const rawScores = ordered.map(([, val]) => val.raw);
   const percentages = rawScores.map((raw, i) => Math.max(0, Math.min(100, (raw / maxScores[i]) * 100)));
   const colors = percentages.map((p) => getGradeBand(p).color);
 
-  // زيادة دقة الرسم على الشاشات عالية الدقة (موبايل/حاسوب) لتحسين جودة الطباعة
+  const n = labels.length;
+  // ارتفاع ديناميكي حسب عدد المواد مع حد أدنى وأقصى مناسب لـ A4
+  const rowH = n <= 8 ? 28 : (n <= 14 ? 22 : 18);
+  const chartH = Math.max(180, Math.min(420, n * rowH + 40));
+
   try {
     const dpr = Math.min(window.devicePixelRatio || 1, 3);
     const parent = canvas.parentElement;
     if (parent) {
       const w = parent.clientWidth || 480;
-      const h = parent.clientHeight || 280;
+      parent.style.height = chartH + "px";
       canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
+      canvas.height = Math.round(chartH * dpr);
       canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
+      canvas.style.height = chartH + "px";
     }
   } catch (e) { /* تجاهل */ }
 
-  const n = labels.length;
-  const barThickness = n <= 6 ? 36 : (n <= 10 ? 26 : 18);
+  const barThickness = n <= 8 ? 18 : (n <= 14 ? 14 : 10);
 
   subjectsChartInstance = new Chart(canvas, {
     type: "bar",
@@ -1904,58 +2342,55 @@ function drawSubjectsChart(numericEntries) {
       datasets: [{
         data: percentages,
         backgroundColor: colors,
-        borderRadius: 4,
+        borderRadius: 3,
         borderSkipped: false,
         maxBarThickness: barThickness,
-        categoryPercentage: 0.75,
+        categoryPercentage: 0.8,
         barPercentage: 0.85,
       }],
     },
     options: {
-      // أعمدة رأسية (محور الفئات أفقي)
-      indexAxis: "x",
+      indexAxis: "y", // أعمدة أفقية
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { top: 8, bottom: 4, left: 4, right: 4 } },
+      // قراءة من اليمين لليسار: أسماء المواد يمين، الأعمدة تمتد نحو اليسار
+      layout: { padding: { top: 4, bottom: 4, left: 12, right: 4 } },
       scales: {
-        // المحور السيني: المواد من اليمين لليسار
         x: {
-          reverse: false,
-          ticks: {
-            font: { family: "Cairo, sans-serif", size: 13, weight: "700" },
-            maxRotation: 45,
-            minRotation: 0,
-            autoSkip: false,
-            color: "#2c3a4a",
-          },
-          grid: { display: false },
-        },
-        // المحور الرأسي على اليسار (شكل بياني RTL: المواد تُقرأ من اليمين لليسار)
-        y: {
-          position: "left",
           beginAtZero: true,
           max: 100,
+          reverse: true, // 0% عند اليمين بجانب الأسماء، 100% عند اليسار
           ticks: {
             stepSize: 20,
             callback: (v) => v + "%",
-            font: { family: "Cairo, sans-serif", size: 12, weight: "600" },
+            font: { family: "Cairo, sans-serif", size: 12, weight: "700" },
             color: "#5a6a7e",
           },
           grid: { color: "rgba(0,0,0,0.06)" },
+        },
+        y: {
+          position: "right", // أسماء المواد على اليمين
+          reverse: false,
+          ticks: {
+            font: { family: "Cairo, sans-serif", size: n > 12 ? 11 : 13, weight: "800" },
+            color: "#1e2a3a",
+            autoSkip: false,
+          },
+          grid: { display: false },
         },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           rtl: true,
-          titleFont: { family: "Cairo, sans-serif" },
-          bodyFont: { family: "Cairo, sans-serif" },
+          titleFont: { family: "Cairo, sans-serif", weight: "700" },
+          bodyFont: { family: "Cairo, sans-serif", weight: "600" },
           callbacks: {
             label: (ctx) => " الدرجة: " + rawScores[ctx.dataIndex] + " من " + maxScores[ctx.dataIndex],
           },
         },
       },
-      animation: { duration: 400 },
+      animation: { duration: 350 },
     },
   });
 }
@@ -1971,77 +2406,117 @@ function getSortedSubjectEntries(row) {
   });
 }
 
+/** أعمدة إجمالي/ملخص جاهزة من الإكسيل — لا تُعرض كمادة ولا تدخل الرسم */
+function isAggregateColumn(name) {
+  const n = String(name || "").trim().toLowerCase();
+  if (!n) return false;
+  return /مجموع|اجمالي|إجمالي|الكلى|الكلي|الكلّي|grand\s*total|\btotal\b|المجموع|النتيجة\s*النهائية|مجموع\s*الدرجات/.test(n);
+}
+
+/** أعمدة إدارية تسربت أحيانًا ضمن المواد — تُستبعد من الجدول والرسم */
+function isMetaSubjectColumn(name) {
+  const n = String(name || "").trim().toLowerCase();
+  if (!n) return false;
+  if (isAggregateColumn(n)) return true;
+  return /^(الحالة|حالة|status|نتيجة|نوع\s*النتيجة|موقف\s*النشر|result)$/i.test(n)
+    || /ناجح\s*و?منقول|دور\s*ثان/.test(n);
+}
+
+/** اسم المادة للعرض: بدون (100) أو /100 حتى لا تختل الأقواس في RTL/Canvas */
+function cleanSubjectLabel(name) {
+  let s = String(name || "").trim();
+  s = s.replace(/\s*[\(\[\{]\s*(?:من\s*)?\d+(?:\.\d+)?\s*[\)\]\}]\s*$/u, "");
+  s = s.replace(/\s*\/\s*\d+(?:\.\d+)?\s*$/u, "");
+  s = s.replace(/\s*من\s*\d+(?:\.\d+)?\s*$/u, "");
+  return s.trim() || String(name || "").trim();
+}
+
+/** مواد للجدول والرسم — بدون مجموع وبدون أعمدة إدارية */
+function getDisplaySubjectEntries(row) {
+  return getSortedSubjectEntries(row).filter(([sub]) => !isMetaSubjectColumn(sub));
+}
+
+/**
+ * المجموع الكلي:
+ * - إن وُجد عمود يحتوي «مجموع» بقيمة رقمية → نأخذه منه (كما في نتيجة آخر العام).
+ * - فترات الشهور غالبًا بلا عمود مجموع → نجمع درجات المواد الرقمية.
+ */
+function resolveTotalFromRow(row) {
+  const all = getSortedSubjectEntries(row);
+  const agg = all.find(([sub, val]) => isAggregateColumn(sub) && val && val.type === "number");
+  if (agg) {
+    const [, val] = agg;
+    const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
+    return { totalRaw: val.raw, totalMax: max, source: "excel" };
+  }
+  let totalRaw = 0, totalMax = 0;
+  all.forEach(([sub, val]) => {
+    if (isMetaSubjectColumn(sub) || !val || val.type !== "number") return;
+    const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
+    totalRaw += val.raw;
+    totalMax += max;
+  });
+  return { totalRaw, totalMax, source: "sum" };
+}
+
 function infoCard(label, value) {
   return `<div class="info-card"><span class="info-label">${label}</span><span class="info-value">${value}</span></div>`;
 }
 
 function renderFullData(nationalId, row) {
-  // نرتّب المواد دائمًا حسب ترتيب أعمدتها الأصلي في ملف الإكسيل المرفوع
-  // (المخزَّن داخل كل مادة كحقل order)، وليس حسب ترتيب مفاتيح الكائن.
-  const entries = getSortedSubjectEntries(row);
+  // مواد العرض فقط (بدون أعمدة «مجموع كلى» والحالة الإدارية)
+  const entries = getDisplaySubjectEntries(row);
   const isElem = isElementaryStage(row.grade);
+  const numericEntries = entries.filter(([, val]) => val.type === "number");
 
-  // للمرحلة الابتدائية (عربي/لغات): نعرض بجانب الدرجة المستوى + الإجراء المقترح
-  const gradesHtml = entries.map(([sub, val]) => {
-    let extra = "";
-    if (isElem && val.type === "number") {
+  // المجموع: من عمود «مجموع» إن وُجد، وإلا جمع المواد (فترات الشهور)
+  const { totalRaw, totalMax } = resolveTotalFromRow(row);
+
+  // جدول المواد الديناميكي: المادة | العظمى | درجة الطالب | التقدير
+  const subjectRowsHtml = entries.map(([sub, val]) => {
+    const label = cleanSubjectLabel(sub);
+    if (val.type === "number") {
       const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
-      const pct = (val.raw / max) * 100;
+      const pct = Math.max(0, Math.min(100, (val.raw / max) * 100));
       const band = getGradeBand(pct);
-      extra = `<span class="grade-level-action" style="font-size:0.62rem;font-weight:600;color:var(--text2);margin-top:2px;display:block;">${esc(band.label)} — ${esc(band.action)}</span>`;
+      const estExtra = isElem && band.action ? `<span class="est-action">${esc(band.action)}</span>` : "";
+      return `<tr>
+        <td class="col-subject">${esc(label)}</td>
+        <td class="col-max" dir="ltr">${max}</td>
+        <td class="col-score" dir="ltr"><span class="score-pill ${getScoreClass(val)}">${esc(val.display)}</span></td>
+        <td class="col-est"><span class="est-label" style="color:${band.color}">${esc(band.label)}</span>${estExtra}</td>
+      </tr>`;
     }
-    return `<div class="grade-item" style="flex-direction:column;align-items:flex-start;gap:0.15rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:0.35rem;">
-        <span class="grade-name">${esc(sub)}</span>
-        <span class="grade-score ${getScoreClass(val)}">${esc(val.display)}</span>
-      </div>${extra}
-    </div>`;
+    // نص / غير مقرر / اجتاز…
+    const isExempt = /غير\s*مقرر|معفى|exempt/i.test(String(val.display || ""));
+    return `<tr class="${isExempt ? "row-exempt" : ""}">
+      <td class="col-subject">${esc(label)}</td>
+      <td class="col-max">—</td>
+      <td class="col-score"><span class="score-pill score-text">${esc(val.display)}</span></td>
+      <td class="col-est">—</td>
+    </tr>`;
   }).join("");
 
-  // الرسم البياني يشمل المواد ذات الدرجات الرقمية فقط (وليس مثل "اجتاز/راسب")
-  const numericEntries = entries.filter(([, val]) => val.type === "number");
-  const chartSectionHtml = numericEntries.length ? `
-      <div class="result-details-section subjects-chart-section">
-        <div class="section-heading"><i class="fas fa-chart-bar"></i><span>الرسم البياني للدرجات</span></div>
-        ${gradeLegendHtml(isElem)}
-        <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
-      </div>` : "";
+  const pctOverall = totalMax > 0 ? (totalRaw / totalMax) * 100 : 0;
+  const overallBand = totalMax > 0 ? getGradeBand(pctOverall) : null;
 
-  // بانر بعرض الصفحة بعد المواد وقبل الرسم:
-  // من عمود «نتيجة» — ناجح ومنقول… / له دور ثانٍ… / ولو فارغ → تهنئة افتراضية
+  // الحالة النهائية (البانر)
   const DEFAULT_OUTCOME_MSG = "مع أطيب الأمنيات بالنجاح والتوفيق";
   const outcome = classifyResultOutcome(row.result_column1);
   const outcomeLabel = outcome.label || DEFAULT_OUTCOME_MSG;
   const outcomeKind = outcome.label ? outcome.kind : "neutral";
-  const icon = outcomeKind === "pass" ? "fa-circle-check"
-    : outcomeKind === "second" ? "fa-circle-exclamation"
-    : "fa-heart";
-  const outcomeBannerHtml = `
-      <div class="result-outcome-banner outcome-${outcomeKind}" role="status">
-        <i class="fas ${icon}"></i>
-        <span>${esc(outcomeLabel)}</span>
-      </div>`;
+  const outcomeIcon = outcomeKind === "pass" ? "fa-circle-check"
+    : outcomeKind === "second" ? "fa-circle-exclamation" : "fa-heart";
 
-  // ملخص مستوى الأداء العام للمرحلة الابتدائية
-  let elemSummaryHtml = "";
-  if (isElem && numericEntries.length) {
-    const pcts = numericEntries.map(([, val]) => {
-      const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
-      return Math.max(0, Math.min(100, (val.raw / max) * 100));
-    });
-    const avg = pcts.reduce((a, b) => a + b, 0) / pcts.length;
-    const band = getGradeBand(avg);
-    elemSummaryHtml = `
-      <div class="result-outcome-banner outcome-neutral" style="margin-top:0.35rem;flex-direction:column;gap:0.25rem;" role="status">
-        <span style="font-size:0.88rem;"><i class="fas fa-chart-line" style="margin-left:0.35rem;"></i>متوسط الأداء: <strong>${avg.toFixed(1)}%</strong> — المستوى: <strong style="color:${band.color}">${esc(band.label)}</strong></span>
-        <span style="font-size:0.78rem;font-weight:600;color:var(--text2);">الإجراء المقترح: ${esc(band.action)}</span>
-      </div>`;
-  }
+  const chartSectionHtml = numericEntries.length ? `
+      <div class="rpt-chart chart-container">
+        <div class="rpt-section-title"><i class="fas fa-chart-bar"></i> الرسم البياني للدرجات</div>
+        ${gradeLegendHtml(isElem)}
+        <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
+      </div>` : "";
 
   const printDate = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
   const subTitle = appSettings.subTitle || "الإيمان • العلم • الأخلاق";
-
-  // شعارات الرأس (إن وُجدت في الإعدادات)
   const rightEmblem = appSettings.kaabaLogo
     ? `<img src="${appSettings.kaabaLogo}" alt="شعار">`
     : `<i class="fas fa-kaaba" style="color:var(--accent);"></i>`;
@@ -2049,46 +2524,29 @@ function renderFullData(nationalId, row) {
     ? `<img src="${appSettings.schoolLogo}" alt="شعار المدرسة">`
     : `<i class="fas fa-shield-alt" style="color:var(--primary);"></i>`;
 
+  // ملخص ابتدائي اختياري
+  let elemNote = "";
+  if (isElem && overallBand) {
+    elemNote = `<div class="rpt-elem-note">الإجراء المقترح: <strong>${esc(overallBand.action)}</strong></div>`;
+  }
+
   return `
-    <div class="result-card" id="printSection">
-      <div class="result-header">
-        <div class="result-header-emblem">${rightEmblem}</div>
-        <div class="result-title-group">
-          <div class="result-school-name">${esc(appSettings.mainTitle)}</div>
-          <div class="result-school-sub">${esc(subTitle)}</div>
-          <div class="result-term-line">نتيجة ${esc(termNames[row.term_key] || row.term_key)}</div>
+    <div class="result-card rpt-sheet" id="printSection">
+      <!-- ===== 1. Header ثابت ===== -->
+      <header class="rpt-header">
+        <div class="rpt-header-emblem">${rightEmblem}</div>
+        <div class="rpt-header-text">
+          <div class="rpt-school-name">${esc(appSettings.mainTitle)}</div>
+          <div class="rpt-school-motto">${esc(subTitle)}</div>
+          <div class="rpt-term-title">بيان درجات — ${esc(termNames[row.term_key] || row.term_key)}</div>
         </div>
-        <div class="result-header-emblem">${leftEmblem}</div>
-      </div>
+        <div class="rpt-header-emblem">${leftEmblem}</div>
+      </header>
 
-      <div class="report-student-section">
-        <div class="section-heading"><i class="fas fa-user-graduate"></i><span>بيانات الطالب / الطالبة</span></div>
-        <div class="report-student-row">
-        <div class="report-student-grid">
-          <div class="report-student-item">
-            <span class="label">🆔 الرقم القومي</span>
-            <span class="value ltr">${esc(nationalId)}</span>
-          </div>
-          <div class="report-student-item">
-            <span class="label">👤 اسم الطالب</span>
-            <span class="value">${esc(row.name)}</span>
-          </div>
-          <div class="report-student-item">
-            <span class="label">📚 الصف</span>
-            <span class="value">${esc(row.grade || "—")}</span>
-          </div>
-          <div class="report-student-item">
-            <span class="label">🎫 رقم الجلوس</span>
-            <span class="value">${esc(row.seat_number || "—")}</span>
-          </div>
-          <div class="report-student-item">
-            <span class="label">📋 موقف النشر</span>
-            <span class="value"><span class="status-badge status-available">متاحة</span></span>
-          </div>
-        </div>
-
-        <div class="report-photo-area" id="reportPhotoArea">
-          <div class="report-photo-frame" id="reportPhotoFrame">
+      <!-- ===== 2. بيانات الطالب: صورة + 6 كروت ثابتة ===== -->
+      <section class="rpt-student">
+        <div class="rpt-photo-col" id="reportPhotoArea">
+          <div class="rpt-photo-frame" id="reportPhotoFrame">
             <div class="photo-placeholder">
               <i class="fas fa-user-graduate"></i>
               <span>صورة الطالب</span>
@@ -2114,20 +2572,91 @@ function renderFullData(nationalId, row) {
           </div>
           <div class="student-photo-hint">الصورة للطباعة على جهازك فقط ولا تُرفع للخادم</div>
         </div>
-      </div>
-      </div>
-
-      <div class="result-details-section" style="padding:0.6rem 1rem;">
-        <div class="section-heading"><i class="fas fa-chart-simple"></i><span>تفاصيل المواد والدرجات (${esc(termNames[row.term_key] || "")})</span></div>
-        <div class="grades-grid">${gradesHtml || '<div style="text-align:center;padding:1rem;color:var(--text3);">لا توجد مواد مسجلة لهذه الفترة</div>'}</div>
-      </div>${outcomeBannerHtml}${elemSummaryHtml}${chartSectionHtml}
-      <div class="print-footer">
-        <div class="pf-stamp-circle">
-          <div class="pf-line">يُعتمد</div>
-          <div class="pf-sub">مدير المدرسة</div>
+        <div class="rpt-cards-grid">
+          <div class="rpt-card">
+            <span class="rpt-card-label">الرقم القومي</span>
+            <span class="rpt-card-value ltr">${esc(nationalId)}</span>
+          </div>
+          <div class="rpt-card">
+            <span class="rpt-card-label">اسم الطالب</span>
+            <span class="rpt-card-value">${esc(row.name)}</span>
+          </div>
+          <div class="rpt-card">
+            <span class="rpt-card-label">الصف</span>
+            <span class="rpt-card-value">${esc(row.grade || "—")}</span>
+          </div>
+          <div class="rpt-card">
+            <span class="rpt-card-label">رقم الجلوس</span>
+            <span class="rpt-card-value">${esc(row.seat_number || "—")}</span>
+          </div>
+          <div class="rpt-card">
+            <span class="rpt-card-label">نتيجة الفترة</span>
+            <span class="rpt-card-value rpt-card-result">${esc(row.result_column1 || "—")}</span>
+          </div>
+          <div class="rpt-card">
+            <span class="rpt-card-label">موقف النشر</span>
+            <span class="rpt-card-value"><span class="status-badge status-available">متاحة</span></span>
+          </div>
         </div>
-        <div class="pf-date">📅 تاريخ الطباعة: ${printDate}</div>
-      </div>
+      </section>
+
+      <!-- ===== 3. جدول المواد (ديناميكي) ===== -->
+      <section class="rpt-subjects">
+        <div class="rpt-section-title"><i class="fas fa-list-ol"></i> درجات المواد</div>
+        <div class="rpt-table-wrap">
+          <table class="rpt-table">
+            <thead>
+              <tr>
+                <th class="col-subject">المادة</th>
+                <th class="col-max">العظمى</th>
+                <th class="col-score">درجة الطالب</th>
+                <th class="col-est">التقدير</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${subjectRowsHtml || `<tr><td colspan="4" class="rpt-empty">لا توجد مواد مسجلة لهذه الفترة</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== 4. الملخص النهائي + الحالة ===== -->
+      <section class="rpt-summary">
+        <div class="rpt-summary-grid">
+          <div class="rpt-sum-item">
+            <span class="rpt-sum-label">المجموع الكلي</span>
+            <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${Number(totalRaw.toFixed(2))} / ${totalMax}` : "—"}</span>
+          </div>
+          <div class="rpt-sum-item">
+            <span class="rpt-sum-label">النسبة المئوية</span>
+            <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? pctOverall.toFixed(2) + "%" : "—"}</span>
+          </div>
+          <div class="rpt-sum-item">
+            <span class="rpt-sum-label">التقدير العام</span>
+            <span class="rpt-sum-value" style="color:${overallBand ? overallBand.color : "inherit"}">${overallBand ? esc(overallBand.label) : "—"}</span>
+          </div>
+        </div>
+        <div class="rpt-status outcome-${outcomeKind}" role="status">
+          <i class="fas ${outcomeIcon}"></i>
+          <span>${esc(outcomeLabel)}</span>
+        </div>
+        ${elemNote}
+      </section>
+
+      <!-- ===== 5. الرسم البياني (إطار ثابت، بيانات ديناميكية) ===== -->
+      ${chartSectionHtml}
+
+      <!-- ===== 6. التوقيع والختم (ثابت) ===== -->
+      <footer class="rpt-signature signature-section">
+        <div class="rpt-stamp-block">
+          <div class="rpt-stamp-circle">
+            <div class="rpt-stamp-line">يُعتمد</div>
+            <div class="rpt-stamp-sub">مدير المدرسة</div>
+          </div>
+        </div>
+        <div class="rpt-print-date">تاريخ الطباعة: ${printDate}</div>
+      </footer>
+
       <div class="action-buttons">
         <button class="action-btn" onclick="printReport()"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
         <button class="action-btn" onclick="window.shareWhatsApp()"><i class="fab fa-whatsapp"></i> مشاركة واتساب</button>
@@ -2297,8 +2826,14 @@ async function searchStudent() {
       if (area) area.classList.add("has-photo");
     }
     if (row.is_visible) {
-      const numericEntries = getSortedSubjectEntries(row).filter(([, val]) => val.type === "number");
-      drawSubjectsChart(numericEntries);
+      const numericEntries = getDisplaySubjectEntries(row).filter(([, val]) => val.type === "number");
+      // انتظر تحميل خط Cairo قبل الرسم حتى لا تتقطع الحروف العربية على Canvas
+      const draw = () => drawSubjectsChart(numericEntries);
+      if (document.fonts && document.fonts.load) {
+        document.fonts.load("700 13px Cairo").then(draw).catch(draw);
+      } else {
+        setTimeout(draw, 50);
+      }
     }
     setTimeout(() => resDiv.scrollIntoView({ behavior: "smooth", block: "nearest" }), 150);
   } catch (err) {
