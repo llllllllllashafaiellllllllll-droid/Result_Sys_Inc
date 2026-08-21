@@ -1606,7 +1606,7 @@
 .modern-report .rpt-chart canvas { display:block !important; visibility:visible !important; }
 
 @media print {
-  @page { size: A4 portrait; }
+  @page { size: A4 portrait; margin: 8mm 10mm; }
 
   html, body {
     margin: 0 !important;
@@ -2228,7 +2228,7 @@
    table header groups inside flex items during PDF pagination. The report
    therefore uses ordinary block flow in print. */
 @media print {
-  @page { size: A4 portrait; }
+  @page { size: A4 portrait; margin: 8mm 10mm; }
 
   html, body {
     margin:0 !important;
@@ -2574,6 +2574,8 @@
 
 let studentsDB = {};
 let uploadedFilesLog = [];
+/** صورة الطالب للطباعة فقط — تُخزَّن في الذاكرة ولا تُرفع للخادم */
+let studentPrintPhotoDataUrl = null;
 let appSettings = { 
   kaabaLogo: "", 
   schoolLogo: "", 
@@ -3121,6 +3123,61 @@ function isTermVisibleForStudent(student, targetTermKey) {
   }
   return targetIndex <= highestAvailableIdx;
 }
+
+
+// ===== صورة الطالب للطباعة (محلية فقط — لا تُرفع للخادم) =====
+function applyStudentPhotoToPreview(dataUrl) {
+  const img = document.getElementById("studentPhotoPreview");
+  const frame = document.getElementById("reportPhotoFrame");
+  const area = document.getElementById("reportPhotoArea");
+  if (!img) return;
+  if (dataUrl) {
+    img.src = dataUrl;
+    img.classList.add("has-img");
+    if (frame) frame.classList.add("has-img");
+    if (area) area.classList.add("has-photo");
+  } else {
+    img.removeAttribute("src");
+    img.classList.remove("has-img");
+    if (frame) frame.classList.remove("has-img");
+    if (area) area.classList.remove("has-photo");
+  }
+}
+
+window.onStudentPhotoSelected = function (input) {
+  const file = input && input.files && input.files[0];
+  if (!file) return;
+  if (!file.type || !file.type.startsWith("image/")) {
+    showToast("الملف المختار ليس صورة صالحة", "err");
+    input.value = "";
+    return;
+  }
+  // حد أقصى تقريبي 8 ميجابايت لتجنّب تعليق المتصفح عند الطباعة
+  if (file.size > 8 * 1024 * 1024) {
+    showToast("حجم الصورة كبير جدًا (الحد الأقصى 8 ميجابايت)", "err");
+    input.value = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    studentPrintPhotoDataUrl = e.target.result;
+    applyStudentPhotoToPreview(studentPrintPhotoDataUrl);
+    showToast("تم إرفاق صورة الطالب للطباعة", "ok");
+  };
+  reader.onerror = function () {
+    showToast("تعذّرت قراءة الصورة", "err");
+  };
+  reader.readAsDataURL(file);
+  // يسمح بإعادة اختيار نفس الملف لاحقًا
+  input.value = "";
+};
+
+window.clearStudentPrintPhoto = function () {
+  studentPrintPhotoDataUrl = null;
+  applyStudentPhotoToPreview(null);
+  document.querySelectorAll(".student-photo-file").forEach((el) => { el.value = ""; });
+  showToast("تم إزالة صورة الطالب", "ok");
+};
 
 window.printReport = async function () {
   if (typeof ensurePrintFontsReady === "function") {
@@ -3856,18 +3913,16 @@ async function searchStudent() {
 
     lastSearchResult = { nationalId: raw, row };
     msgDiv.innerHTML = `<span style="color:var(--success);">✅ تم العثور على طالب: ${esc(row.name)}</span>`;
-    resDiv.innerHTML = row.is_visible ? renderFullData(raw, row) : renderBasicDataOnly(raw, row);
-    if (studentPrintPhotoDataUrl) {
-      const img = document.getElementById("studentPhotoPreview");
-      const frame = document.getElementById("reportPhotoFrame");
-      const area = document.getElementById("reportPhotoArea");
-      if (img) { img.src = studentPrintPhotoDataUrl; img.classList.add("has-img"); }
-      if (frame) frame.classList.add("has-img");
-      if (area) area.classList.add("has-photo");
+    // is_visible من دالة السحابة؛ إن غاب الحقل نرجع إلى is_available كاحتياط
+    const showFull = (row.is_visible === true) || (row.is_visible == null && row.is_available === true);
+    resDiv.innerHTML = showFull ? renderFullData(raw, row) : renderBasicDataOnly(raw, row);
+    if (showFull && studentPrintPhotoDataUrl) {
+      applyStudentPhotoToPreview(studentPrintPhotoDataUrl);
     }
-    if (row.is_visible) {
-      const numericEntries = getDisplaySubjectEntries(row).filter(([, val]) => val.type === "number");
-      // انتظر تحميل خط Cairo قبل الرسم حتى لا تتقطع الحروف العربية على Canvas
+    // التقرير يعتمد رسمًا بيانيًا HTML/CSS (rpt-html-chart) يظهر فورًا في الشاشة والطباعة.
+    // استدعاء Chart.js اختياري فقط إن وُجد canvas قديم #subjectsChart.
+    if (showFull && document.getElementById("subjectsChart")) {
+      const numericEntries = getDisplaySubjectEntries(row).filter(([, val]) => val && val.type === "number");
       const draw = () => {
         requestAnimationFrame(() => {
           drawSubjectsChart(numericEntries);
