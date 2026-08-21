@@ -825,8 +825,8 @@
 
     @media print {
       /* هوامش مضغوطة لضمان صفحة واحدة A4 */
-      @page { size: A4 portrait; margin: 8mm; }
-      @page { size: 210mm 297mm; margin: 8mm; }
+      @page { size: A4 portrait; margin: 5mm; }
+      @page { size: 210mm 297mm; margin: 5mm; }
 
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
@@ -895,7 +895,6 @@
         font-size: 16pt !important; font-weight: 900 !important; color: #ffffff !important;
         font-family: 'Cairo', sans-serif !important;
         letter-spacing: normal !important;
-        -webkit-text-stroke: 0.15pt #ffffff;
       }
       .rpt-school-motto {
         font-size: 11pt !important; font-weight: 800 !important; color: #f0d9a8 !important;
@@ -904,7 +903,50 @@
       .rpt-term-title {
         font-size: 12.5pt !important; font-weight: 900 !important; color: #e8f4fa !important;
         font-family: 'Cairo', sans-serif !important; letter-spacing: normal !important;
-        -webkit-text-stroke: 0.1pt #e8f4fa;
+      }
+      /* === modern-report يطغى على الترويسة الفيروزية — هوية التصميم المرجعي === */
+      .modern-report .rpt-header {
+        background: #ffffff !important;
+        color: #0b4767 !important;
+        border-bottom: 1px solid #e1e8ef !important;
+        padding: 2.5mm 3mm 2mm !important;
+        margin-bottom: 0 !important;
+        display: grid !important;
+        grid-template-columns: 16mm 1fr 16mm !important;
+        gap: 2mm !important;
+        align-items: center !important;
+      }
+      .modern-report .rpt-header-emblem {
+        width: 15mm !important; height: 15mm !important;
+        border: 1px solid #d6dee7 !important;
+        background: #fff !important;
+        border-radius: 50% !important;
+      }
+      .modern-report .rpt-school-name {
+        color: #0b4767 !important;
+        font-size: 11.5pt !important;
+        font-weight: 900 !important;
+        -webkit-text-stroke: 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        letter-spacing: -0.02em !important;
+        line-height: 1.15 !important;
+      }
+      .modern-report .rpt-school-motto {
+        color: #c9a227 !important;
+        font-size: 8pt !important;
+        font-weight: 800 !important;
+        line-height: 1.15 !important;
+        margin-top: 0.5mm !important;
+      }
+      .modern-report .rpt-term-title {
+        color: #0b4767 !important;
+        font-size: 9pt !important;
+        font-weight: 900 !important;
+        -webkit-text-stroke: 0 !important;
+        line-height: 1.2 !important;
+        margin-top: 0.5mm !important;
       }
 
       .rpt-student {
@@ -1056,7 +1098,7 @@
       .rpt-stamp-sub { font-size: 7.5pt !important; font-weight: 700 !important; }
       .rpt-print-date { font-size: 9pt !important; font-weight: 700 !important; color: #64748b !important; direction: rtl !important; }
 
-      /* مقياس التصغير التلقائي — صفحة واحدة فقط */
+      /* مقياس التصغير + ملء ارتفاع الصفحة حتى يلتصق التذييل بالأسفل */
       #printSection {
         zoom: var(--print-scale, 1);
         display: flex !important;
@@ -1068,10 +1110,11 @@
         margin: 0 !important;
         box-sizing: border-box !important;
         color: #1e2a3a !important;
-        min-height: 0 !important;
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
+        /* ارتفاع منطقة الطباعة التقريبي (A4 − هامشين ~10مم) */
+        min-height: 277mm !important;
+        height: 277mm !important;
+        max-height: 277mm !important;
+        overflow: hidden !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
       }
@@ -1425,7 +1468,1129 @@
 
 
     }
-  </style>
+  
+
+/* ================================================================
+   MODERN A4 TRANSCRIPT — redesign v2
+   ثابت: الرأس، الصورة، 6 كروت، إطار الرسم، التوقيع والختم
+   ديناميكي: بيانات الطالب، المواد، الدرجات، المجموع، الرسم
+   ================================================================ */
+:root {
+  --report-navy: #0b4767;
+  --report-navy-2: #083650;
+  --report-gold: #c9963e;
+  --report-ink: #162536;
+  --report-muted: #667789;
+  --report-line: #cbd5df;
+  --report-soft: #f5f8fb;
+  --report-green: #2b8a57;
+}
+
+.rpt-sheet.modern-report {
+  width: min(100%, 210mm);
+  max-width: 210mm;
+  margin: 1.2rem auto 2rem;
+  background: #fff;
+  border: 1px solid #d5dde5;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 35px rgba(11,71,103,.10);
+  color: var(--report-ink);
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+}
+
+.modern-report .rpt-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px 1fr 58px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px;
+  background: #ffffff !important;
+  color: var(--report-ink) !important;
+  border-bottom: 1px solid var(--report-line) !important;
+}
+.modern-report .rpt-header::after {
+  content: '';
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 7px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--report-gold) 18%, var(--report-gold) 82%, transparent);
+}
+.modern-report .rpt-header-emblem {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #d6dee7;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.modern-report .rpt-header-emblem img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.modern-report .rpt-header-text { text-align: center; min-width: 0; }
+.modern-report .rpt-school-name {
+  color: #0b4767 !important;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.2;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+.modern-report .rpt-school-motto {
+  color: #c9a227 !important;
+  font-size: .78rem;
+  font-weight: 800;
+  margin-top: 1px;
+  line-height: 1.2;
+}
+.modern-report .rpt-term-title {
+  color: #0b4767 !important;
+  font-size: .92rem;
+  font-weight: 900;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+.modern-report .rpt-student {
+  display: grid;
+  grid-template-columns: 36mm 1fr;
+  gap: 4.5mm;
+  padding: 12px 18px 14px;
+  direction: ltr;
+  align-items: stretch;
+}
+.modern-report .rpt-photo-col { order: 1; display:flex; flex-direction:column; align-items:center; }
+.modern-report .rpt-photo-frame {
+  width: 34mm;
+  height: 46mm;
+  aspect-ratio: auto;
+  border: 1.5px solid #c5d0dc;
+  border-radius: 12px;
+  background: #f4f7fa;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(15,40,70,.06);
+}
+.modern-report .rpt-photo-frame .student-photo-preview {
+  width:100%; height:100%; object-fit:cover; display:none;
+}
+.modern-report .rpt-photo-frame .student-photo-preview.has-img { display:block; }
+.modern-report .rpt-photo-frame .photo-placeholder { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#9aa8b6; }
+.modern-report .rpt-photo-frame .photo-placeholder i { font-size:2rem; margin-bottom:5px; }
+.modern-report .rpt-cards-grid {
+  order: 2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:repeat(3, minmax(48px, 1fr));
+  gap: 7px;
+  direction:rtl;
+}
+/* كروت البيانات — أيقونة يسار + نص يمين كما في التصميم المرجعي */
+.modern-report .rpt-card {
+  background: #fff;
+  border: 1.2px solid #d5dee8;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  direction: ltr; /* الأيقونة يسار بصريًا */
+}
+.modern-report .rpt-card-icon {
+  flex: 0 0 36px;
+  width: 36px; height: 36px;
+  border-radius: 0;
+  background: transparent;
+  color: #2a5f82;
+  display: flex; align-items: center; justify-content: center;
+  order: 1;
+  overflow: visible;
+  flex-shrink: 0;
+}
+.modern-report .rpt-card-icon img {
+  width: 30px; height: 30px;
+  object-fit: contain;
+  display: block;
+}
+.modern-report .rpt-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: right;
+  direction: rtl;
+  order: 2;
+}
+.modern-report .rpt-card-label {
+  font-size: .7rem; color: #8a9aab; font-weight: 700; margin-bottom: 2px;
+  display: block;
+}
+.modern-report .rpt-card-value {
+  font-size: .9rem; color: #1a2b3c; font-weight: 800; line-height: 1.35;
+  display: block;
+}
+.modern-report .rpt-card-value.ltr { direction:ltr; text-align:right; font-family:'Cairo',sans-serif; letter-spacing:0; }
+.modern-report .rpt-card-result { font-size: .84rem; }
+.modern-report .rpt-card.status-card .rpt-card-value { color: #1f8a5b; font-weight: 800; }
+.modern-report .rpt-card.status-card .rpt-card-icon { color: #2a5f82; background: transparent; }
+/* أزرار الصورة تظهر على الشاشة فقط — تُخفى عند الطباعة عبر @media print */
+.modern-report .student-photo-actions {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.35rem;
+}
+.modern-report .student-photo-hint {
+  display: block !important;
+  font-size: 0.58rem;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 0.2rem;
+}
+
+.modern-report .rpt-section-title {
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  width:max-content; min-width:160px;
+  margin: 0 auto 9px;
+  padding:6px 28px;
+  border-radius:18px;
+  background:var(--report-navy);
+  color:#fff;
+  font-size:.92rem;
+  font-weight:900;
+}
+.modern-report .rpt-section-title i { display:none; }
+.modern-report .rpt-subjects { padding: 0 20px 11px; }
+.modern-report .rpt-table-wrap { border:1px solid var(--report-line); border-radius:8px; overflow:hidden; }
+.modern-report .rpt-table { width:100%; border-collapse:collapse; font-size:.88rem; }
+.modern-report .rpt-table thead th {
+  background:var(--report-navy); color:#fff; padding:8px 10px; font-size:.82rem; font-weight:900; border:0; text-align:center;
+}
+.modern-report .rpt-table tbody td { padding:7px 10px; border-bottom:1px solid #e1e7ed; font-weight:700; text-align:center; }
+.modern-report .rpt-table tbody tr:last-child td { border-bottom:0; }
+.modern-report .rpt-table tbody tr:nth-child(even) { background:#f8fafc; }
+.modern-report .rpt-table .col-subject { text-align:right; width:43%; color:var(--report-ink); }
+.modern-report .rpt-table .col-max { width:14%; color:#526476; }
+.modern-report .rpt-table .col-score { width:18%; }
+.modern-report .rpt-table .col-est { width:25%; }
+.modern-report .score-pill { background:transparent !important; padding:0; font-size:.9rem; color:var(--report-ink); font-weight:900; }
+.modern-report .est-label { font-size:.86rem; font-weight:900; }
+.modern-report .est-action { font-size:.67rem; color:var(--report-muted); }
+
+.modern-report .rpt-summary {
+  margin: 6px 18px 12px;
+  padding: 0;
+  border: 1.2px solid #d0dae6;
+  border-radius: 14px;
+  overflow: visible;
+  background: #fff;
+  box-sizing: border-box;
+}
+.modern-report .rpt-summary-grid {
+  display: grid;
+  /* كارتان: المجموع | النسبة */
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 0;
+  direction: rtl;
+}
+.modern-report .rpt-sum-item {
+  min-height: 82px;
+  padding: 14px 16px;
+  border: 0;
+  border-left: 1px solid #e2e8f0;
+  border-radius: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+.modern-report .rpt-sum-item:last-child { border-left: 0; }
+
+/* الحالة النهائية — أخضر فاتح + ✓ (مطابق للصورة المرجعية) */
+.modern-report .rpt-sum-status {
+  background: #eef8f2 !important;
+  color: #1a9b5c !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  direction: rtl !important;
+}
+.modern-report .rpt-sum-status.outcome-second { background: #fff3f1 !important; color: #b33d31 !important; }
+.modern-report .rpt-sum-status.outcome-neutral { background: #f3faf6 !important; color: #1a9b5c !important; }
+.modern-report .rpt-sum-status-text {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px;
+}
+.modern-report .rpt-sum-status .rpt-sum-label { color: #5a8f72 !important; font-size: .72rem !important; }
+.modern-report .rpt-sum-status .rpt-sum-value {
+  color: #1a9b5c !important; font-size: .92rem !important; font-weight: 800 !important;
+  max-width: 12em; line-height: 1.4 !important;
+}
+.modern-report .rpt-sum-status.outcome-second .rpt-sum-value { color: #b33d31 !important; }
+.modern-report .rpt-sum-check {
+  position: static !important;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid #22a35a;
+  display: flex !important; align-items: center; justify-content: center;
+  font-size: .95rem !important;
+  color: #22a35a !important;
+  flex-shrink: 0;
+}
+.modern-report .rpt-sum-status.outcome-second .rpt-sum-check {
+  border-color: #b33d31; color: #b33d31 !important;
+}
+.modern-report .rpt-sum-status.outcome-neutral .rpt-sum-check {
+  border-color: #22a35a; color: #22a35a !important;
+}
+
+/* النسبة المئوية — وسط */
+.modern-report .rpt-sum-pct {
+  background: #fff !important;
+}
+.modern-report .rpt-sum-pct .rpt-sum-value {
+  color: #0f4c6e !important; font-size: 1.55rem !important; font-weight: 900 !important;
+}
+.modern-report .rpt-sum-band {
+  display: block !important; margin-top: 2px !important;
+  font-size: .9rem !important; font-weight: 900 !important; color: #c9a227 !important;
+}
+
+/* المجموع الكلي — أزرق داكن */
+.modern-report .rpt-sum-total {
+  background: #0d4a6b !important;
+  color: #fff !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  direction: rtl !important;
+}
+.modern-report .rpt-sum-total .rpt-sum-label { color: #b8d4e4 !important; font-size: .72rem !important; }
+.modern-report .rpt-sum-total .rpt-sum-value {
+  color: #fff !important; font-size: 1.5rem !important; font-weight: 900 !important;
+}
+.modern-report .rpt-sum-icon {
+  width: 34px; height: 34px;
+  background: transparent !important;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem !important; color: #fff !important; flex-shrink: 0;
+}
+.modern-report .rpt-sum-body { display: flex; flex-direction: column; align-items: center; }
+
+.modern-report .rpt-sum-label { font-size: .72rem; font-weight: 800; color: #7a8b9c; margin-bottom: 3px; }
+.modern-report .rpt-sum-value { font-size: 1.2rem; font-weight: 900; color: #0f4c6e; }
+.modern-report .rpt-status { display: none; }
+.modern-report .rpt-elem-note { padding-bottom: 8px; }
+
+.modern-report .rpt-chart.chart-container {
+  margin:0 20px 12px;
+  padding:12px 14px 13px;
+  border:1px solid var(--report-navy);
+  border-radius:10px;
+  background:#fff;
+  text-align:center;
+  page-break-inside:avoid;
+}
+.modern-report .rpt-chart .rpt-section-title { margin-bottom:8px; background:transparent; color:var(--report-navy); padding:0; min-width:0; }
+.modern-report .rpt-chart .rpt-section-title::before,
+.modern-report .rpt-chart .rpt-section-title::after { content:''; width:46px; height:2px; background:var(--report-gold); display:block; }
+.modern-report .grade-legend { margin:2px 0 7px; gap:4px 13px; }
+.modern-report .legend-item { font-size:.68rem; }
+.modern-report .chart-wrap { height:230px; width:100%; direction:ltr; }
+
+.modern-report .rpt-signature.signature-section {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:center;
+  gap:10px;
+  margin:0 20px 16px;
+  padding:13px 15px;
+  border:1px solid var(--report-line);
+  border-radius:10px;
+  background:#fff;
+  direction:ltr;
+}
+.modern-report .rpt-stamp-block {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+}
+.modern-report .rpt-stamp-title {
+  font-size:.72rem; font-weight:800; color:var(--report-navy); text-align:center;
+}
+.modern-report .rpt-stamp-circle {
+  width:62px; height:62px; border-radius:50%;
+  border:1.5px solid var(--report-navy);
+  color:var(--report-navy);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden; background:#fff;
+}
+.modern-report .rpt-stamp-circle img { display: none !important; } /* لا شعار داخل الختم */
+.modern-report .rpt-stamp-line { font-size:.55rem; font-weight:900; }
+.modern-report .rpt-stamp-sub { font-size:.48rem; font-weight:700; }
+.modern-report .rpt-signature-box { text-align:center; direction:rtl; border-right:1px solid var(--report-line); border-left:1px solid var(--report-line); min-height:55px; display:flex; flex-direction:column; justify-content:center; }
+.modern-report .rpt-signature-label { font-size:.7rem; font-weight:900; color:var(--report-navy); }
+.modern-report .rpt-signature-line { width:70%; margin:13px auto 0; border-bottom:1px solid #7d8b98; }
+.modern-report .rpt-print-date {
+  font-size:.72rem; font-weight:800; color:var(--report-muted);
+  direction:rtl; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.modern-report .rpt-date-icon {
+  width:28px; height:28px; border-radius:50%;
+  background:#eef4f9; color:#1a4a6e;
+  display:flex; align-items:center; justify-content:center; font-size:.9rem;
+}
+/* أزرار الطباعة وواتساب تظهر على الشاشة — تُخفى فقط عند الطباعة */
+.modern-report .action-buttons {
+  display: flex !important;
+  gap: 0.8rem;
+  justify-content: center;
+  padding: 1rem 1.2rem 1.2rem;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .rpt-sheet.modern-report { border-radius:0; margin:0; }
+  .modern-report .rpt-header { grid-template-columns:52px 1fr 52px; padding:12px 10px 10px; }
+  .modern-report .rpt-header-emblem { width:50px; height:50px; }
+  .modern-report .rpt-school-name { font-size:1rem; }
+  .modern-report .rpt-school-motto { font-size:.7rem; }
+  .modern-report .rpt-term-title { font-size:.78rem; }
+  .modern-report .rpt-student { grid-template-columns:95px 1fr; gap:8px; padding:10px; }
+  .modern-report .rpt-photo-frame { width:90px; height:120px; }
+  .modern-report .rpt-cards-grid { gap:6px; }
+  .modern-report .rpt-card { min-height:52px; padding:7px 8px; }
+  .modern-report .rpt-card-value { font-size:.76rem; }
+  .modern-report .rpt-card-label { font-size:.62rem; }
+  .modern-report .rpt-subjects, .modern-report .rpt-chart, .modern-report .rpt-summary { margin-left:10px; margin-right:10px; }
+  .modern-report .rpt-table { font-size:.72rem; }
+  .modern-report .rpt-table thead th { font-size:.68rem; padding:6px 5px; }
+  .modern-report .rpt-table tbody td { padding:6px 5px; }
+  .modern-report .rpt-summary-grid { grid-template-columns:1fr; }
+  .modern-report .rpt-sum-item { border-left:0; border-bottom:1px solid var(--report-line); }
+  .modern-report .rpt-sum-item:last-child { border-bottom:0; }
+  .modern-report .rpt-signature.signature-section { margin:0 10px 12px; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 5mm; }
+  .rpt-sheet.modern-report {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border: 0.6pt solid #c5d0dc !important;
+    border-radius: 3mm !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    /* يملأ الارتفاع القابل للطباعة (~281مم) */
+    min-height: 280mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .modern-report .rpt-header {
+    flex: 0 0 auto !important;
+    padding: 2.5mm 3mm 2mm !important;
+    grid-template-columns: 16mm 1fr 16mm !important;
+    gap: 2mm !important;
+    background: #ffffff !important;
+    color: #0b4767 !important;
+    border-bottom: 1px solid #e1e8ef !important;
+  }
+  .modern-report .rpt-header::after { left:4mm; right:4mm; bottom:2mm; }
+  .modern-report .rpt-header-emblem { width:15mm !important; height:15mm !important; }
+  .modern-report .rpt-school-name {
+    font-size:11.5pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', 'Arial', sans-serif !important;
+    letter-spacing: -0.02em !important;
+    color: #0b4767 !important;
+    -webkit-text-stroke: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.15 !important;
+  }
+  .modern-report .rpt-school-motto {
+    font-size:8pt !important; font-weight:800 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+    color: #c9a227 !important;
+    line-height: 1.15 !important;
+  }
+  .modern-report .rpt-term-title {
+    font-size:9pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+    color: #0b4767 !important;
+    -webkit-text-stroke: 0 !important;
+    line-height: 1.2 !important;
+  }
+  .modern-report .rpt-student {
+    flex: 0 0 auto !important;
+    grid-template-columns: 38mm 1fr !important;
+    gap: 3.5mm !important;
+    padding: 3mm 4mm 3mm !important;
+  }
+  .modern-report .rpt-photo-frame { width: 36mm !important; height: 48mm !important; }
+  .modern-report .rpt-cards-grid { gap:2mm !important; }
+  .modern-report .rpt-card { min-height:14mm !important; padding:2mm 2.5mm !important; }
+  .modern-report .rpt-card-label {
+    font-size:9pt !important; font-weight:800 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .rpt-card-value {
+    font-size:11pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+    -webkit-text-stroke: 0.12pt currentColor !important;
+  }
+  .modern-report .rpt-card-result { font-size:10pt !important; font-weight:900 !important; }
+  .modern-report .rpt-subjects { padding:0 0 3.5mm !important; }
+  .modern-report .rpt-section-title {
+    font-size:12pt !important; font-weight:900 !important; padding:1.4mm 8mm !important; margin-bottom:2.5mm !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .rpt-table {
+    font-size:11pt !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important;
+    letter-spacing: normal !important;
+  }
+  .modern-report .rpt-table thead th {
+    padding:2.2mm 2mm !important; font-size:10pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .rpt-table tbody td {
+    padding:1.8mm 2mm !important; font-weight:800 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .est-label {
+    font-size:11pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+    white-space: nowrap !important;
+    -webkit-text-stroke: 0.15pt currentColor !important;
+  }
+  .modern-report .score-pill {
+    font-size:11pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .rpt-summary { margin:0 0 3.5mm !important; }
+  .modern-report .rpt-sum-item { min-height:20mm !important; padding:2.5mm !important; }
+  .modern-report .rpt-sum-item:first-child .rpt-sum-value { font-size:17pt !important; }
+  .modern-report .rpt-sum-value {
+    font-size:14pt !important; font-weight:900 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+    -webkit-text-stroke: 0.2pt currentColor !important;
+  }
+  .modern-report .rpt-sum-label {
+    font-size:9pt !important; font-weight:800 !important;
+    font-family: 'Cairo', 'Tahoma', sans-serif !important; letter-spacing: normal !important;
+  }
+  .modern-report .rpt-status { padding:2.5mm !important; font-size:11pt !important; font-weight:900 !important; }
+  /* إخفاء الرسم — مساحته تُضمَّن في قسم المواد المرن */
+  .modern-report .rpt-chart.chart-container,
+  .modern-report .chart-wrap,
+  .modern-report .grade-legend {
+    display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* الشهادة عمود مرن يملأ الصفحة حتى الهامش */
+  .rpt-sheet.modern-report {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 280mm !important;
+    height: 280mm !important;
+    box-sizing: border-box !important;
+  }
+  .modern-report .rpt-header { flex: 0 0 auto !important; }
+  .modern-report .rpt-student { flex: 0 0 auto !important; }
+
+
+  .modern-report .rpt-subjects .rpt-section-title { display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
+
+  /* قسم المواد = مرن (جدول + مساحة الرسم المرجعي) */
+  .modern-report .rpt-subjects {
+    flex: 1 1 auto !important;
+    margin: 0 4mm 2mm !important;
+    padding: 0 !important;
+    min-height: 90mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  .modern-report .rpt-subjects .rpt-section-title {
+    flex: 0 0 auto !important;
+    margin: 0 auto 2mm !important;
+  }
+  .modern-report .rpt-subjects .rpt-table-wrap {
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .modern-report .rpt-subjects .rpt-table {
+    width: 100% !important;
+    height: 100% !important;
+    table-layout: fixed !important;
+  }
+  .modern-report .rpt-subjects .rpt-table tbody td {
+    padding: 1.4mm 1.5mm !important;
+    vertical-align: middle !important;
+  }
+
+  /* الملخص الثلاثي — ثابت المقاس */
+  .modern-report .rpt-summary {
+    flex: 0 0 16mm !important;
+    height: 16mm !important;
+    min-height: 16mm !important;
+    max-height: 16mm !important;
+    margin: 0 3mm 1.5mm !important;
+  }
+  .modern-report .rpt-summary-grid {
+    height: auto !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .modern-report .rpt-sum-item {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 1.5mm 2mm !important;
+  }
+  .modern-report .rpt-sum-total .rpt-sum-value { font-size: 11pt !important; }
+  .modern-report .rpt-sum-pct .rpt-sum-value { font-size: 11pt !important; }
+  .modern-report .rpt-sum-label { font-size: 7pt !important; }
+  .modern-report .rpt-sum-band { font-size: 8pt !important; }
+  .modern-report .rpt-sum-icon { font-size: 11pt !important; width: 6mm !important; height: 6mm !important; }
+  .modern-report .rpt-outcome-banner {
+    margin: 0 3mm 1.5mm !important;
+    padding: 2mm 3mm !important;
+    font-size: 9pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* التذييل (ختم + توقيع + تاريخ) — ثابت وملتصق بأسفل الصفحة قبل الهامش */
+  .modern-report .rpt-signature.signature-section {
+    flex: 0 0 18mm !important;
+    height: 18mm !important;
+    min-height: 18mm !important;
+    max-height: 18mm !important;
+    margin: 0 3mm 0 !important;
+    margin-top: auto !important;
+    padding: 1.5mm 2.5mm !important;
+  }
+  .modern-report .rpt-stamp-circle {
+    width: 12mm !important; height: 12mm !important;
+  }
+  .modern-report .rpt-signature-box { min-height: 12mm !important; }
+  .modern-report .rpt-stamp-title { font-size: 7pt !important; }
+  .modern-report .rpt-signature-label { font-size: 7pt !important; }
+  .modern-report .rpt-print-date { font-size: 7pt !important; }
+  .modern-report .rpt-stamp-circle { width:18mm !important; height:18mm !important; }
+  .modern-report .rpt-stamp-circle img { display: none !important; }
+  .modern-report .rpt-stamp-title { font-size:8pt !important; font-weight:800 !important; margin-bottom:1mm !important; }
+  .modern-report .rpt-card-icon {
+    width: 7mm !important; height: 7mm !important; font-size: 9pt !important;
+    background: transparent !important; color: #2a5f82 !important;
+  }
+  .modern-report .rpt-card {
+    direction: ltr !important;
+    min-height: 13mm !important;
+    padding: 1.8mm 2.2mm !important;
+    gap: 2mm !important;
+  }
+  .modern-report .rpt-card-body { direction: rtl !important; text-align: right !important; }
+  .modern-report .rpt-sum-status {
+    background: #eef8f1 !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .modern-report .rpt-sum-total {
+    background: linear-gradient(145deg, #0d4a6b 0%, #0a3552 100%) !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .modern-report .rpt-sum-check { font-size: 12pt !important; color: #22a35a !important; }
+  .modern-report .rpt-sum-band { color: #c9a227 !important; font-weight: 900 !important; }
+
+  /* ملخص كارتان + بانر الحالة */
+  .modern-report .rpt-summary-grid {
+    direction: rtl !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .modern-report .rpt-outcome-banner.outcome-pass {
+    background: #eef8f2 !important;
+    color: #1a9b5c !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .modern-report .rpt-outcome-banner.outcome-second {
+    background: #fff3f1 !important;
+    color: #b33d31 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .modern-report .rpt-sum-check {
+    border: 2.5px solid #22a35a !important;
+    color: #22a35a !important;
+    width: 7mm !important; height: 7mm !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .modern-report .rpt-sum-pct { background: #fff !important; }
+  .modern-report .rpt-sum-band { color: #c9a227 !important; font-weight: 900 !important; }
+  .modern-report .rpt-sum-total {
+    background: #0d4a6b !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .modern-report .rpt-sum-total .rpt-sum-value { color: #fff !important; }
+  .modern-report .rpt-sum-icon { color: #fff !important; }
+
+  .modern-report .rpt-signature-box { min-height:18mm !important; }
+  .modern-report .rpt-print-date { font-size:9pt !important; font-weight:800 !important; }
+  .modern-report .action-buttons, .modern-report .student-photo-actions, .modern-report .student-photo-hint { display:none !important; }
+  .modern-report, .modern-report * {
+    -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important;
+    font-family: 'Cairo', 'Tahoma', 'Arial', sans-serif !important;
+    letter-spacing: normal !important;
+  }
+  .modern-report .rpt-table-wrap, .modern-report .rpt-summary, .modern-report .rpt-chart, .modern-report .rpt-signature { break-inside:avoid; page-break-inside:avoid; }
+}
+
+  
+/* ================================================================
+   MODERN A4 TRANSCRIPT — visual refinement v2.1
+   الهدف: مطابقة النموذج المرجعي بصريًا مع الحفاظ على كل منطق النظام.
+   ================================================================ */
+.modern-report {
+  --v2-navy:#0a496b;
+  --v2-navy-dark:#083b57;
+  --v2-gold:#c9973f;
+  --v2-line:#c8d1da;
+  --v2-soft:#f7f9fb;
+  --v2-green:#2b8a57;
+}
+.modern-report.rpt-sheet{
+  max-width:210mm;
+  width:100%;
+  margin:18px auto 28px;
+  border:1px solid #cfd8e1;
+  border-radius:16px;
+  box-shadow:0 10px 28px rgba(8,59,87,.10);
+  background:#fff;
+}
+.modern-report .rpt-header{
+  grid-template-columns:72px 1fr 72px;
+  gap:14px;
+  padding:16px 22px 17px;
+  border-bottom:0;
+  background:#fff;
+}
+.modern-report .rpt-header::after{
+  left:22px; right:22px; bottom:7px; height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--v2-gold) 18%,var(--v2-gold) 82%,transparent 100%);
+}
+.modern-report .rpt-header-emblem{
+  width:68px;height:68px;border-radius:8px;
+  border:0;background:#fff;box-shadow:none;
+}
+.modern-report .rpt-header-emblem img{padding:0;object-fit:contain}
+.modern-report .rpt-school-name{font-size:1.55rem;color:var(--v2-navy);line-height:1.25}
+.modern-report .rpt-school-motto{font-size:.86rem;color:var(--v2-gold);margin-top:3px}
+.modern-report .rpt-term-title{font-size:1.04rem;color:var(--v2-navy);margin-top:7px}
+
+.modern-report .rpt-student{
+  grid-template-columns:39mm 1fr;
+  gap:5mm;
+  padding:13px 20px 14px;
+}
+.modern-report .rpt-photo-frame{
+  width:37mm;height:49.5mm;
+  border:1.5px solid var(--v2-navy);
+  border-radius:10px;
+  background:#f5f8fb;
+}
+.modern-report .rpt-cards-grid{gap:7px}
+.modern-report .rpt-card{
+  min-height:56px;
+  padding:8px 11px;
+  border:1px solid var(--v2-line);
+  border-radius:9px;
+  background:#fff;
+}
+.modern-report .rpt-card-label{font-size:.68rem;color:#667789;margin-bottom:2px}
+.modern-report .rpt-card-value{font-size:.91rem;line-height:1.3;color:#162536}
+.modern-report .rpt-card-result{font-size:.82rem}
+.modern-report .rpt-card.status-card .rpt-card-value{color:var(--v2-green)}
+
+.modern-report .rpt-section-title{
+  min-width:150px;
+  padding:5px 27px;
+  margin:0 auto 8px;
+  border-radius:18px;
+  background:var(--v2-navy);
+  font-size:.88rem;
+  box-shadow:none;
+}
+.modern-report .rpt-subjects{padding:0 20px 10px}
+.modern-report .rpt-table-wrap{
+  border:1px solid var(--v2-line);
+  border-radius:8px;
+  overflow:hidden;
+}
+.modern-report .rpt-table{font-size:.84rem;table-layout:fixed}
+.modern-report .rpt-table thead th{
+  background:var(--v2-navy);
+  color:#fff;
+  padding:7px 7px;
+  font-size:.79rem;
+  height:31px;
+}
+.modern-report .rpt-table tbody td{
+  padding:5.5px 7px;
+  height:30px;
+  border-bottom:1px solid #e2e7ec;
+  font-weight:700;
+}
+.modern-report .rpt-table .col-num{width:7%;text-align:center;color:#526476}
+.modern-report .rpt-table .col-subject{width:39%;text-align:right;color:#162536}
+.modern-report .rpt-table .col-subject .subject-icon{
+  color:var(--v2-navy,#0a496b);
+  margin-left:6px;
+  font-size:.85em;
+  opacity:.85;
+  width:1.1em;
+  text-align:center;
+  display:inline-block;
+}
+.modern-report .rpt-table .col-subject .subject-name{vertical-align:middle}
+.modern-report .rpt-table .col-max{width:16%;text-align:center;color:#526476}
+.modern-report .rpt-table .col-score{width:17%;text-align:center}
+.modern-report .rpt-table .col-est{width:21%;text-align:center}
+.modern-report .rpt-table .score-pill{font-size:.86rem}
+.modern-report .rpt-table .est-label{font-size:.82rem}
+.modern-report .rpt-table .est-action{font-size:.62rem}
+
+.modern-report .rpt-summary{
+  margin:4px 20px 8px;
+  padding:0;
+  border:1px solid var(--v2-line);
+  border-radius:9px;
+  overflow:visible;
+  background:#fff;
+  box-sizing:border-box;
+}
+/* كارتان فقط: المجموع | النسبة */
+.modern-report .rpt-summary-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  margin:0;
+  direction:rtl;
+}
+.modern-report .rpt-sum-item{
+  min-height:64px;padding:10px 14px;
+  border:0;border-left:1px solid var(--v2-line);border-radius:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:#fff;
+  position:relative;
+}
+.modern-report .rpt-sum-item:last-child{border-left:0}
+.modern-report .rpt-sum-total{background:var(--v2-navy);color:#fff}
+.modern-report .rpt-sum-total .rpt-sum-label{color:#dbeaf2}
+.modern-report .rpt-sum-total .rpt-sum-value{color:#fff;font-size:1.35rem;font-weight:900}
+.modern-report .rpt-sum-total .rpt-sum-icon{color:rgba(255,255,255,.85);margin-top:2px}
+.modern-report .rpt-sum-pct .rpt-sum-value{color:var(--v2-navy);font-size:1.28rem;font-weight:900}
+.modern-report .rpt-sum-band{display:block;font-size:.78rem;font-weight:800;color:var(--v2-gold);margin-top:2px}
+.modern-report .rpt-sum-label{font-size:.7rem;color:#667789;margin-bottom:2px;font-weight:700}
+.modern-report .rpt-sum-value{font-size:1.16rem;color:var(--v2-navy);line-height:1.25}
+.modern-report .rpt-status{font-size:.82rem;padding:7px 10px;border-top:1px solid var(--v2-line)}
+
+/* بانر الحالة النهائية — بعرض الصفحة، يتكيّف مع طول النص */
+.modern-report .rpt-outcome-banner{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:0 20px 12px;
+  padding:12px 16px;
+  border-radius:10px;
+  border:1.5px solid transparent;
+  font-weight:800;
+  font-size:.95rem;
+  line-height:1.45;
+  text-align:center;
+  box-sizing:border-box;
+}
+.modern-report .rpt-outcome-banner.outcome-pass{
+  background:#eef8f2;
+  color:#1a9b5c;
+  border-color:rgba(26,155,92,.28);
+}
+.modern-report .rpt-outcome-banner.outcome-second{
+  background:#fff3f1;
+  color:#b33d31;
+  border-color:rgba(179,61,49,.28);
+}
+.modern-report .rpt-outcome-banner.outcome-neutral{
+  background:#f3f6f9;
+  color:#3d5a73;
+  border-color:#d0dae6;
+}
+.modern-report .rpt-outcome-icon{font-size:1.25rem;flex-shrink:0}
+.modern-report .rpt-outcome-text{flex:1;min-width:0;word-break:break-word}
+
+.modern-report .rpt-chart.chart-container{
+  margin:0 20px 11px;
+  padding:9px 12px 10px;
+  border:1px solid var(--v2-navy);
+  border-radius:9px;
+  background:#fff;
+}
+.modern-report .rpt-chart .rpt-section-title{
+  background:transparent;color:var(--v2-navy);padding:0;min-width:0;
+  margin:0 auto 4px;font-size:.9rem;
+}
+.modern-report .rpt-chart .rpt-section-title::before,
+.modern-report .rpt-chart .rpt-section-title::after{
+  content:'';display:block;width:40px;height:2px;background:var(--v2-gold)
+}
+.modern-report .grade-legend{margin:1px 0 4px;gap:3px 11px}
+.modern-report .legend-item{font-size:.62rem}
+.modern-report .legend-swatch{width:9px;height:9px}
+.modern-report .chart-wrap{height:215px}
+
+.modern-report .rpt-signature.signature-section{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  align-items:center;
+  gap:0;
+  margin:0 20px 14px;
+  padding:10px 14px;
+  min-height:78px;
+  border:1px solid var(--v2-line);
+  border-radius:9px;
+  background:#fff;
+  direction:ltr;
+  box-sizing:border-box;
+  overflow:visible;
+  /* على الشاشة عادي — في الطباعة يُثبَّت أسفل الصفحة */
+  flex-shrink:0;
+}
+.modern-report .rpt-stamp-block{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+.modern-report .rpt-stamp-circle{width:56px;height:56px;border:1.5px solid var(--v2-navy);color:var(--v2-navy);flex-shrink:0}
+.modern-report .rpt-stamp-circle img{display:none!important}
+.modern-report .rpt-stamp-line{font-size:.5rem;font-weight:900}
+.modern-report .rpt-stamp-sub{font-size:.45rem;font-weight:700}
+.modern-report .rpt-signature-box{
+  min-height:52px;
+  border-left:1px solid var(--v2-line);
+  border-right:1px solid var(--v2-line);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.modern-report .rpt-signature-label{font-size:.68rem;color:var(--v2-navy);font-weight:800}
+.modern-report .rpt-signature-line{width:62%;margin:10px auto 0;border-bottom:1px solid #7d8b98}
+.modern-report .rpt-print-date{
+  font-size:.68rem;
+  color:#667789;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+
+@media print{
+  @page { size: A4 portrait; margin: 5mm; }
+  .modern-report.rpt-sheet{width:100%!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .modern-report .rpt-header{grid-template-columns:22mm 1fr 22mm!important;gap:2.5mm!important;padding:2.5mm 3mm 3.5mm!important}
+  .modern-report .rpt-header-emblem{width:14mm!important;height:14mm!important}
+  .modern-report .rpt-school-name{font-size:11pt!important;white-space:nowrap!important;letter-spacing:-0.02em!important}
+  .modern-report .rpt-school-motto{font-size:8.5pt!important}
+  .modern-report .rpt-term-title{font-size:10pt!important;margin-top:1.2mm!important}
+  .modern-report .rpt-header::after{left:3mm;right:3mm;bottom:1.5mm}
+  .modern-report .rpt-student{grid-template-columns:34mm 1fr!important;gap:3mm!important;padding:2.5mm 0 2.5mm!important}
+  .modern-report .rpt-photo-frame{width:32mm!important;height:42mm!important}
+  .modern-report .rpt-cards-grid{gap:1.5mm!important}
+  .modern-report .rpt-card{min-height:11.5mm!important;padding:1.3mm 2mm!important}
+  .modern-report .rpt-card-label{font-size:6.8pt!important;margin-bottom:.4mm!important}
+  .modern-report .rpt-card-value{font-size:8.6pt!important}
+  .modern-report .rpt-card-result{font-size:7.8pt!important}
+  .modern-report .rpt-subjects{padding:0 0 2mm!important}
+  .modern-report .rpt-section-title{font-size:9pt!important;padding:0.9mm 6mm!important;margin-bottom:1.3mm!important}
+  .modern-report .rpt-table{font-size:8.2pt!important}
+  .modern-report .rpt-table thead th{font-size:7.5pt!important;padding:1.2mm 1.3mm!important;height:auto!important}
+  .modern-report .rpt-table tbody td{font-size:8pt!important;padding:0.95mm 1.3mm!important;height:auto!important}
+  .modern-report .rpt-table .score-pill{font-size:8pt!important}
+  .modern-report .rpt-table .est-label{font-size:7.6pt!important}
+  .modern-report .rpt-table .subject-icon{
+    font-size:7.5pt!important;
+    margin-left:3px!important;
+    color:#0a496b!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  .modern-report .rpt-summary{
+    margin:0 0 1.5mm!important;
+    padding:0!important;
+    overflow:visible!important;
+    height:auto!important;
+    min-height:14mm!important;
+    border:1px solid #c8d1da!important;
+    border-radius:5px!important;
+    box-sizing:border-box!important;
+  }
+  .modern-report .rpt-summary-grid{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:0!important;
+    direction:rtl!important;
+  }
+  .modern-report .rpt-sum-item{
+    min-height:14mm!important;
+    padding:1.4mm 1.5mm!important;
+    box-sizing:border-box!important;
+  }
+  .modern-report .rpt-sum-total{background:#0a496b!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .modern-report .rpt-sum-total .rpt-sum-value{font-size:12pt!important;color:#fff!important}
+  .modern-report .rpt-sum-total .rpt-sum-label{color:#dbeaf2!important}
+  .modern-report .rpt-sum-pct .rpt-sum-value{font-size:11pt!important}
+  .modern-report .rpt-sum-band{font-size:7.5pt!important;color:#c9973f!important}
+  .modern-report .rpt-sum-value{font-size:10.5pt!important}
+  .modern-report .rpt-sum-label{font-size:6.5pt!important}
+  .modern-report .rpt-status{padding:1.2mm!important;font-size:8pt!important}
+  /* بانر الحالة النهائية في الطباعة */
+  .modern-report .rpt-outcome-banner{
+    margin:0 0 1.8mm!important;
+    padding:2mm 3mm!important;
+    font-size:9pt!important;
+    font-weight:800!important;
+    border-radius:5px!important;
+    gap:2mm!important;
+    line-height:1.4!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+    page-break-inside:avoid!important;
+  }
+  .modern-report .rpt-outcome-banner.outcome-pass{
+    background:#eef8f2!important;color:#1a9b5c!important;border-color:rgba(26,155,92,.3)!important;
+  }
+  .modern-report .rpt-outcome-banner.outcome-second{
+    background:#fff3f1!important;color:#b33d31!important;border-color:rgba(179,61,49,.3)!important;
+  }
+  .modern-report .rpt-outcome-banner.outcome-neutral{
+    background:#f3f6f9!important;color:#3d5a73!important;border-color:#d0dae6!important;
+  }
+  .modern-report .rpt-outcome-icon{font-size:11pt!important}
+  .modern-report .rpt-chart.chart-container{margin:0 0 1.8mm!important;padding:1.5mm 2mm 1.8mm!important}
+  .modern-report .rpt-chart .rpt-section-title{font-size:8.5pt!important;margin-bottom:0.8mm!important}
+  .modern-report .grade-legend{margin:0 0 1mm!important}
+  .modern-report .legend-item{font-size:6pt!important}
+  .modern-report .chart-wrap{height:38mm!important}
+  /* الشهادة عمود مرن يملأ الصفحة — التذييل ملتصق بالأسفل */
+  .modern-report.rpt-sheet,
+  #printSection.modern-report{
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:277mm!important;
+    height:277mm!important;
+    max-height:277mm!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+  .modern-report .rpt-header,
+  .modern-report .rpt-student,
+  .modern-report .rpt-summary,
+  .modern-report .rpt-outcome-banner{flex:0 0 auto!important}
+  .modern-report .rpt-subjects{flex:1 1 auto!important;min-height:0!important}
+  .modern-report .rpt-chart.chart-container{flex:0 0 auto!important}
+  .modern-report .action-buttons{display:none!important}
+  /* التذييل ثابت 22مم — ملتصق بأسفل منطقة الطباعة */
+  .modern-report .rpt-signature.signature-section{
+    margin-top:auto!important;
+    margin-bottom:0!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    padding:2.2mm 2.5mm!important;
+    height:22mm!important;
+    min-height:22mm!important;
+    max-height:22mm!important;
+    overflow:hidden!important;
+    border:1px solid #c8d1da!important;
+    border-radius:6px!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr 1fr!important;
+    align-items:center!important;
+    gap:0!important;
+    background:#fff!important;
+    flex:0 0 22mm!important;
+    page-break-inside:avoid!important;
+  }
+  .modern-report .rpt-stamp-block{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0.8mm!important;
+  }
+  .modern-report .rpt-stamp-circle{
+    width:12mm!important;
+    height:12mm!important;
+    flex-shrink:0!important;
+    border:1.5px solid #0a496b!important;
+  }
+  .modern-report .rpt-stamp-circle img{display:none!important}
+  .modern-report .rpt-stamp-title{font-size:6.5pt!important;font-weight:800!important}
+  .modern-report .rpt-stamp-line{font-size:6.5pt!important}
+  .modern-report .rpt-stamp-sub{font-size:6pt!important}
+  .modern-report .rpt-signature-box{
+    min-height:14mm!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:center!important;
+  }
+  .modern-report .rpt-signature-label{font-size:7pt!important}
+  .modern-report .rpt-print-date{
+    font-size:6.8pt!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0.8mm!important;
+  }
+  .modern-report .rpt-table-wrap,
+  .modern-report .rpt-summary,
+  .modern-report .rpt-chart,
+  .modern-report .rpt-signature{
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+}
+
+
+</style>
 </head>
 <body>
 <div class="page-wrapper">
@@ -1694,7 +2859,7 @@ async function parseExcelRecords(file) {
           records.push({
             national_id: nid, name, seat_number: seatNumber, grade,
             result_column1: resultColumn1, result_type: resultType,
-            is_available: isAvailable, subjects,
+            status_text: statusCol, is_available: isAvailable, subjects,
           });
         }
         resolve(records);
@@ -1927,10 +3092,47 @@ function applySettingsToUI() {
 
 function parseCellValue(v) {
   if (v === undefined || v === null || v === "") return { display: "—", raw: "", type: "empty" };
+  if (typeof v === "number" && isFinite(v)) return { display: String(v), raw: v, type: "number" };
   let str = String(v).trim();
+  // صيغة "565/600" أو "565 / 600"
+  const ratio = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if (ratio) {
+    const raw = parseFloat(ratio[1]);
+    const max = parseFloat(ratio[2]);
+    if (isFinite(raw) && isFinite(max) && max > 0) return { display: str, raw, type: "number", max };
+  }
   let num = parseFloat(str);
   if (!isNaN(num) && isFinite(num) && /^-?\d+(\.\d+)?$/.test(str)) return { display: str, raw: num, type: "number" };
   return { display: str, raw: str, type: "text" };
+}
+
+/** تطبيع قيمة مادة قادمة من السحابة أو الإكسيل إلى شكل موحّد */
+function normalizeSubjectVal(val) {
+  if (val == null || val === "") return { display: "—", raw: "", type: "empty" };
+  if (typeof val === "number" && isFinite(val)) return { display: String(val), raw: val, type: "number" };
+  if (typeof val === "string") return parseCellValue(val);
+  if (typeof val === "object") {
+    if (val.type === "number" && typeof val.raw === "number" && isFinite(val.raw)) {
+      const max = (typeof val.max === "number" && val.max > 0) ? val.max : undefined;
+      return max ? { ...val, max } : { ...val };
+    }
+    if (typeof val.raw === "number" && isFinite(val.raw)) {
+      return {
+        display: val.display != null ? String(val.display) : String(val.raw),
+        raw: val.raw,
+        type: "number",
+        max: (typeof val.max === "number" && val.max > 0) ? val.max : undefined,
+        order: val.order,
+      };
+    }
+    if (val.display != null) {
+      const p = parseCellValue(val.display);
+      if (typeof val.max === "number" && val.max > 0) p.max = val.max;
+      if (typeof val.order === "number") p.order = val.order;
+      return p;
+    }
+  }
+  return parseCellValue(val);
 }
 
 // بعض المواد (خصوصًا اختبارات الشهر) تكون درجتها النهائية أقل من 100 (5 مثلاً
@@ -2027,8 +3229,9 @@ function fitReportToOnePage() {
     n.removeAttribute("data-print-pad");
   });
 
-  // A4 (210×297مم) + هامش 8مم — مساحة قابلة للطباعة أكبر لضمان صفحة واحدة
-  const marginMm = 8;
+  // A4 مع هامش احتياطي ~10مم (مطابق لـ min-height: 277mm في CSS الطباعة)
+  // لمحاكاة هوامش المتصفح الافتراضية دون أن يضبطها ولي الأمر
+  const marginMm = 10;
   const marginPx = (marginMm / 25.4) * 96;
   const a4WidthPx = (210 / 25.4) * 96;
   const a4HeightPx = (297 / 25.4) * 96;
@@ -2040,50 +3243,85 @@ function fitReportToOnePage() {
   el.style.maxWidth = availableWidthPx + "px";
   el.style.zoom = "1";
 
-  // ضغط ارتفاع الرسم البياني قبل القياس (مهم مع كثرة المواد)
-  const chartWrap = el.querySelector(".chart-wrap");
-  if (chartWrap) {
-    chartWrap.style.height = "55mm";
-    chartWrap.style.maxHeight = "55mm";
-    chartWrap.style.minHeight = "35mm";
-    chartWrap.style.overflow = "hidden";
+  // عند الطباعة: الرسم مخفي — مساحته ضمن قسم المواد المرن
+  const chartSection = el.querySelector(".rpt-chart");
+  const chartPrevDisplay = chartSection ? chartSection.style.display : "";
+  if (chartSection) chartSection.style.display = "none";
+
+  // الشهادة تملأ ارتفاع الصفحة القابل للطباعة
+  el.style.display = "flex";
+  el.style.flexDirection = "column";
+  el.style.minHeight = availableHeightPx + "px";
+  el.style.height = availableHeightPx + "px";
+  el.style.boxSizing = "border-box";
+
+  const subjectsSec = el.querySelector(".rpt-subjects");
+  const tbody = el.querySelector(".rpt-subjects .rpt-table tbody");
+  if (subjectsSec) {
+    subjectsSec.style.flex = "1 1 auto";
+    subjectsSec.style.display = "flex";
+    subjectsSec.style.flexDirection = "column";
+    subjectsSec.style.overflow = "hidden";
+    subjectsSec.style.minHeight = "70mm";
+  }
+  if (tbody) {
+    const rows = tbody.querySelectorAll("tr");
+    const n = rows.length || 1;
+    // بعد تطبيق flex، نوزّع الصفوف على الارتفاع الفعلي
+    void el.offsetHeight;
+    const titleEl = subjectsSec && subjectsSec.querySelector(".rpt-section-title");
+    const thead = subjectsSec && subjectsSec.querySelector("thead");
+    const titleH = titleEl ? titleEl.offsetHeight : 28;
+    const theadH = thead ? thead.offsetHeight : 28;
+    const secH = subjectsSec ? subjectsSec.clientHeight : 0;
+    const availPx = Math.max(secH - titleH - theadH - 6, n * 18);
+    const rowH = Math.max(16, Math.floor(availPx / n));
+    rows.forEach((tr) => { tr.style.height = rowH + "px"; });
   }
 
-  if (typeof subjectsChartInstance !== "undefined" && subjectsChartInstance) {
-    try {
-      const ch = subjectsChartInstance;
-      if (ch.options && ch.options.scales) {
-        if (ch.options.scales.x && ch.options.scales.x.ticks) {
-          ch.options.scales.x.ticks.font = { family: "Cairo, sans-serif", size: 11, weight: "700" };
-        }
-        if (ch.options.scales.y && ch.options.scales.y.ticks) {
-          ch.options.scales.y.ticks.font = { family: "Cairo, sans-serif", size: 10, weight: "700" };
-        }
-      }
-      if (ch.options && ch.options.layout) {
-        ch.options.layout.padding = { top: 4, bottom: 4, left: 4, right: 4 };
-      }
-      ch.update("none");
-      ch.resize();
-    } catch (e) {}
+  const sig = el.querySelector(".rpt-signature");
+  if (sig) {
+    // تذييل ثابت المقاس والموضع — ملتصق بأسفل منطقة الطباعة لكل الفترات والصفوف
+    sig.style.flex = "0 0 22mm";
+    sig.style.minHeight = "22mm";
+    sig.style.maxHeight = "22mm";
+    sig.style.height = "22mm";
+    sig.style.marginTop = "auto";
+    sig.style.marginBottom = "0";
+    sig.style.overflow = "hidden";
   }
+  const sum = el.querySelector(".rpt-summary");
+  if (sum) {
+    sum.style.flex = "0 0 auto";
+    sum.style.minHeight = "14mm";
+    sum.style.height = "auto";
+    sum.style.overflow = "visible";
+  }
+  const outcomeBanner = el.querySelector(".rpt-outcome-banner");
+  if (outcomeBanner) {
+    outcomeBanner.style.flex = "0 0 auto";
+  }
+
   void el.offsetHeight;
 
   const realH = Array.from(el.children).reduce((sum, c) => {
     if (c.classList && c.classList.contains("action-buttons")) return sum;
+    if (c.classList && c.classList.contains("rpt-chart")) return sum;
     return sum + (c.offsetHeight || 0);
   }, 0) || el.scrollHeight;
   const realW = el.scrollWidth || el.offsetWidth || availableWidthPx;
+  // realH محسوب أعلاه من مجموع ارتفاعات الأبناء (بدون الرسم والأزرار)
 
+  // حساب المقياس من العرض والارتفاع — لا نُصغّر إلا عند تجاوز الصفحة فعليًا
+  // حتى يبقى التذييل ملتصقًا بالأسفل دون فراغ ناتج عن zoom
   const scaleW = realW > 0 ? (availableWidthPx / realW) : 1;
   const scaleH = realH > 0 ? (availableHeightPx / realH) : 1;
-  // هامش أمان 4% لضمان عدم تجاوز الصفحة
-  let scale = Math.min(scaleW, scaleH, 1) * 0.96;
-  if (realH * scale > availableHeightPx && realH > 0) {
-    scale = (availableHeightPx / realH) * 0.96;
-  }
-  // لا نكبّر أبدًا فوق 1، ونسمح بتصغير حتى 0.40 عند الحاجة
-  scale = Math.max(0.40, Math.min(1, scale));
+  let scale = Math.min(scaleW, scaleH, 1);
+  if (scale < 1) scale = Math.max(0.65, scale * 0.98);
+  else scale = 1;
+
+  // استعادة الرسم على الشاشة (مخفي فقط أثناء القياس/الطباعة عبر CSS)
+  if (chartSection) chartSection.style.display = chartPrevDisplay || "";
 
   el.style.width = prevW;
   el.style.maxWidth = prevMW;
@@ -2103,6 +3341,45 @@ function resetPrintScale() {
     n.style.height = "";
     n.removeAttribute("data-print-pad");
   });
+  el.style.display = "";
+  el.style.flexDirection = "";
+  el.style.minHeight = "";
+  el.style.height = "";
+  el.style.boxSizing = "";
+  const subjectsSec = el.querySelector(".rpt-subjects");
+  if (subjectsSec) {
+    subjectsSec.style.height = "";
+    subjectsSec.style.maxHeight = "";
+    subjectsSec.style.minHeight = "";
+    subjectsSec.style.display = "";
+    subjectsSec.style.flexDirection = "";
+    subjectsSec.style.overflow = "";
+    subjectsSec.style.flex = "";
+  }
+  el.querySelectorAll(".rpt-subjects .rpt-table tbody tr").forEach((tr) => { tr.style.height = ""; });
+  const chartSection = el.querySelector(".rpt-chart");
+  if (chartSection) chartSection.style.display = "";
+  const sig = el.querySelector(".rpt-signature");
+  if (sig) {
+    sig.style.flex = "";
+    sig.style.minHeight = "";
+    sig.style.maxHeight = "";
+    sig.style.height = "";
+    sig.style.marginTop = "";
+    sig.style.marginBottom = "";
+    sig.style.overflow = "";
+  }
+  const sum = el.querySelector(".rpt-summary");
+  if (sum) {
+    sum.style.flex = "";
+    sum.style.minHeight = "";
+    sum.style.height = "";
+    sum.style.overflow = "";
+  }
+  const outcomeBanner = el.querySelector(".rpt-outcome-banner");
+  if (outcomeBanner) {
+    outcomeBanner.style.flex = "";
+  }
 
   // إعادة خطوط الرسم البياني لحجم الشاشة بعد الطباعة
   if (typeof subjectsChartInstance !== "undefined" && subjectsChartInstance) {
@@ -2306,34 +3583,22 @@ function drawSubjectsChart(numericEntries) {
   if (subjectsChartInstance) { subjectsChartInstance.destroy(); subjectsChartInstance = null; }
   if (!numericEntries.length) return;
 
-  // رسم أفقي: اسم المادة فقط (بدون أقواس الدرجات) — أول مادة في الأعلى
   const ordered = numericEntries.filter(([sub]) => !isAggregateColumn(sub));
   if (!ordered.length) return;
   const labels = ordered.map(([sub]) => cleanSubjectLabel(sub));
   const maxScores = ordered.map(([, val]) => (typeof val.max === "number" && val.max > 0) ? val.max : 100);
   const rawScores = ordered.map(([, val]) => val.raw);
   const percentages = rawScores.map((raw, i) => Math.max(0, Math.min(100, (raw / maxScores[i]) * 100)));
-  const colors = percentages.map((p) => getGradeBand(p).color);
+  const colors = percentages.map((p) => {
+    const band = getGradeBand(p);
+    return band && band.color ? band.color : "#0b4767";
+  });
 
   const n = labels.length;
-  // ارتفاع ديناميكي حسب عدد المواد مع حد أدنى وأقصى مناسب لـ A4
-  const rowH = n <= 8 ? 28 : (n <= 14 ? 22 : 18);
-  const chartH = Math.max(180, Math.min(420, n * rowH + 40));
-
-  try {
-    const dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const parent = canvas.parentElement;
-    if (parent) {
-      const w = parent.clientWidth || 480;
-      parent.style.height = chartH + "px";
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(chartH * dpr);
-      canvas.style.width = w + "px";
-      canvas.style.height = chartH + "px";
-    }
-  } catch (e) { /* تجاهل */ }
-
-  const barThickness = n <= 8 ? 18 : (n <= 14 ? 14 : 10);
+  const rowH = n <= 8 ? 30 : (n <= 12 ? 25 : 21);
+  const chartH = Math.max(190, Math.min(430, n * rowH + 45));
+  const parent = canvas.parentElement;
+  if (parent) parent.style.height = chartH + "px";
 
   subjectsChartInstance = new Chart(canvas, {
     type: "bar",
@@ -2342,56 +3607,59 @@ function drawSubjectsChart(numericEntries) {
       datasets: [{
         data: percentages,
         backgroundColor: colors,
-        borderRadius: 3,
+        borderColor: "rgba(11,71,103,.12)",
+        borderWidth: 1,
+        borderRadius: 4,
         borderSkipped: false,
-        maxBarThickness: barThickness,
-        categoryPercentage: 0.8,
-        barPercentage: 0.85,
-      }],
+        maxBarThickness: n <= 8 ? 18 : (n <= 12 ? 15 : 12),
+        categoryPercentage: .78,
+        barPercentage: .82
+      }]
     },
     options: {
-      indexAxis: "y", // أعمدة أفقية
+      indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
-      // قراءة من اليمين لليسار: أسماء المواد يمين، الأعمدة تمتد نحو اليسار
-      layout: { padding: { top: 4, bottom: 4, left: 12, right: 4 } },
+      animation: { duration: 250 },
+      layout: { padding: { top: 4, right: 4, bottom: 4, left: 8 } },
       scales: {
         x: {
           beginAtZero: true,
           max: 100,
-          reverse: true, // 0% عند اليمين بجانب الأسماء، 100% عند اليسار
+          reverse: false, // 0% يسار → 100% يمين كما في التصميم المرجعي
           ticks: {
             stepSize: 20,
             callback: (v) => v + "%",
-            font: { family: "Cairo, sans-serif", size: 12, weight: "700" },
-            color: "#5a6a7e",
+            font: { family: "Cairo, sans-serif", size: 11, weight: "700" },
+            color: "#647789"
           },
-          grid: { color: "rgba(0,0,0,0.06)" },
+          grid: { color: "rgba(11,71,103,.08)" },
+          border: { display: false }
         },
         y: {
-          position: "right", // أسماء المواد على اليمين
-          reverse: false,
+          position: "right", // أسماء المواد يمين
           ticks: {
-            font: { family: "Cairo, sans-serif", size: n > 12 ? 11 : 13, weight: "800" },
-            color: "#1e2a3a",
             autoSkip: false,
+            font: { family: "Cairo, sans-serif", size: n > 12 ? 10 : 12, weight: "800" },
+            color: "#162536",
+            padding: 8
           },
           grid: { display: false },
-        },
+          border: { display: false }
+        }
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           rtl: true,
-          titleFont: { family: "Cairo, sans-serif", weight: "700" },
-          bodyFont: { family: "Cairo, sans-serif", weight: "600" },
+          titleFont: { family: "Cairo, sans-serif", weight: "800" },
+          bodyFont: { family: "Cairo, sans-serif", weight: "700" },
           callbacks: {
-            label: (ctx) => " الدرجة: " + rawScores[ctx.dataIndex] + " من " + maxScores[ctx.dataIndex],
-          },
-        },
-      },
-      animation: { duration: 350 },
-    },
+            label: (ctx) => " الدرجة: " + rawScores[ctx.dataIndex] + " من " + maxScores[ctx.dataIndex]
+          }
+        }
+      }
+    }
   });
 }
 
@@ -2399,7 +3667,8 @@ function drawSubjectsChart(numericEntries) {
 // العرض، والطباعة، ومشاركة واتساب، ورسم المخطط البياني) — بدلاً من تكرار
 // نفس منطق الفرز في كل مكان.
 function getSortedSubjectEntries(row) {
-  return Object.entries(row.subjects || {}).sort((a, b) => {
+  const subjects = row.subjects || {};
+  return Object.entries(subjects).map(([k, v]) => [k, normalizeSubjectVal(v)]).sort((a, b) => {
     const oa = a[1] && typeof a[1].order === "number" ? a[1].order : 0;
     const ob = b[1] && typeof b[1].order === "number" ? b[1].order : 0;
     return oa - ob;
@@ -2431,6 +3700,31 @@ function cleanSubjectLabel(name) {
   return s.trim() || String(name || "").trim();
 }
 
+/** أيقونة Font Awesome مناسبة لاسم المادة */
+function getSubjectIcon(name) {
+  const n = String(name || "").trim().toLowerCase();
+  if (!n) return "fa-book";
+  if (/عربي|عربية|لغة\s*عربية|نحو|صرف|بلاغة|أدب/.test(n)) return "fa-book-open";
+  if (/إنجليز|انجليز|English|لغة\s*إنج|لغة\s*انج/.test(n)) return "fa-language";
+  if (/فرنس|French/.test(n)) return "fa-globe-europe";
+  if (/ألمان|المان|German/.test(n)) return "fa-globe";
+  if (/رياض|حساب|جبر|هندسة|تفاضل|إحصاء|احصاء|Math/.test(n)) return "fa-calculator";
+  if (/علوم?\s*متكامل|علوم|أحياء|احياء|فيزياء|كيمياء|جيولوجيا|بيولوجي|Science/.test(n)) return "fa-flask";
+  if (/تاريخ/.test(n)) return "fa-landmark";
+  if (/جغراف/.test(n)) return "fa-map-marked-alt";
+  if (/فلسف|منطق|علم\s*نفس|اجتماع/.test(n)) return "fa-brain";
+  if (/تربي[ةه]\s*وطني|وطني[ةه]|قومي[ةه]/.test(n)) return "fa-flag";
+  if (/دين|شرع|فقه|تفسير|حديث|قرآن|تربي[ةه]\s*ديني|إسلام/.test(n)) return "fa-mosque";
+  if (/كمبيوتر|حاسوب|حاسب|تكنولوج|معلومات|ICT|IT/.test(n)) return "fa-laptop-code";
+  if (/رياض[ةه]|بدني|ألعاب|لياق/.test(n)) return "fa-running";
+  if (/فني[ةه]|رسم|موسيقى|مسرح|نشاط|مهارات/.test(n)) return "fa-palette";
+  if (/اقتصاد|محاسب|إدار|تجار/.test(n)) return "fa-chart-line";
+  if (/صح[ةه]|إسعاف|تمريض/.test(n)) return "fa-heartbeat";
+  if (/م mechan|ميكان|كهرب|صناع/.test(n)) return "fa-cogs";
+  if (/مقرر|غير\s*مقرر/.test(n)) return "fa-ban";
+  return "fa-book";
+}
+
 /** مواد للجدول والرسم — بدون مجموع وبدون أعمدة إدارية */
 function getDisplaySubjectEntries(row) {
   return getSortedSubjectEntries(row).filter(([sub]) => !isMetaSubjectColumn(sub));
@@ -2446,14 +3740,23 @@ function resolveTotalFromRow(row) {
   const agg = all.find(([sub, val]) => isAggregateColumn(sub) && val && val.type === "number");
   if (agg) {
     const [, val] = agg;
-    const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
-    return { totalRaw: val.raw, totalMax: max, source: "excel" };
+    let max = (typeof val.max === "number" && val.max > 0) ? val.max : 0;
+    // إذا لم يُستخرج max من العنوان وكانت الدرجة > 100 فالغالب أن العظمى ليست 100
+    if (!max) {
+      max = val.raw > 100 ? Math.ceil(val.raw / 50) * 50 : 100;
+      // تقريب شائع لآخر العام: 600
+      if (val.raw > 100 && val.raw <= 600) max = 600;
+      if (val.raw > 600) max = Math.ceil(val.raw / 100) * 100;
+    }
+    if (max < val.raw) max = val.raw;
+    return { totalRaw: Number(val.raw), totalMax: Number(max), source: "excel" };
   }
   let totalRaw = 0, totalMax = 0;
   all.forEach(([sub, val]) => {
     if (isMetaSubjectColumn(sub) || !val || val.type !== "number") return;
+    if (isAggregateColumn(sub)) return;
     const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
-    totalRaw += val.raw;
+    totalRaw += Number(val.raw) || 0;
     totalMax += max;
   });
   return { totalRaw, totalMax, source: "sum" };
@@ -2463,198 +3766,220 @@ function infoCard(label, value) {
   return `<div class="info-card"><span class="info-label">${label}</span><span class="info-value">${value}</span></div>`;
 }
 
+// أيقونات الكروت — SVG واضح وحاد بنفس أسلوب التصميم
+const REPORT_ICONS = {
+  user: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSIzLjYiLz48cGF0aCBkPSJNNSAxOS4yYzAtMy4zIDMuMS01LjcgNy01LjdzNyAyLjQgNyA1LjciLz48L3N2Zz4=',
+  id: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iNSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE0IiByeD0iMi4yIi8+PGNpcmNsZSBjeD0iOSIgY3k9IjEyIiByPSIyLjMiLz48cGF0aCBkPSJNMTMuNSAxMC41aDQuMk0xMy41IDEzLjVoMyIvPjwvc3ZnPg==',
+  grad: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIgOS41TDEyIDRsMTAgNS41LTEwIDUuNUwyIDkuNXoiLz48cGF0aCBkPSJNNiAxMi4ydjQuM2MwIDAgMi42IDIuNSA2IDIuNXM2LTIuNSA2LTIuNXYtNC4zIi8+PHBhdGggZD0iTTIyIDkuNVYxNiIvPjwvc3ZnPg==',
+  chair: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTcgNGgxMHY4SDd6Ii8+PHBhdGggZD0iTTUgMTJoMTR2Mi4ySDV6Ii8+PHBhdGggZD0iTTcgMTQuMlYyME0xNyAxNC4yVjIwTTUgMjBoNE0xNSAyMGg0Ii8+PC9zdmc+',
+  cal: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMy41IiB5PSI1IiB3aWR0aD0iMTciIGhlaWdodD0iMTUiIHJ4PSIyIi8+PHBhdGggZD0iTTMuNSAxMGgxN004IDMuNXYzLjJNMTYgMy41djMuMiIvPjxwYXRoIGQ9Ik04IDE0aDJNMTIgMTRoMk0xNiAxNGguMDFNOCAxN2gyTTEyIDE3aDIiLz48L3N2Zz4=',
+  clip: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkE1RjgyIiBzdHJva2Utd2lkdGg9IjEuNzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTggNGg4YTIgMiAwIDAgMSAyIDJ2MTRhMiAyIDAgMCAxLTIgMkg4YTIgMiAwIDAgMS0yLTJWNmEyIDIgMCAwIDEgMi0yeiIvPjxwYXRoIGQ9Ik05IDIuNWg2djNIOXoiLz48cGF0aCBkPSJNOSAxMWg2TTkgMTQuNWg2TTkgMThoNCIvPjwvc3ZnPg=='
+};
+
 function renderFullData(nationalId, row) {
-  // مواد العرض فقط (بدون أعمدة «مجموع كلى» والحالة الإدارية)
   const entries = getDisplaySubjectEntries(row);
   const isElem = isElementaryStage(row.grade);
-  const numericEntries = entries.filter(([, val]) => val.type === "number");
-
-  // المجموع: من عمود «مجموع» إن وُجد، وإلا جمع المواد (فترات الشهور)
+  const numericEntries = entries.filter(([, val]) => val && val.type === "number");
   const { totalRaw, totalMax } = resolveTotalFromRow(row);
+  const pctOverall = totalMax > 0 ? (totalRaw / totalMax) * 100 : 0;
+  const overallBand = totalMax > 0 ? getGradeBand(pctOverall) : null;
 
-  // جدول المواد الديناميكي: المادة | العظمى | درجة الطالب | التقدير
-  const subjectRowsHtml = entries.map(([sub, val]) => {
+  // العمود السادس = نوع النتيجة (متاح / سداد مبلغ / …)
+  const resultTypeText = String(row.result_type || row.resultType || "").trim()
+    || (row.is_available === true ? "متاح" : row.is_available === false ? "غير متاح" : "—");
+
+  // الحالة النهائية ← آخر عمود في الإكسيل (result_column1)، مع احتياطي عمود الحالة
+  const resultFromLast = String(row.result_column1 || row.result || "").trim();
+  const statusFromCol = String(row.status_text || row.statusText || "").trim();
+  const isOutcomeText = (t) => /ناجح|منقول|دور\s*ثان|رسوب|راسب|اجتاز|مقبول/.test(String(t || ""));
+  const looksLikeTermOnly = (t) => {
+    if (!t) return true;
+    if (isOutcomeText(t)) return false;
+    if (/آخر\s*العام|شهر\s+\S+|نتيجة\s*(الفترة|آخر)|^شهر/.test(t)) return true;
+    return Object.values(termNames || {}).some(
+      (tn) => tn && (t === tn || t.includes(String(tn).slice(0, 8)))
+    );
+  };
+  let outcomeSource = "";
+  if (resultFromLast && isOutcomeText(resultFromLast)) outcomeSource = resultFromLast;
+  else if (statusFromCol && isOutcomeText(statusFromCol)) outcomeSource = statusFromCol;
+  else if (resultFromLast && !looksLikeTermOnly(resultFromLast)) outcomeSource = resultFromLast;
+  else if (statusFromCol && !looksLikeTermOnly(statusFromCol)) outcomeSource = statusFromCol;
+  const outcome = classifyResultOutcome(outcomeSource);
+  const DEFAULT_OUTCOME_MSG = "مع أطيب التمنيات بالنجاح والتوفيق";
+  const outcomeLabel = outcome.label || DEFAULT_OUTCOME_MSG;
+  let outcomeKind = outcome.label ? outcome.kind : "neutral";
+  if (outcomeKind === "neutral" && isOutcomeText(outcomeLabel)) {
+    outcomeKind = /دور\s*ثان|رسوب|راسب/.test(outcomeLabel) ? "second" : "pass";
+  }
+  const termLabel = termNames[row.term_key] || row.term_key || "—";
+
+  const subjectRowsHtml = entries.map(([sub, val], index) => {
     const label = cleanSubjectLabel(sub);
+    const icon = getSubjectIcon(label);
+    const subjectCell = `<td class="col-subject"><i class="fas ${icon} subject-icon" aria-hidden="true"></i><span class="subject-name">${esc(label)}</span></td>`;
+    const rowNumber = index + 1;
     if (val.type === "number") {
       const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
       const pct = Math.max(0, Math.min(100, (val.raw / max) * 100));
       const band = getGradeBand(pct);
       const estExtra = isElem && band.action ? `<span class="est-action">${esc(band.action)}</span>` : "";
       return `<tr>
-        <td class="col-subject">${esc(label)}</td>
+        <td class="col-num">${rowNumber}</td>
+        ${subjectCell}
         <td class="col-max" dir="ltr">${max}</td>
-        <td class="col-score" dir="ltr"><span class="score-pill ${getScoreClass(val)}">${esc(val.display)}</span></td>
+        <td class="col-score" dir="ltr"><span class="score-pill">${esc(val.display)}</span></td>
         <td class="col-est"><span class="est-label" style="color:${band.color}">${esc(band.label)}</span>${estExtra}</td>
       </tr>`;
     }
-    // نص / غير مقرر / اجتاز…
     const isExempt = /غير\s*مقرر|معفى|exempt/i.test(String(val.display || ""));
     return `<tr class="${isExempt ? "row-exempt" : ""}">
-      <td class="col-subject">${esc(label)}</td>
+      <td class="col-num">${rowNumber}</td>
+      ${subjectCell}
       <td class="col-max">—</td>
-      <td class="col-score"><span class="score-pill score-text">${esc(val.display)}</span></td>
+      <td class="col-score"><span class="score-pill">${esc(val.display)}</span></td>
       <td class="col-est">—</td>
     </tr>`;
   }).join("");
 
-  const pctOverall = totalMax > 0 ? (totalRaw / totalMax) * 100 : 0;
-  const overallBand = totalMax > 0 ? getGradeBand(pctOverall) : null;
-
-  // الحالة النهائية (البانر)
-  const DEFAULT_OUTCOME_MSG = "مع أطيب الأمنيات بالنجاح والتوفيق";
-  const outcome = classifyResultOutcome(row.result_column1);
-  const outcomeLabel = outcome.label || DEFAULT_OUTCOME_MSG;
-  const outcomeKind = outcome.label ? outcome.kind : "neutral";
-  const outcomeIcon = outcomeKind === "pass" ? "fa-circle-check"
-    : outcomeKind === "second" ? "fa-circle-exclamation" : "fa-heart";
-
-  const chartSectionHtml = numericEntries.length ? `
-      <div class="rpt-chart chart-container">
-        <div class="rpt-section-title"><i class="fas fa-chart-bar"></i> الرسم البياني للدرجات</div>
-        ${gradeLegendHtml(isElem)}
-        <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
-      </div>` : "";
-
-  const printDate = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+  const printDate = new Date().toLocaleDateString("ar-EG", { year:"numeric", month:"long", day:"numeric" });
   const subTitle = appSettings.subTitle || "الإيمان • العلم • الأخلاق";
   const rightEmblem = appSettings.kaabaLogo
-    ? `<img src="${appSettings.kaabaLogo}" alt="شعار">`
-    : `<i class="fas fa-kaaba" style="color:var(--accent);"></i>`;
+    ? `<img src="${appSettings.kaabaLogo}" alt="شعار الكعبة">`
+    : `<i class="fas fa-kaaba" style="color:var(--report-gold)"></i>`;
   const leftEmblem = appSettings.schoolLogo
     ? `<img src="${appSettings.schoolLogo}" alt="شعار المدرسة">`
-    : `<i class="fas fa-shield-alt" style="color:var(--primary);"></i>`;
+    : `<i class="fas fa-shield-alt" style="color:var(--report-navy)"></i>`;
 
-  // ملخص ابتدائي اختياري
-  let elemNote = "";
-  if (isElem && overallBand) {
-    elemNote = `<div class="rpt-elem-note">الإجراء المقترح: <strong>${esc(overallBand.action)}</strong></div>`;
-  }
+  const chartSectionHtml = numericEntries.length ? `
+    <section class="rpt-chart chart-container">
+      <div class="rpt-section-title">الرسم البياني للدرجات</div>
+      ${gradeLegendHtml(isElem)}
+      <div class="chart-wrap"><canvas id="subjectsChart"></canvas></div>
+    </section>` : "";
 
   return `
-    <div class="result-card rpt-sheet" id="printSection">
-      <!-- ===== 1. Header ثابت ===== -->
+    <div class="result-card rpt-sheet modern-report" id="printSection">
       <header class="rpt-header">
         <div class="rpt-header-emblem">${rightEmblem}</div>
         <div class="rpt-header-text">
           <div class="rpt-school-name">${esc(appSettings.mainTitle)}</div>
           <div class="rpt-school-motto">${esc(subTitle)}</div>
-          <div class="rpt-term-title">بيان درجات — ${esc(termNames[row.term_key] || row.term_key)}</div>
+          <div class="rpt-term-title">بيان نتيجة الطالب — ${esc(termNames[row.term_key] || row.term_key)}</div>
         </div>
         <div class="rpt-header-emblem">${leftEmblem}</div>
       </header>
 
-      <!-- ===== 2. بيانات الطالب: صورة + 6 كروت ثابتة ===== -->
       <section class="rpt-student">
         <div class="rpt-photo-col" id="reportPhotoArea">
           <div class="rpt-photo-frame" id="reportPhotoFrame">
-            <div class="photo-placeholder">
-              <i class="fas fa-user-graduate"></i>
-              <span>صورة الطالب</span>
-            </div>
+            <div class="photo-placeholder"><i class="fas fa-user-graduate"></i><span>صورة الطالب</span></div>
             <img id="studentPhotoPreview" class="student-photo-preview" alt="صورة الطالب">
           </div>
           <div class="student-photo-actions">
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;">
-              <i class="fas fa-camera"></i> كاميرا
-              <input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)">
-            </label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;">
-              <i class="fas fa-images"></i> المعرض
-              <input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)">
-            </label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;">
-              <i class="fas fa-folder-open"></i> استعراض
-              <input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)">
-            </label>
-            <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);">
-              <i class="fas fa-times"></i> إزالة
-            </button>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-camera"></i> كاميرا<input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-folder-open"></i> استعراض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()"><i class="fas fa-times"></i> إزالة</button>
           </div>
           <div class="student-photo-hint">الصورة للطباعة على جهازك فقط ولا تُرفع للخادم</div>
         </div>
+
         <div class="rpt-cards-grid">
           <div class="rpt-card">
-            <span class="rpt-card-label">الرقم القومي</span>
-            <span class="rpt-card-value ltr">${esc(nationalId)}</span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.user}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">اسم الطالب</span>
+              <span class="rpt-card-value">${esc(row.name)}</span>
+            </div>
           </div>
           <div class="rpt-card">
-            <span class="rpt-card-label">اسم الطالب</span>
-            <span class="rpt-card-value">${esc(row.name)}</span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.id}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">الرقم القومي</span>
+              <span class="rpt-card-value ltr">${esc(nationalId)}</span>
+            </div>
           </div>
           <div class="rpt-card">
-            <span class="rpt-card-label">الصف</span>
-            <span class="rpt-card-value">${esc(row.grade || "—")}</span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.grad}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">الصف</span>
+              <span class="rpt-card-value">${esc(row.grade || "—")}</span>
+            </div>
           </div>
           <div class="rpt-card">
-            <span class="rpt-card-label">رقم الجلوس</span>
-            <span class="rpt-card-value">${esc(row.seat_number || "—")}</span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.chair}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">رقم الجلوس</span>
+              <span class="rpt-card-value" dir="ltr">${esc(row.seat_number || "—")}</span>
+            </div>
           </div>
           <div class="rpt-card">
-            <span class="rpt-card-label">نتيجة الفترة</span>
-            <span class="rpt-card-value rpt-card-result">${esc(row.result_column1 || "—")}</span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.cal}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">نتيجة الفترة</span>
+              <span class="rpt-card-value rpt-card-result">${esc(termLabel)}</span>
+            </div>
           </div>
           <div class="rpt-card">
-            <span class="rpt-card-label">موقف النشر</span>
-            <span class="rpt-card-value"><span class="status-badge status-available">متاحة</span></span>
+            <div class="rpt-card-icon"><img src="${REPORT_ICONS.clip}" alt=""></div>
+            <div class="rpt-card-body">
+              <span class="rpt-card-label">نوع النتيجة</span>
+              <span class="rpt-card-value rpt-card-result">${esc(resultTypeText)}</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- ===== 3. جدول المواد (ديناميكي) ===== -->
       <section class="rpt-subjects">
-        <div class="rpt-section-title"><i class="fas fa-list-ol"></i> درجات المواد</div>
         <div class="rpt-table-wrap">
           <table class="rpt-table">
-            <thead>
-              <tr>
-                <th class="col-subject">المادة</th>
-                <th class="col-max">العظمى</th>
-                <th class="col-score">درجة الطالب</th>
-                <th class="col-est">التقدير</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${subjectRowsHtml || `<tr><td colspan="4" class="rpt-empty">لا توجد مواد مسجلة لهذه الفترة</td></tr>`}
-            </tbody>
+            <thead><tr><th class="col-num">م</th><th class="col-subject">المادة</th><th class="col-max">الدرجة العظمى</th><th class="col-score">درجة الطالب</th><th class="col-est">التقدير</th></tr></thead>
+            <tbody>${subjectRowsHtml || `<tr><td colspan="5" class="rpt-empty">لا توجد مواد مسجلة لهذه الفترة</td></tr>`}</tbody>
           </table>
         </div>
       </section>
 
-      <!-- ===== 4. الملخص النهائي + الحالة ===== -->
       <section class="rpt-summary">
         <div class="rpt-summary-grid">
-          <div class="rpt-sum-item">
-            <span class="rpt-sum-label">المجموع الكلي</span>
-            <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${Number(totalRaw.toFixed(2))} / ${totalMax}` : "—"}</span>
+          <div class="rpt-sum-item rpt-sum-total">
+            <div class="rpt-sum-body">
+              <span class="rpt-sum-label">المجموع الكلي</span>
+              <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${Number(totalRaw.toFixed(2))} / ${totalMax}` : "—"}</span>
+            </div>
+            <div class="rpt-sum-icon"><i class="fas fa-clipboard-list"></i></div>
           </div>
-          <div class="rpt-sum-item">
+          <div class="rpt-sum-item rpt-sum-pct">
             <span class="rpt-sum-label">النسبة المئوية</span>
             <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? pctOverall.toFixed(2) + "%" : "—"}</span>
-          </div>
-          <div class="rpt-sum-item">
-            <span class="rpt-sum-label">التقدير العام</span>
-            <span class="rpt-sum-value" style="color:${overallBand ? overallBand.color : "inherit"}">${overallBand ? esc(overallBand.label) : "—"}</span>
+            <span class="rpt-sum-band">${overallBand ? esc(overallBand.label) : ""}</span>
           </div>
         </div>
-        <div class="rpt-status outcome-${outcomeKind}" role="status">
-          <i class="fas ${outcomeIcon}"></i>
-          <span>${esc(outcomeLabel)}</span>
-        </div>
-        ${elemNote}
       </section>
 
-      <!-- ===== 5. الرسم البياني (إطار ثابت، بيانات ديناميكية) ===== -->
+      <div class="rpt-outcome-banner outcome-${outcomeKind}">
+        <span class="rpt-outcome-icon"><i class="fas ${outcomeKind === 'pass' ? 'fa-check-circle' : outcomeKind === 'second' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i></span>
+        <span class="rpt-outcome-text">${esc(outcomeLabel)}</span>
+      </div>
+
       ${chartSectionHtml}
 
-      <!-- ===== 6. التوقيع والختم (ثابت) ===== -->
       <footer class="rpt-signature signature-section">
         <div class="rpt-stamp-block">
+          <div class="rpt-stamp-title">ختم</div>
           <div class="rpt-stamp-circle">
-            <div class="rpt-stamp-line">يُعتمد</div>
-            <div class="rpt-stamp-sub">مدير المدرسة</div>
+            <div class="rpt-stamp-line">ختم</div>
+            <div class="rpt-stamp-sub">الاعتماد</div>
           </div>
         </div>
-        <div class="rpt-print-date">تاريخ الطباعة: ${printDate}</div>
+        <div class="rpt-signature-box">
+          <div class="rpt-signature-label">توقيع الإدارة</div>
+          <div class="rpt-signature-line"></div>
+        </div>
+        <div class="rpt-print-date">
+          <div class="rpt-date-icon"><i class="fas fa-calendar-check"></i></div>
+          <div><strong>تاريخ الطباعة</strong><br>${printDate}</div>
+        </div>
       </footer>
 
       <div class="action-buttons">
@@ -2664,7 +3989,6 @@ function renderFullData(nationalId, row) {
     </div>
   `;
 }
-
 
 function renderBasicDataOnly(nationalId, row) {
   // نعرض البيان المكتوب بالضبط في الخلية السادسة من ملف الإكسيل (العمود
