@@ -3843,24 +3843,62 @@ function clearDynamicPrintLayout() {
   delete sheet.dataset.printScale;
 }
 
+/** اسم ملف PDF المقترح: اسم_الطالب_الفترة */
+function buildCertificateFileName() {
+  const meta = window._lastResultMeta || {};
+  let name = String(meta.name || "").trim();
+  let term = String(meta.termLabel || meta.termKey || "").trim();
+  // تنظيف أحرف غير صالحة في أسماء الملفات
+  const clean = (s) => String(s || "")
+    .replace(/[\\/:*?"<>|]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  name = clean(name) || "طالب";
+  term = clean(term) || "فترة";
+  // حد طول معقول
+  if (name.length > 60) name = name.slice(0, 60).trim();
+  if (term.length > 40) term = term.slice(0, 40).trim();
+  return name + "_" + term;
+}
+
+function setPrintDocumentTitle() {
+  if (window._printTitleBackup == null) {
+    window._printTitleBackup = document.title;
+  }
+  document.title = buildCertificateFileName();
+}
+
+function restorePrintDocumentTitle() {
+  if (window._printTitleBackup != null) {
+    document.title = window._printTitleBackup;
+    window._printTitleBackup = null;
+  }
+}
+
 window.printReport = async function () {
   if (typeof ensurePrintFontsReady === "function") {
     try { await ensurePrintFontsReady(); } catch (e) {}
   }
   try { applyDynamicPrintLayout(); } catch (e) { console.warn("print layout:", e); }
+  try { setPrintDocumentTitle(); } catch (e) {}
   // انتظار إطار رسم لتطبيق متغيرات CSS قبل فتح حوار الطباعة
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   window.print();
   // إعادة الضبط بعد الطباعة حتى لا تؤثر على العرض على الشاشة
-  setTimeout(clearDynamicPrintLayout, 500);
+  setTimeout(() => {
+    try { clearDynamicPrintLayout(); } catch (e) {}
+    try { restorePrintDocumentTitle(); } catch (e) {}
+  }, 500);
 };
 
 // دعم Ctrl+P / قائمة الطباعة من المتصفح
 window.addEventListener("beforeprint", () => {
   try { applyDynamicPrintLayout(); } catch (e) {}
+  try { setPrintDocumentTitle(); } catch (e) {}
 });
 window.addEventListener("afterprint", () => {
   try { clearDynamicPrintLayout(); } catch (e) {}
+  try { restorePrintDocumentTitle(); } catch (e) {}
 });
 
 // ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
@@ -4140,6 +4178,15 @@ const REPORT_ICONS = {
 };
 
 function renderFullData(nationalId, row) {
+  try {
+    window._lastResultMeta = {
+      name: String(row && row.name || "").trim(),
+      termKey: String(row && row.term_key || "").trim(),
+      termLabel: String((typeof termNames !== "undefined" && termNames[row && row.term_key]) || (row && row.term_key) || "").trim(),
+      nationalId: String(nationalId || row && row.national_id || "").trim()
+    };
+  } catch (e) {}
+
   const entries = getDisplaySubjectEntries(row);
   const isElem = isElementaryStage(row.grade);
   const { counted: _countedEarly, extra: _extraEarly } = getSubjectGroups(row);
@@ -4436,6 +4483,15 @@ function renderFullData(nationalId, row) {
 }
 
 function renderBasicDataOnly(nationalId, row) {
+  try {
+    window._lastResultMeta = {
+      name: String(row && row.name || "").trim(),
+      termKey: String(row && row.term_key || "").trim(),
+      termLabel: String((typeof termNames !== "undefined" && termNames[row && row.term_key]) || (row && row.term_key) || "").trim(),
+      nationalId: String(nationalId || row && row.national_id || "").trim()
+    };
+  } catch (e) {}
+
   // نعرض البيان المكتوب بالضبط في الخلية السادسة من ملف الإكسيل (العمود
   // الذي تحدده الإدارة لكل طالب — مثل "غير متاح" أو رسالة مخصّصة زي
   // "يرجى سداد باقي المصروفات لإظهار النتيجة")، لأن المدرسة تخاطب ولي
