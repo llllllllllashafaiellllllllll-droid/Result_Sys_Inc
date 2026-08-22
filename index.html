@@ -1039,7 +1039,7 @@
 .modern-report .rpt-table .col-max { width:14%; color:#526476; }
 .modern-report .rpt-table .col-score { width:18%; }
 .modern-report .rpt-table .col-est { width:25%; }
-.modern-report .score-pill { background:transparent !important; padding:0; font-size:.9rem; color:var(--report-ink); font-weight:900; }
+.modern-report .score-pill { background:transparent !important; padding:0; font-size:.95rem; color:#0a496b !important; font-weight:900 !important; -webkit-text-fill-color:#0a496b; }
 .modern-report .est-label { font-size:.86rem; font-weight:900; }
 .modern-report .est-action { font-size:.67rem; color:var(--report-muted); }
 
@@ -1370,9 +1370,9 @@
 }
 .modern-report .rpt-table .col-subject .subject-name{vertical-align:middle}
 .modern-report .rpt-table .col-max{width:16%;text-align:center;color:#526476}
-.modern-report .rpt-table .col-score{width:17%;text-align:center}
+.modern-report .rpt-table .col-score{width:17%;text-align:center;color:#0a496b !important;font-weight:900 !important;}
 .modern-report .rpt-table .col-est{width:21%;text-align:center}
-.modern-report .rpt-table .score-pill{font-size:.86rem}
+.modern-report .rpt-table .score-pill{font-size:.95rem;color:#0a496b !important;font-weight:900 !important;-webkit-text-fill-color:#0a496b;}
 .modern-report .rpt-table .est-label{font-size:.82rem}
 .modern-report .rpt-table .est-action{font-size:.62rem}
 
@@ -3029,6 +3029,23 @@
   }
   .modern-report .rpt-table tbody td {
     padding: 6px 4px !important;
+  }
+  /* درجة الطالب: لون واضح على الموبايل */
+  .modern-report .rpt-table .col-score,
+  .modern-report .rpt-table .score-pill {
+    color: #083b57 !important;
+    -webkit-text-fill-color: #083b57 !important;
+    font-weight: 900 !important;
+    font-size: 0.88rem !important;
+    opacity: 1 !important;
+  }
+  .modern-report .rpt-table .col-max {
+    color: #3d4f5f !important;
+    font-weight: 700 !important;
+  }
+  .modern-report .rpt-table .est-label {
+    color: #0a496b !important;
+    font-weight: 900 !important;
   }
 
   .modern-report .rpt-summary-grid {
