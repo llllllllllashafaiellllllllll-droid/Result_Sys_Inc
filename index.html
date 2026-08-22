@@ -3740,7 +3740,11 @@ function applyStudentPhotoToPreview(dataUrl) {
 window.onStudentPhotoSelected = function (input) {
   const file = input && input.files && input.files[0];
   if (!file) return;
-  if (!file.type || !file.type.startsWith("image/")) {
+  // بعض أجهزة أندرويد لا تملأ file.type — نتحقق بالامتداد أيضًا
+  const name = (file.name || "").toLowerCase();
+  const okExt = /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/.test(name);
+  const okType = file.type && file.type.startsWith("image/");
+  if (!okType && !okExt) {
     showToast("الملف المختار ليس صورة صالحة", "err");
     input.value = "";
     return;
@@ -4304,8 +4308,7 @@ function renderFullData(nationalId, row) {
           </div>
           <div class="student-photo-actions">
             <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-camera"></i> كاميرا<input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-folder-open"></i> استعراض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;" title="اختيار صورة من الجهاز"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
             <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()"><i class="fas fa-times"></i> إزالة</button>
           </div>
           <div class="student-photo-hint">الصورة للطباعة على جهازك فقط ولا تُرفع للخادم</div>
