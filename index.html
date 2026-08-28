@@ -2567,7 +2567,12 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" integrity="sha384-qafw21c/iciq0VXsi9FzkfoQv5I/V0iqE4lSNcKXPnW9/UTJLnv5CcN4FHxVLnKg" crossorigin="anonymous"></script>
+<!-- FIX: تثبيت supabase-js@2.112.4 + SRI صحيح — الهاش القديم كان يمنع تحميل المكتبة فيتوقف الاتصال -->
+<script id="supabaseJs"
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js"
+  integrity="sha384-ysv13JVP3fufiEXfjML9OdCa/rRbMJvUBOWyor82wfuK8INNZAvmbxHgKIHi+oqz"
+  crossorigin="anonymous"
+  onerror="(function(el){if(el.dataset.fb)return;el.dataset.fb='1';el.removeAttribute('integrity');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js';})(this)"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 'use strict';
@@ -2592,7 +2597,25 @@ const SETTINGS_KEY = "Shabab_AppSettings_Emblem_v4";
 // تلقائياً بسبب RLS، والموقع هيستمر يشتغل محلياً زي ما هو دلوقتي.
 const SUPABASE_URL = "https://xzfclfnugrafjdipjrrw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__tJo_VX21pzrTada_2-Yvg_A_OkH8KR";
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+(function ensureSupabaseClient() {
+  if (supabaseClient) return;
+  if (window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return;
+  }
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js";
+  s.crossOrigin = "anonymous";
+  s.onload = function () {
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.info("[Supabase] loaded via fallback");
+    }
+  };
+  s.onerror = function () { console.error("[Supabase] CDN load failed"); };
+  document.head.appendChild(s);
+})();
 
 // ===== تحميل مكتبة XLSX ديناميكيًا (للأدمن فقط) =====
 const XLSX_SCRIPT_URL = "https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js";
