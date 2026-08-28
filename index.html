@@ -1644,7 +1644,7 @@
   }
   #resultContainer > * { visibility: visible !important; }
 
-  /* منطقة طباعة A4: بدون ارتفاع ثابت يمنع التمدد لصفحة ثانية عند الفائض */
+  /* حاوية واحدة فقط — القص داخل ارتفاع الصفحة يمنع صفحة ثانية */
   .modern-report.rpt-sheet#printSection {
     width: 100% !important;
     max-width: none !important;
@@ -1658,9 +1658,8 @@
     border-radius: 3mm !important;
     box-shadow: none !important;
     background: #fff !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
+    display: block !important;
+    overflow: visible !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -2246,6 +2245,14 @@
     height:auto !important;
   }
 
+  /* وضع الطباعة المُقاس: صفحة واحدة فقط، أي فائض يُقص */
+  html.print-fit-a4,
+  body.print-fit-a4 {
+    height: 285mm !important;
+    max-height: 285mm !important;
+    overflow: hidden !important;
+  }
+
   #resultContainer {
     display:block !important;
     width:100% !important;
@@ -2254,6 +2261,18 @@
     height:auto !important;
     min-height:0 !important;
     overflow:visible !important;
+  }
+
+  #resultContainer[data-print-fit="1"] {
+    width: 194mm !important;
+    height: 285mm !important;
+    max-height: 285mm !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .modern-report.rpt-sheet#printSection {
@@ -2277,9 +2296,12 @@
     break-after:avoid-page !important;
   }
 
-  /* عند التحجيم عبر JS: اترك transform يعمل دون قص */
   .modern-report.rpt-sheet#printSection[data-print-scaled="1"] {
-    transform-origin: top center !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform-origin: top left !important;
+    margin: 0 !important;
   }
 
   /* Every major section is ordinary block flow. */
@@ -3744,6 +3766,7 @@ window.printReport = async function () {
     try { await ensurePrintFontsReady(); } catch (e) {}
   }
   const el = document.getElementById("printSection");
+  const box = document.getElementById("resultContainer");
   if (!el) {
     window.print();
     return;
@@ -3759,37 +3782,61 @@ window.printReport = async function () {
     el.style.marginBottom = "";
     el.style.marginLeft = "";
     el.style.marginRight = "";
+    el.style.position = "";
+    el.style.left = "";
+    el.style.top = "";
     el.removeAttribute("data-print-scaled");
+    if (box) {
+      box.style.height = "";
+      box.style.maxHeight = "";
+      box.style.width = "";
+      box.style.overflow = "";
+      box.style.position = "";
+      box.style.margin = "";
+      box.removeAttribute("data-print-fit");
+    }
+    document.documentElement.classList.remove("print-fit-a4");
+    document.body.classList.remove("print-fit-a4");
   };
 
   clearScale();
-  // انتظر إعادة الرسم لقياس الحجم الطبيعي بدقة
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   try {
-    // منطقة الطباعة الفعلية = A4 ناقص هوامش @page (6mm رأسي، 8mm أفقي)
+    // A4 − هوامش @page (8mm أفقي، 6mm رأسي)
     const mm = 96 / 25.4;
-    const targetW = (210 - 16) * mm; // ≈ 194mm
-    const targetH = (297 - 12) * mm; // ≈ 285mm
+    const targetW = (210 - 16) * mm;
+    const targetH = (297 - 12) * mm;
 
     const w = Math.max(el.scrollWidth, el.offsetWidth, 1);
     const h = Math.max(el.scrollHeight, el.offsetHeight, 1);
 
-    // تحجيم مستقل للعرض والارتفاع لملء صفحة A4 بالكامل
-    let sx = targetW / w;
-    let sy = targetH / h;
-    sx = Math.min(1.5, Math.max(0.6, sx));
-    sy = Math.min(1.5, Math.max(0.6, sy));
+    // مقياس موحّد: التقرير كامل يدخل في صفحة واحدة
+    let scale = Math.min(targetW / w, targetH / h);
+    scale = Math.min(1.35, Math.max(0.55, scale));
+
+    document.documentElement.classList.add("print-fit-a4");
+    document.body.classList.add("print-fit-a4");
+
+    if (box) {
+      box.setAttribute("data-print-fit", "1");
+      box.style.position = "relative";
+      box.style.width = targetW + "px";
+      box.style.height = targetH + "px";
+      box.style.maxHeight = targetH + "px";
+      box.style.overflow = "hidden";
+      box.style.margin = "0 auto";
+    }
 
     el.setAttribute("data-print-scaled", "1");
-    el.style.transformOrigin = "top center";
-    el.style.transform = "scale(" + sx + ", " + sy + ")";
+    el.style.position = "absolute";
+    el.style.left = "0";
+    el.style.top = "0";
+    el.style.transformOrigin = "top left";
+    el.style.transform = "scale(" + scale + ")";
     el.style.width = w + "px";
     el.style.maxWidth = "none";
-    el.style.marginLeft = "auto";
-    el.style.marginRight = "auto";
-    // تعويض المساحة بعد scale حتى لا تُنشأ صفحة فارغة / قص
-    el.style.marginBottom = ((sy - 1) * h) + "px";
+    el.style.margin = "0";
   } catch (e) {
     console.warn("print scale failed:", e);
   }
