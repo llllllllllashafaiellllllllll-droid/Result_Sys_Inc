@@ -896,13 +896,12 @@
 .modern-report .rpt-school-name {
   color: #0b4767 !important;
   font-size: clamp(1.05rem, 2.2vw, 1.35rem);
-  line-height: 1.25;
+  line-height: 1.2;
   font-weight: 900;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: -0.01em;
-  word-break: break-word;
 }
 .modern-report .rpt-school-motto {
   color: #c9a227 !important;
@@ -1039,7 +1038,7 @@
 .modern-report .rpt-table .col-max { width:14%; color:#526476; }
 .modern-report .rpt-table .col-score { width:18%; }
 .modern-report .rpt-table .col-est { width:25%; }
-.modern-report .score-pill { background:transparent !important; padding:0; font-size:.95rem; color:#0a496b !important; font-weight:900 !important; -webkit-text-fill-color:#0a496b; }
+.modern-report .score-pill { background:transparent !important; padding:0; font-size:.9rem; color:var(--report-ink); font-weight:900; }
 .modern-report .est-label { font-size:.86rem; font-weight:900; }
 .modern-report .est-action { font-size:.67rem; color:var(--report-muted); }
 
@@ -1160,6 +1159,7 @@
   border-radius:10px;
   background:#fff;
   text-align:center;
+  page-break-inside:avoid;
 }
 .modern-report .rpt-chart .rpt-section-title { margin-bottom:8px; background:transparent; color:var(--report-navy); padding:0; min-width:0; }
 .modern-report .rpt-chart .rpt-section-title::before,
@@ -1370,9 +1370,9 @@
 }
 .modern-report .rpt-table .col-subject .subject-name{vertical-align:middle}
 .modern-report .rpt-table .col-max{width:16%;text-align:center;color:#526476}
-.modern-report .rpt-table .col-score{width:17%;text-align:center;color:#0a496b !important;font-weight:900 !important;}
+.modern-report .rpt-table .col-score{width:17%;text-align:center}
 .modern-report .rpt-table .col-est{width:21%;text-align:center}
-.modern-report .rpt-table .score-pill{font-size:.95rem;color:#0a496b !important;font-weight:900 !important;-webkit-text-fill-color:#0a496b;}
+.modern-report .rpt-table .score-pill{font-size:.86rem}
 .modern-report .rpt-table .est-label{font-size:.82rem}
 .modern-report .rpt-table .est-action{font-size:.62rem}
 
@@ -1606,19 +1606,13 @@
 .modern-report .rpt-chart canvas { display:block !important; visibility:visible !important; }
 
 @media print {
-  @page { size: A4 portrait; margin: 6mm 8mm; }
-  /* منع أي صفحة ثانية — المحتوى كله داخل إطار واحد */
-  @page :left { size: A4 portrait; margin: 8mm 10mm; }
-  @page :right { size: A4 portrait; margin: 8mm 10mm; }
+  @page { size: A4 portrait; margin: 8mm 10mm; }
 
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    height: auto !important;
     min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
     background: #fff !important;
     color: #172536 !important;
     -webkit-print-color-adjust: exact !important;
@@ -1654,23 +1648,21 @@
   .modern-report.rpt-sheet#printSection {
     width: 100% !important;
     max-width: none !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    height: auto !important;
-    margin: 0 auto !important;
-    padding: 2mm !important;
+    min-height: 258mm !important;
+    max-height: 258mm !important;
+    height: 258mm !important;
+    margin: 0 !important;
+    padding: 2.5mm !important;
     box-sizing: border-box !important;
     border: 0.7pt solid #b8c5d1 !important;
-    border-radius: 3mm !important;
+    border-radius: 4mm !important;
     box-shadow: none !important;
     background: #fff !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: visible !important;
     page-break-after: avoid !important;
-    page-break-inside: avoid !important;
     break-inside: avoid !important;
-    break-after: avoid !important;
   }
 
   /* Header */
@@ -1786,7 +1778,7 @@
     overflow: visible !important;
   }
   .modern-report .subjects-extra .rpt-section-heading { background: #516579 !important; margin-bottom: .8mm !important; }
-  .modern-report .subjects-extra .extra-table-screen { display: block !important; }
+  .modern-report .subjects-extra .extra-table-screen { display: none !important; }
   .modern-report .subjects-extra .extra-print-grid {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1950,16 +1942,8 @@
 }
 
 </style>
-<style id="no-duplicate-extra-subjects">
-/* الشاشة: جدول واحد فقط لمواد خارج المجموع — بدون تكرار */
-.extra-print-grid,
-.modern-report .extra-print-grid,
-.modern-report .subjects-extra .extra-print-grid {
-  display: none !important;
-}
-.modern-report .subjects-extra .extra-table-screen {
-  display: block !important;
-}
+<style>/* Screen fallback: the two-column additional-subject grid is print-only. */
+.extra-print-grid{display:none;}
 </style>
 <style id="final-layout-fixes">
 /* ================================================================
@@ -2425,7 +2409,7 @@
     padding:.55mm 4mm !important;
     transform:none !important;
   }
-  .modern-report .subjects-extra .extra-table-screen { display:block !important; }
+  .modern-report .subjects-extra .extra-table-screen { display:none !important; }
   .modern-report .subjects-extra .extra-print-grid {
     display:grid !important;
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
@@ -2513,573 +2497,6 @@
   .modern-report .rpt-heading-sign,
   .modern-report .rpt-notice,
   .modern-report .rpt-outcome-banner { page-break-after:avoid !important; }
-}
-</style>
-<style id="print-fill-page">
-/* ================================================================
-   PRINT — صفحة A4 واحدة فقط: ضغط صارم + لا فاصل قبل التذييل
-   ================================================================ */
-@media print {
-  @page { size: A4 portrait; margin: 5mm 6mm; }
-
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
-    background: #fff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* إخفاء كل شيء عدا التقرير */
-  .page-wrapper > *:not(#resultContainer),
-  .school-emblem-header, .topbar, .hero, .search-card, .search-section,
-  .action-buttons, .student-photo-actions, .student-photo-hint,
-  #studentPhotoInput, .student-photo-file, .toast-container,
-  .theme-toggle-fixed, .modal-overlay, #themeToggle, #themeToggle2 {
-    display: none !important;
-  }
-
-  #resultContainer {
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-  }
-
-  .modern-report.rpt-sheet#printSection {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 1.5mm !important;
-    box-sizing: border-box !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    box-shadow: none !important;
-    border-radius: 2mm !important;
-    display: block !important; /* block وليس flex لتجنب مشاكل التقسيم */
-    overflow: visible !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  /* إلغاء أي page-break على الأقسام الداخلية */
-  .modern-report .rpt-header,
-  .modern-report .rpt-student,
-  .modern-report .subjects-counted,
-  .modern-report .subjects-extra,
-  .modern-report .rpt-summary,
-  .modern-report .rpt-chart,
-  .modern-report .rpt-outcome-banner,
-  .modern-report .rpt-notice,
-  .modern-report .rpt-heading-sign,
-  .modern-report .rpt-signature {
-    page-break-inside: auto !important;
-    break-inside: auto !important;
-    page-break-before: auto !important;
-    page-break-after: auto !important;
-  }
-
-  /* التذييل والرسم لا يبدأان صفحة جديدة */
-  .modern-report .rpt-chart,
-  .modern-report .rpt-outcome-banner,
-  .modern-report .rpt-notice,
-  .modern-report .rpt-heading-sign,
-  .modern-report .rpt-signature {
-    page-break-before: avoid !important;
-    break-before: avoid !important;
-  }
-
-  /* —— هيدر مضغوط —— */
-  .modern-report .rpt-header {
-    padding: 1mm 1.5mm !important;
-    margin: 0 0 1mm !important;
-    gap: 2mm !important;
-  }
-  .modern-report .rpt-header-emblem { width: 12mm !important; height: 12mm !important; }
-  .modern-report .rpt-school-name { font-size: 10pt !important; }
-  .modern-report .rpt-school-motto { font-size: 7pt !important; margin-top: 0 !important; }
-  .modern-report .rpt-term-title { font-size: 8pt !important; margin-top: .3mm !important; }
-
-  /* —— بيانات الطالب —— */
-  .modern-report .rpt-section-heading {
-    margin: 0 auto 1mm !important;
-    padding: .5mm 3.5mm !important;
-    font-size: 7.5pt !important;
-    min-width: 0 !important;
-  }
-  .modern-report .rpt-student {
-    grid-template-columns: 24mm 1fr !important;
-    gap: 2mm !important;
-    padding: 0 0 1.5mm !important;
-  }
-  .modern-report .rpt-photo-frame { width: 22mm !important; height: 29mm !important; }
-  .modern-report .rpt-cards-grid { gap: 1mm !important; }
-  .modern-report .rpt-card {
-    min-height: 0 !important;
-    padding: .7mm 1.2mm !important;
-  }
-  .modern-report .rpt-card-label { font-size: 5.8pt !important; }
-  .modern-report .rpt-card-value { font-size: 7.2pt !important; }
-  .modern-report .rpt-card-icon { width: 5mm !important; height: 5mm !important; }
-
-  /* —— جدول المواد الأساسية: مضغوط —— */
-  .modern-report .subjects-counted { margin: 0 0 1.2mm !important; padding: 0 !important; }
-  .modern-report .rpt-table { font-size: 7pt !important; table-layout: fixed !important; width: 100% !important; }
-  .modern-report .rpt-table thead th {
-    padding: .6mm 1mm !important;
-    font-size: 6.5pt !important;
-    height: auto !important;
-  }
-  .modern-report .rpt-table tbody td {
-    padding: .55mm 1mm !important;
-    height: 4.2mm !important;
-    font-size: 6.8pt !important;
-    line-height: 1.1 !important;
-  }
-  .modern-report .score-pill, .modern-report .est-label { font-size: 6.8pt !important; }
-
-  /* متغيرات ديناميكية (إن وُجدت) */
-  .modern-report.rpt-sheet#printSection[data-print-layout="dynamic"] .rpt-table tbody td {
-    height: var(--print-row-h, 4.2mm) !important;
-    min-height: var(--print-row-h, 4.2mm) !important;
-    padding: .5mm 1mm !important;
-    font-size: 6.8pt !important;
-  }
-
-  /* —— الملخص —— */
-  .modern-report .rpt-summary { margin: 0 0 1.2mm !important; padding: 0 !important; }
-  .modern-report .rpt-summary-grid { height: 14mm !important; gap: 1mm !important; }
-  .modern-report .rpt-sum-item {
-    min-height: 14mm !important;
-    height: 14mm !important;
-    padding: 1mm 1.5mm !important;
-  }
-  .modern-report .rpt-sum-total .rpt-sum-value { font-size: 11pt !important; }
-  .modern-report .rpt-sum-pct .rpt-sum-value { font-size: 12pt !important; }
-  .modern-report .rpt-sum-label { font-size: 6pt !important; }
-
-  /* —— مواد إضافية: جدول مضغوط في الطباعة (أوضح من الكروت) —— */
-  .modern-report .subjects-extra { margin: 0 0 1.2mm !important; padding: 0 !important; }
-  .modern-report .subjects-extra .extra-table-screen {
-    display: block !important; /* أظهر الجدول بدل شبكة الكروت المعطوبة في الطباعة */
-  }
-  .modern-report .subjects-extra .extra-print-grid {
-    display: none !important;
-  }
-  .modern-report .subjects-extra .rpt-table tbody td {
-    height: 3.9mm !important;
-    padding: .4mm .8mm !important;
-    font-size: 6.4pt !important;
-  }
-  .modern-report .subjects-extra .rpt-table thead th {
-    padding: .5mm .8mm !important;
-    font-size: 6.2pt !important;
-  }
-
-  /* —— الرسم البياني: صغير جدًا —— */
-  .modern-report .rpt-chart.chart-container {
-    margin: 0 0 1mm !important;
-    padding: 1mm 1.5mm !important;
-    page-break-inside: auto !important;
-    break-inside: auto !important;
-  }
-  .modern-report .rpt-chart .rpt-section-title {
-    font-size: 7pt !important;
-    margin: 0 auto .6mm !important;
-    height: auto !important;
-    line-height: 1.2 !important;
-    padding: 0 !important;
-  }
-  .modern-report .rpt-html-chart { gap: .6mm !important; }
-  .modern-report .rpt-chart-row {
-    min-height: 2.8mm !important;
-    grid-template-columns: 11mm minmax(0,1fr) 32mm !important;
-    gap: 1mm !important;
-  }
-  .modern-report .rpt-chart-track { height: 2.2mm !important; }
-  .modern-report .rpt-chart-value,
-  .modern-report .rpt-chart-name { font-size: 5.5pt !important; }
-  .modern-report .chart-wrap { height: auto !important; min-height: 0 !important; max-height: 45mm !important; }
-  .modern-report .rpt-chart canvas { max-height: 40mm !important; }
-
-  .modern-report.rpt-sheet#printSection[data-print-layout="dynamic"] .rpt-chart-row {
-    min-height: var(--print-chart-row-h, 2.8mm) !important;
-  }
-  .modern-report.rpt-sheet#printSection[data-print-layout="dynamic"] .rpt-chart-track {
-    height: calc(var(--print-chart-row-h, 2.8mm) * 0.7) !important;
-  }
-
-  /* —— بانر + تنويه + توقيع —— */
-  .modern-report .rpt-outcome-banner {
-    margin: 0 0 .8mm !important;
-    padding: .8mm 2mm !important;
-    min-height: 0 !important;
-    font-size: 7pt !important;
-  }
-  .modern-report .rpt-notice {
-    margin: 0 0 .8mm !important;
-    padding: .5mm 1.5mm !important;
-    font-size: 5.8pt !important;
-    width: 100% !important;
-    max-width: none !important;
-  }
-  .modern-report .rpt-heading-sign {
-    margin: 0 auto .5mm !important;
-    padding: .4mm 3mm !important;
-    font-size: 7pt !important;
-  }
-  .modern-report .rpt-signature.signature-section {
-    margin: 0 !important;
-    padding: .8mm 1.2mm !important;
-    min-height: 10mm !important;
-    height: auto !important;
-    max-height: none !important;
-    page-break-before: avoid !important;
-  }
-  .modern-report .rpt-stamp-circle,
-  .modern-report .rpt-date-icon { display: none !important; }
-  .modern-report .action-buttons { display: none !important; }
-
-  /* إلغاء توسعات الكثافة القديمة التي كانت تكبّر الصفحة */
-  .modern-report.report-density-normal .rpt-table tbody td,
-  .modern-report.report-density-compact .rpt-table tbody td {
-    height: 4.2mm !important;
-    font-size: 6.8pt !important;
-    padding: .55mm 1mm !important;
-  }
-}
-</style>
-<style id="print-one-page-final">
-/* ملء ورقة A4 بالكامل — يعمل مع/بدون JS */
-@media print {
-  @page { size: A4 portrait; margin: 4mm 5mm !important; }
-
-  html, body {
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    background: #fff !important;
-  }
-
-  .page-wrapper {
-    max-width: none !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  #resultContainer {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* إطار الشهادة = كامل مساحة الطباعة */
-  .modern-report.rpt-sheet#printSection {
-    width: 100% !important;
-    max-width: none !important;
-    min-height: 287mm !important;
-    height: 287mm !important;
-    max-height: 287mm !important;
-    margin: 0 !important;
-    padding: 2.5mm !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    overflow: hidden !important;
-    box-shadow: none !important;
-    border-radius: 2mm !important;
-    page-break-after: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  .modern-report .subjects-extra .extra-table-screen {
-    display: block !important;
-    visibility: visible !important;
-  }
-  .modern-report .subjects-extra .extra-print-grid {
-    display: none !important;
-  }
-
-  /* الأقسام تتمدد لتوزيع الفراغ */
-  .modern-report .subjects-counted,
-  .modern-report .subjects-extra,
-  .modern-report .rpt-chart.chart-container {
-    flex: 1 1 auto !important;
-  }
-  .modern-report .rpt-header,
-  .modern-report .rpt-section-heading,
-  .modern-report .rpt-student,
-  .modern-report .rpt-summary,
-  .modern-report .rpt-outcome-banner,
-  .modern-report .rpt-notice,
-  .modern-report .rpt-heading-sign {
-    flex: 0 0 auto !important;
-  }
-  /* التذييل يثبت أسفل الإطار */
-  .modern-report .rpt-signature.signature-section {
-    flex: 0 0 auto !important;
-    margin-top: auto !important;
-    page-break-before: avoid !important;
-  }
-
-  /* صفوف أوضح — تُضبط أدق عبر --print-row-h */
-  .modern-report .rpt-table tbody td {
-    height: var(--print-row-h, 5.5mm) !important;
-    min-height: var(--print-row-h, 5.5mm) !important;
-    padding: .7mm 1.1mm !important;
-    font-size: 7.5pt !important;
-  }
-  .modern-report .subjects-extra .rpt-table tbody td {
-    height: var(--print-row-h, 5mm) !important;
-    min-height: var(--print-row-h, 5mm) !important;
-    font-size: 7pt !important;
-  }
-  .modern-report .rpt-table thead th {
-    padding: .9mm 1.1mm !important;
-    font-size: 7.2pt !important;
-  }
-
-  /* رسم بياني مرن */
-  .modern-report .rpt-chart.chart-container {
-    max-height: none !important;
-    min-height: 28mm !important;
-    page-break-before: avoid !important;
-    page-break-inside: avoid !important;
-  }
-  .modern-report .chart-wrap {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-  }
-  .modern-report .rpt-html-chart {
-    max-height: none !important;
-    overflow: visible !important;
-    gap: 1.2mm !important;
-  }
-  .modern-report .rpt-chart-row {
-    min-height: var(--print-chart-row-h, 4mm) !important;
-  }
-  .modern-report .rpt-chart-track {
-    height: calc(var(--print-chart-row-h, 4mm) * 0.7) !important;
-  }
-
-  .modern-report .rpt-outcome-banner,
-  .modern-report .rpt-notice,
-  .modern-report .rpt-heading-sign,
-  .modern-report .rpt-signature {
-    page-break-before: avoid !important;
-    break-before: avoid !important;
-  }
-
-  .modern-report .action-buttons { display: none !important; }
-}
-</style>
-
-<style id="mobile-report-fix">
-/* ================================================================
-   MOBILE — إصلاح عرض التقرير على الشاشات الضيقة (لا يؤثر على الطباعة)
-   ================================================================ */
-@media screen and (max-width: 720px) {
-  .rpt-sheet.modern-report {
-    border-radius: 0;
-    margin: 0;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* ترويسة: اسم المدرسة كامل بدون قص */
-  .modern-report .rpt-header {
-    grid-template-columns: 44px 1fr 44px !important;
-    gap: 6px !important;
-    padding: 10px 8px 12px !important;
-    align-items: center !important;
-  }
-  .modern-report .rpt-header-emblem {
-    width: 42px !important;
-    height: 42px !important;
-  }
-  .modern-report .rpt-school-name {
-    font-size: 0.92rem !important;
-    line-height: 1.3 !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    word-break: break-word !important;
-  }
-  .modern-report .rpt-school-motto {
-    font-size: 0.68rem !important;
-    margin-top: 2px !important;
-  }
-  .modern-report .rpt-term-title {
-    font-size: 0.78rem !important;
-    margin-top: 4px !important;
-    line-height: 1.35 !important;
-    white-space: normal !important;
-  }
-
-  /* بيانات الطالب: صورة أعلى ثم الكروت بعرض كامل */
-  .modern-report .rpt-student {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
-    padding: 10px 10px 12px !important;
-    direction: rtl !important;
-  }
-  .modern-report .rpt-photo-col {
-    order: 0 !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 8px !important;
-  }
-  .modern-report .rpt-photo-frame {
-    width: 110px !important;
-    height: 145px !important;
-    max-width: 42vw !important;
-  }
-  .modern-report .student-photo-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 6px !important;
-    width: 100% !important;
-  }
-  .modern-report .student-photo-actions .action-btn,
-  .modern-report .student-photo-actions .photo-src-btn {
-    width: auto !important;
-    min-width: 28% !important;
-    flex: 1 1 auto !important;
-    font-size: 0.72rem !important;
-    padding: 0.4rem 0.55rem !important;
-  }
-
-  .modern-report .rpt-cards-grid {
-    order: 1 !important;
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
-    direction: rtl !important;
-  }
-  .modern-report .rpt-card {
-    min-height: 52px !important;
-    padding: 8px 10px !important;
-    gap: 8px !important;
-  }
-  .modern-report .rpt-card-icon {
-    width: 28px !important;
-    height: 28px !important;
-    flex: 0 0 28px !important;
-  }
-  .modern-report .rpt-card-icon img {
-    width: 24px !important;
-    height: 24px !important;
-  }
-  .modern-report .rpt-card-label {
-    font-size: 0.65rem !important;
-  }
-  .modern-report .rpt-card-value {
-    font-size: 0.82rem !important;
-    line-height: 1.35 !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-  }
-  /* الرقم القومي: لا ينكسر رقمًا رقمًا */
-  .modern-report .rpt-card-value.ltr {
-    direction: ltr !important;
-    unicode-bidi: isolate !important;
-    letter-spacing: 0.02em !important;
-    font-size: 0.78rem !important;
-    white-space: normal !important;
-    word-break: break-all !important;
-  }
-
-  .modern-report .rpt-section-heading {
-    max-width: calc(100% - 16px) !important;
-    font-size: 0.82rem !important;
-    padding: 5px 14px !important;
-  }
-
-  .modern-report .rpt-subjects,
-  .modern-report .rpt-summary,
-  .modern-report .rpt-chart,
-  .modern-report .rpt-outcome-banner,
-  .modern-report .rpt-notice,
-  .modern-report .rpt-signature {
-    margin-left: 8px !important;
-    margin-right: 8px !important;
-  }
-
-  .modern-report .rpt-table {
-    font-size: 0.72rem !important;
-  }
-  .modern-report .rpt-table thead th {
-    font-size: 0.68rem !important;
-    padding: 6px 4px !important;
-  }
-  .modern-report .rpt-table tbody td {
-    padding: 6px 4px !important;
-  }
-  /* درجة الطالب: لون واضح على الموبايل */
-  .modern-report .rpt-table .col-score,
-  .modern-report .rpt-table .score-pill {
-    color: #083b57 !important;
-    -webkit-text-fill-color: #083b57 !important;
-    font-weight: 900 !important;
-    font-size: 0.88rem !important;
-    opacity: 1 !important;
-  }
-  .modern-report .rpt-table .col-max {
-    color: #3d4f5f !important;
-    font-weight: 700 !important;
-  }
-  .modern-report .rpt-table .est-label {
-    color: #0a496b !important;
-    font-weight: 900 !important;
-  }
-
-  .modern-report .rpt-summary-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .modern-report .rpt-sum-item {
-    border-left: 0 !important;
-    border-bottom: 1px solid var(--report-line, #c8d1da) !important;
-  }
-  .modern-report .rpt-sum-item:last-child {
-    border-bottom: 0 !important;
-  }
-}
-
-@media screen and (max-width: 400px) {
-  .modern-report .rpt-header {
-    grid-template-columns: 36px 1fr 36px !important;
-    gap: 4px !important;
-    padding: 8px 6px 10px !important;
-  }
-  .modern-report .rpt-header-emblem {
-    width: 34px !important;
-    height: 34px !important;
-  }
-  .modern-report .rpt-school-name {
-    font-size: 0.82rem !important;
-  }
-  .modern-report .rpt-cards-grid {
-    grid-template-columns: 1fr !important; /* كرت واحد بعرض الشاشة على الموبايل الضيق جدًا */
-  }
-  .modern-report .rpt-card-value.ltr {
-    font-size: 0.85rem !important;
-    word-break: normal !important;
-  }
 }
 </style>
 </head>
@@ -3586,50 +3003,40 @@ function applySettingsToUI() {
   }
 }
 
-/** تنسيق درجة للعرض: يزيل أخطاء الفاصلة العائمة (مثل 77.60000000000001 → 77.6) */
-function formatScore(n) {
-  if (n === undefined || n === null || n === "") return "—";
-  const num = typeof n === "number" ? n : parseFloat(String(n).replace(/٫/g, ".").replace(/,/g, "."));
-  if (!isFinite(num)) return String(n);
-  return String(Number(num.toFixed(2)));
-}
-
 function parseCellValue(v) {
   if (v === undefined || v === null || v === "") return { display: "—", raw: "", type: "empty" };
-  if (typeof v === "number" && isFinite(v)) return { display: formatScore(v), raw: v, type: "number" };
+  if (typeof v === "number" && isFinite(v)) return { display: String(v), raw: v, type: "number" };
   let str = String(v).trim();
-  const normalized = str.replace(/٫/g, ".").replace(/,/g, ".");
-  const ratio = normalized.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  // صيغة "565/600" أو "565 / 600"
+  const ratio = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
   if (ratio) {
     const raw = parseFloat(ratio[1]);
     const max = parseFloat(ratio[2]);
-    if (isFinite(raw) && isFinite(max) && max > 0) {
-      return { display: formatScore(raw) + "/" + formatScore(max), raw, type: "number", max };
-    }
+    if (isFinite(raw) && isFinite(max) && max > 0) return { display: str, raw, type: "number", max };
   }
-  let num = parseFloat(normalized);
-  if (!isNaN(num) && isFinite(num) && /^-?\d+(\.\d+)?$/.test(normalized)) {
-    return { display: formatScore(num), raw: num, type: "number" };
-  }
+  let num = parseFloat(str);
+  if (!isNaN(num) && isFinite(num) && /^-?\d+(\.\d+)?$/.test(str)) return { display: str, raw: num, type: "number" };
   return { display: str, raw: str, type: "text" };
 }
 
 /** تطبيع قيمة مادة قادمة من السحابة أو الإكسيل إلى شكل موحّد */
 function normalizeSubjectVal(val) {
   if (val == null || val === "") return { display: "—", raw: "", type: "empty" };
-  if (typeof val === "number" && isFinite(val)) return { display: formatScore(val), raw: val, type: "number" };
+  if (typeof val === "number" && isFinite(val)) return { display: String(val), raw: val, type: "number" };
   if (typeof val === "string") return parseCellValue(val);
   if (typeof val === "object") {
-    if (typeof val.raw === "number" && isFinite(val.raw)) {
+    if (val.type === "number" && typeof val.raw === "number" && isFinite(val.raw)) {
       const max = (typeof val.max === "number" && val.max > 0) ? val.max : undefined;
-      const out = {
-        display: formatScore(val.raw),
+      return max ? { ...val, max } : { ...val };
+    }
+    if (typeof val.raw === "number" && isFinite(val.raw)) {
+      return {
+        display: val.display != null ? String(val.display) : String(val.raw),
         raw: val.raw,
         type: "number",
+        max: (typeof val.max === "number" && val.max > 0) ? val.max : undefined,
         order: val.order,
       };
-      if (max) out.max = max;
-      return out;
     }
     if (val.display != null) {
       const p = parseCellValue(val.display);
@@ -3740,11 +3147,7 @@ function applyStudentPhotoToPreview(dataUrl) {
 window.onStudentPhotoSelected = function (input) {
   const file = input && input.files && input.files[0];
   if (!file) return;
-  // بعض أجهزة أندرويد لا تملأ file.type — نتحقق بالامتداد أيضًا
-  const name = (file.name || "").toLowerCase();
-  const okExt = /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/.test(name);
-  const okType = file.type && file.type.startsWith("image/");
-  if (!okType && !okExt) {
+  if (!file.type || !file.type.startsWith("image/")) {
     showToast("الملف المختار ليس صورة صالحة", "err");
     input.value = "";
     return;
@@ -3776,130 +3179,12 @@ window.clearStudentPrintPhoto = function () {
   showToast("تم إزالة صورة الطالب", "ok");
 };
 
-/**
- * يحسب ارتفاع صفوف المواد وكروت المواد الإضافية ديناميكيًا حسب:
- * - المساحة المتاحة داخل ورقة A4 القابلة للطباعة
- * - عدد صفوف المواد الأساسية
- * - عدد كروت المواد الإضافية
- * يعمل قبل window.print() ويضبط متغيرات CSS على #printSection.
- */
-function applyDynamicPrintLayout() {
-  const sheet = document.getElementById("printSection");
-  if (!sheet) return;
-
-  const nCounted = (sheet.querySelectorAll(".subjects-counted .rpt-table tbody tr") || []).length;
-  const nExtra = (sheet.querySelectorAll(".subjects-extra .rpt-table tbody tr, .subjects-extra .subject-card") || []).length;
-  const nChart = (sheet.querySelectorAll(".rpt-html-chart .rpt-chart-row") || []).length;
-  const nTotal = nCounted + nExtra;
-
-  // ارتفاعات تملأ الصفحة حسب عدد المواد (بدون الاعتماد على transform فقط)
-  let rowH, chartH;
-  if (nTotal >= 18) { rowH = 3.8; chartH = 2.6; }
-  else if (nTotal >= 14) { rowH = 4.4; chartH = 3.0; }
-  else if (nTotal >= 10) { rowH = 5.2; chartH = 3.6; }
-  else if (nTotal >= 7) { rowH = 6.0; chartH = 4.2; }
-  else { rowH = 7.0; chartH = 5.0; }
-
-  // إعادة ضبط
-  sheet.style.zoom = "";
-  sheet.style.transform = "";
-  sheet.style.transformOrigin = "";
-  sheet.style.marginBottom = "";
-
-  sheet.style.setProperty("--print-row-h", rowH.toFixed(2) + "mm");
-  sheet.style.setProperty("--print-card-h", rowH.toFixed(2) + "mm");
-  sheet.style.setProperty("--print-chart-row-h", chartH.toFixed(2) + "mm");
-  sheet.dataset.printLayout = "dynamic";
-  sheet.dataset.printScale = "1";
-
-  // إطار ثابت بارتفاع صفحة الطباعة — CSS يتولى الملء بـ flex
-  sheet.style.minHeight = "287mm";
-  sheet.style.height = "287mm";
-  sheet.style.maxHeight = "287mm";
-  sheet.style.width = "100%";
-  sheet.style.boxSizing = "border-box";
-  sheet.style.display = "flex";
-  sheet.style.flexDirection = "column";
-}
-
-function clearDynamicPrintLayout() {
-  const sheet = document.getElementById("printSection");
-  if (!sheet) return;
-  ["--print-row-h", "--print-card-h", "--print-chart-row-h", "--print-card-cols"].forEach((p) => {
-    sheet.style.removeProperty(p);
-  });
-  sheet.style.zoom = "";
-  sheet.style.transform = "";
-  sheet.style.transformOrigin = "";
-  sheet.style.marginBottom = "";
-  sheet.style.minHeight = "";
-  sheet.style.height = "";
-  sheet.style.maxHeight = "";
-  sheet.style.width = "";
-  sheet.style.display = "";
-  sheet.style.flexDirection = "";
-  sheet.style.boxSizing = "";
-  delete sheet.dataset.printLayout;
-  delete sheet.dataset.printScale;
-}
-
-/** اسم ملف PDF المقترح: اسم_الطالب_الفترة */
-function buildCertificateFileName() {
-  const meta = window._lastResultMeta || {};
-  let name = String(meta.name || "").trim();
-  let term = String(meta.termLabel || meta.termKey || "").trim();
-  // تنظيف أحرف غير صالحة في أسماء الملفات
-  const clean = (s) => String(s || "")
-    .replace(/[\\/:*?"<>|]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  name = clean(name) || "طالب";
-  term = clean(term) || "فترة";
-  // حد طول معقول
-  if (name.length > 60) name = name.slice(0, 60).trim();
-  if (term.length > 40) term = term.slice(0, 40).trim();
-  return name + "_" + term;
-}
-
-function setPrintDocumentTitle() {
-  if (window._printTitleBackup == null) {
-    window._printTitleBackup = document.title;
-  }
-  document.title = buildCertificateFileName();
-}
-
-function restorePrintDocumentTitle() {
-  if (window._printTitleBackup != null) {
-    document.title = window._printTitleBackup;
-    window._printTitleBackup = null;
-  }
-}
-
 window.printReport = async function () {
   if (typeof ensurePrintFontsReady === "function") {
     try { await ensurePrintFontsReady(); } catch (e) {}
   }
-  try { applyDynamicPrintLayout(); } catch (e) { console.warn("print layout:", e); }
-  try { setPrintDocumentTitle(); } catch (e) {}
-  // انتظار إطار رسم لتطبيق متغيرات CSS قبل فتح حوار الطباعة
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   window.print();
-  // إعادة الضبط بعد الطباعة حتى لا تؤثر على العرض على الشاشة
-  setTimeout(() => {
-    try { clearDynamicPrintLayout(); } catch (e) {}
-    try { restorePrintDocumentTitle(); } catch (e) {}
-  }, 500);
 };
-
-// دعم Ctrl+P / قائمة الطباعة من المتصفح
-window.addEventListener("beforeprint", () => {
-  try { applyDynamicPrintLayout(); } catch (e) {}
-  try { setPrintDocumentTitle(); } catch (e) {}
-});
-window.addEventListener("afterprint", () => {
-  try { clearDynamicPrintLayout(); } catch (e) {}
-  try { restorePrintDocumentTitle(); } catch (e) {}
-});
 
 // ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
 // النسبة المئوية → المستوى → الإجراء المقترح
@@ -4178,15 +3463,6 @@ const REPORT_ICONS = {
 };
 
 function renderFullData(nationalId, row) {
-  try {
-    window._lastResultMeta = {
-      name: String(row && row.name || "").trim(),
-      termKey: String(row && row.term_key || "").trim(),
-      termLabel: String((typeof termNames !== "undefined" && termNames[row && row.term_key]) || (row && row.term_key) || "").trim(),
-      nationalId: String(nationalId || row && row.national_id || "").trim()
-    };
-  } catch (e) {}
-
   const entries = getDisplaySubjectEntries(row);
   const isElem = isElementaryStage(row.grade);
   const { counted: _countedEarly, extra: _extraEarly } = getSubjectGroups(row);
@@ -4355,7 +3631,8 @@ function renderFullData(nationalId, row) {
           </div>
           <div class="student-photo-actions">
             <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-camera"></i> كاميرا<input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;" title="اختيار صورة من الجهاز"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-folder-open"></i> استعراض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
             <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()"><i class="fas fa-times"></i> إزالة</button>
           </div>
           <div class="student-photo-hint">الصورة للطباعة على جهازك فقط ولا تُرفع للخادم</div>
@@ -4446,6 +3723,10 @@ function renderFullData(nationalId, row) {
             <tbody>${extraRowsHtml}</tbody>
           </table>
         </div>
+        <!-- للطباعة فقط: شبكة مرنة من عمودين، ارتفاعها يتبع عدد المواد -->
+        <div class="extra-print-grid extra-density-${extraDensity}" aria-label="المواد التي لا تدخل في المجموع">
+          ${extraCardsHtml}
+        </div>
       </section>` : ""}
 
       ${chartSectionHtml}
@@ -4483,15 +3764,6 @@ function renderFullData(nationalId, row) {
 }
 
 function renderBasicDataOnly(nationalId, row) {
-  try {
-    window._lastResultMeta = {
-      name: String(row && row.name || "").trim(),
-      termKey: String(row && row.term_key || "").trim(),
-      termLabel: String((typeof termNames !== "undefined" && termNames[row && row.term_key]) || (row && row.term_key) || "").trim(),
-      nationalId: String(nationalId || row && row.national_id || "").trim()
-    };
-  } catch (e) {}
-
   // نعرض البيان المكتوب بالضبط في الخلية السادسة من ملف الإكسيل (العمود
   // الذي تحدده الإدارة لكل طالب — مثل "غير متاح" أو رسالة مخصّصة زي
   // "يرجى سداد باقي المصروفات لإظهار النتيجة")، لأن المدرسة تخاطب ولي
