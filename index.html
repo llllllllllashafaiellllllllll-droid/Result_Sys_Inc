@@ -2664,13 +2664,309 @@
     min-height: 44px !important;
   }
 
-  /* جدول المواد: تمرير أفقي مريح إن لزم */
-  .modern-report .rpt-table-wrap {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
+  /* ========== تقرير النتيجة على الموبايل ========== */
+  .modern-report.rpt-sheet {
+    margin: 0.75rem 0 1.25rem !important;
+    border-radius: 16px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* ترويسة التقرير */
+  .modern-report .rpt-header {
+    grid-template-columns: 48px 1fr 48px !important;
+    gap: 8px !important;
+    padding: 12px 10px 14px !important;
+  }
+  .modern-report .rpt-header-emblem {
+    width: 46px !important;
+    height: 46px !important;
+  }
+  .modern-report .rpt-school-name {
+    font-size: 0.95rem !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
+  }
+  .modern-report .rpt-school-motto { font-size: 0.72rem !important; }
+  .modern-report .rpt-term-title { font-size: 0.8rem !important; }
+
+  .modern-report .rpt-section-heading {
+    font-size: 0.82rem !important;
+    padding: 6px 16px !important;
+    margin: 0.55rem auto 0.55rem !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 24px) !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.35 !important;
+  }
+
+  /* صورة الطالب: في الأعلى، واضحة، أزرار سهلة اللمس */
+  .modern-report .rpt-student {
+    grid-template-columns: 1fr !important;
+    direction: rtl !important;
+    gap: 12px !important;
+    padding: 12px 12px 14px !important;
+  }
+  .modern-report .rpt-photo-col {
+    order: -1 !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+  }
+  .modern-report .rpt-photo-frame {
+    width: min(132px, 38vw) !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4 !important;
+    border-radius: 12px !important;
+  }
+  .modern-report .student-photo-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .modern-report .student-photo-actions .action-btn,
+  .modern-report .student-photo-actions .photo-src-btn {
+    display: inline-flex !important;
+    flex: 1 1 40% !important;
+    min-width: 42% !important;
+    max-width: 48% !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+    font-size: 0.78rem !important;
+    padding: 0.45rem 0.5rem !important;
+    border-radius: 12px !important;
+  }
+  .modern-report .student-photo-hint {
+    display: block !important;
+    font-size: 0.68rem !important;
+    text-align: center !important;
+    line-height: 1.35 !important;
+    padding: 0 0.5rem;
+  }
+
+  /* كروت بيانات الطالب: عمودان واضحان، نص أكبر */
+  .modern-report .rpt-cards-grid {
+    order: 2 !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .modern-report .rpt-card {
+    min-height: 58px !important;
+    padding: 10px 10px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+  }
+  .modern-report .rpt-card-icon {
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+  }
+  .modern-report .rpt-card-icon img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  .modern-report .rpt-card-label {
+    font-size: 0.68rem !important;
+    margin-bottom: 2px !important;
   }
   .modern-report .rpt-card-value {
+    font-size: 0.88rem !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
+  }
+  .modern-report .rpt-card-result {
+    font-size: 0.82rem !important;
+  }
+
+  /* المواد: كل صف كارت منفصل بدل جدول ضيق */
+  .modern-report .rpt-subjects {
+    padding: 0 12px 12px !important;
+  }
+  .modern-report .subjects-counted,
+  .modern-report .subjects-extra {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .modern-report .rpt-table-wrap {
+    overflow: visible !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .modern-report .rpt-table {
+    width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important;
+    font-size: 0.86rem !important;
+  }
+  .modern-report .rpt-table thead {
+    display: none !important; /* العناوين تُعرض داخل كل كارت */
+  }
+  .modern-report .rpt-table tbody tr {
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto auto !important;
+    grid-template-areas:
+      "num subject subject est"
+      "num score max est" !important;
+    align-items: center !important;
+    gap: 4px 6px !important;
+    background: #f7fafc !important;
+    border: 1.2px solid #d5dee8 !important;
+    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+  }
+  .modern-report .rpt-table tbody tr:nth-child(even) {
+    background: #eef5fa !important;
+  }
+  .modern-report .rpt-table tbody td {
+    border: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    text-align: right !important;
+  }
+  .modern-report .rpt-table .col-num {
+    grid-area: num !important;
+    width: auto !important;
+    text-align: center !important;
+    font-size: 0.75rem !important;
+    color: #647789 !important;
+    font-weight: 800 !important;
+  }
+  .modern-report .rpt-table .col-subject {
+    grid-area: subject !important;
+    width: auto !important;
+    text-align: right !important;
+    font-size: 0.88rem !important;
+    font-weight: 800 !important;
+    line-height: 1.3 !important;
+  }
+  .modern-report .rpt-table .col-max {
+    grid-area: max !important;
+    width: auto !important;
+    text-align: center !important;
+    direction: ltr !important;
+    font-size: 0.78rem !important;
+    color: #667789 !important;
+  }
+  .modern-report .rpt-table .col-max::before {
+    content: "من ";
+    font-weight: 700;
+    font-size: 0.68rem;
+    font-family: 'Cairo', sans-serif;
+  }
+  .modern-report .rpt-table .col-score {
+    grid-area: score !important;
+    width: auto !important;
+    text-align: right !important;
+    direction: rtl !important;
+    font-size: 0.88rem !important;
+    color: #0a496b !important;
+  }
+  .modern-report .rpt-table .col-est {
+    grid-area: est !important;
+    width: auto !important;
+    text-align: center !important;
+    align-self: center !important;
+  }
+  .modern-report .rpt-table .score-pill {
+    font-size: 0.9rem !important;
+    font-weight: 900 !important;
+  }
+  .modern-report .rpt-table .est-label {
     font-size: 0.8rem !important;
+    font-weight: 900 !important;
+  }
+  .modern-report .rpt-table .est-action {
+    font-size: 0.68rem !important;
+  }
+  .modern-report .subject-emoji {
+    font-size: 0.95em !important;
+  }
+
+  /* الملخص: كارتان تحت بعض أو جنب بعض بمساحة أوضح */
+  .modern-report .rpt-summary {
+    margin: 4px 12px 12px !important;
+    border-radius: 12px !important;
+  }
+  .modern-report .rpt-summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+  .modern-report .rpt-sum-item {
+    min-height: 72px !important;
+    padding: 14px 12px !important;
+    border-left: 0 !important;
+    border-bottom: 1px solid #d0dae6 !important;
+  }
+  .modern-report .rpt-sum-item:last-child {
+    border-bottom: 0 !important;
+  }
+  .modern-report .rpt-sum-total .rpt-sum-value,
+  .modern-report .rpt-sum-pct .rpt-sum-value {
+    font-size: 1.35rem !important;
+  }
+  .modern-report .rpt-sum-label {
+    font-size: 0.75rem !important;
+  }
+
+  /* بانر الحالة والتنويه */
+  .modern-report .rpt-outcome-banner {
+    margin: 0 12px 10px !important;
+    padding: 12px 14px !important;
+    font-size: 0.9rem !important;
+    border-radius: 12px !important;
+  }
+  .modern-report .rpt-notice {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin: 0 12px 12px !important;
+    padding: 10px 12px !important;
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* الرسم البياني */
+  .modern-report .rpt-chart.chart-container {
+    margin: 0 12px 12px !important;
+    padding: 10px 10px 12px !important;
+  }
+  .modern-report .rpt-chart-row {
+    grid-template-columns: 42px minmax(0, 1fr) minmax(90px, 38%) !important;
+    gap: 6px !important;
+    min-height: 20px !important;
+  }
+  .modern-report .rpt-chart-value,
+  .modern-report .rpt-chart-name {
+    font-size: 11px !important;
+  }
+  .modern-report .rpt-chart-track {
+    height: 12px !important;
+  }
+
+  /* التوقيع */
+  .modern-report .rpt-signature.signature-section {
+    margin: 0 12px 14px !important;
+    padding: 12px 8px !important;
+    min-height: auto !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .modern-report .rpt-signature-box {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 1px solid #d0dae6 !important;
+    border-bottom: 1px solid #d0dae6 !important;
+    padding: 10px 0 !important;
   }
 }
 
@@ -2678,6 +2974,24 @@
   .emblem-title { font-size: 0.82rem !important; }
   .hero-title { font-size: 1.2rem !important; }
   .basic-info-grid { grid-template-columns: 1fr !important; }
+
+  .modern-report .rpt-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .modern-report .rpt-card {
+    min-height: 52px !important;
+  }
+  .modern-report .rpt-table tbody tr {
+    grid-template-columns: 24px minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "num subject est"
+      "num score max" !important;
+  }
+  .modern-report .student-photo-actions .action-btn,
+  .modern-report .student-photo-actions .photo-src-btn {
+    min-width: 46% !important;
+    font-size: 0.72rem !important;
+  }
 }
 </style>
 </head>
