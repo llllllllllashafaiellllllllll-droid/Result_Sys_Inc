@@ -1606,7 +1606,7 @@
 .modern-report .rpt-chart canvas { display:block !important; visibility:visible !important; }
 
 @media print {
-  @page { size: A4 portrait; margin: 8mm 10mm; }
+  @page { size: A4 portrait; margin: 6mm 8mm; }
 
   html, body {
     margin: 0 !important;
@@ -1644,24 +1644,25 @@
   }
   #resultContainer > * { visibility: visible !important; }
 
-  /* Printable A4 content area: 297mm - 24mm margins = 273mm minimum. */
+  /* منطقة طباعة A4: بدون ارتفاع ثابت يمنع التمدد لصفحة ثانية عند الفائض */
   .modern-report.rpt-sheet#printSection {
     width: 100% !important;
     max-width: none !important;
-    min-height: 258mm !important;
-    max-height: 258mm !important;
-    height: 258mm !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
     margin: 0 !important;
-    padding: 2.5mm !important;
+    padding: 2mm !important;
     box-sizing: border-box !important;
     border: 0.7pt solid #b8c5d1 !important;
-    border-radius: 4mm !important;
+    border-radius: 3mm !important;
     box-shadow: none !important;
     background: #fff !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     page-break-after: avoid !important;
+    page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
@@ -1816,16 +1817,23 @@
   .modern-report .subjects-extra .extra-print-grid .sc-est { white-space: nowrap !important; font-size: 5.7pt !important; font-weight: 800 !important; }
 
   /* Dense grades: 15–18 subjects. */
-  .modern-report.report-density-compact .rpt-table tbody td { height: 4.05mm !important; padding: .55mm 1mm !important; font-size: 6.8pt !important; }
-  .modern-report.report-density-compact .rpt-table thead th { padding: .7mm 1mm !important; font-size: 6.5pt !important; }
-  .modern-report.report-density-compact .rpt-student { padding-bottom: 1.5mm !important; }
-  .modern-report.report-density-dense .rpt-table tbody td { height: 3.75mm !important; padding: .45mm .9mm !important; font-size: 6.4pt !important; }
-  .modern-report.report-density-dense .rpt-table thead th { padding: .6mm .9mm !important; font-size: 6.1pt !important; }
-  .modern-report.report-density-dense .rpt-summary-grid { height: 16.5mm !important; }
-  .modern-report.report-density-dense .rpt-sum-item { height: 16.5mm !important; min-height: 16.5mm !important; }
-  .modern-report.report-density-dense .subjects-extra .extra-print-grid { gap: .55mm !important; grid-auto-rows: minmax(3.9mm, auto) !important; }
+  .modern-report.report-density-compact .rpt-table tbody td { height: 3.9mm !important; padding: .45mm 1mm !important; font-size: 6.6pt !important; }
+  .modern-report.report-density-compact .rpt-table thead th { padding: .6mm 1mm !important; font-size: 6.3pt !important; }
+  .modern-report.report-density-compact .rpt-student { padding-bottom: 1.2mm !important; }
+  .modern-report.report-density-compact .rpt-chart.chart-container { margin-bottom: 1mm !important; padding: 0.8mm 1.5mm !important; }
+  .modern-report.report-density-compact .rpt-html-chart { gap: 0.7mm !important; }
+  .modern-report.report-density-compact .rpt-chart-row { min-height: 2.8mm !important; }
+  .modern-report.report-density-dense .rpt-table tbody td { height: 3.5mm !important; padding: .35mm .8mm !important; font-size: 6.1pt !important; }
+  .modern-report.report-density-dense .rpt-table thead th { padding: .5mm .8mm !important; font-size: 5.9pt !important; }
+  .modern-report.report-density-dense .rpt-summary-grid { height: 15mm !important; }
+  .modern-report.report-density-dense .rpt-sum-item { height: 15mm !important; min-height: 15mm !important; }
+  .modern-report.report-density-dense .subjects-extra .extra-print-grid { gap: .45mm !important; grid-auto-rows: minmax(3.6mm, auto) !important; }
   .modern-report.report-density-dense .subjects-extra .extra-print-grid .subject-card,
-  .modern-report.report-density-dense .subjects-extra .extra-print-grid .subject-card-span { min-height: 3.9mm !important; padding: .3mm .8mm !important; }
+  .modern-report.report-density-dense .subjects-extra .extra-print-grid .subject-card-span { min-height: 3.6mm !important; padding: .25mm .7mm !important; }
+  /* عند كثرة المواد: إخفاء الرسم البياني في الطباعة للحفاظ على صفحة واحدة */
+  .modern-report.report-density-dense .rpt-chart.chart-container { display: none !important; }
+  .modern-report.report-density-compact .rpt-chart .rpt-chart-name { font-size: 5.2pt !important; }
+  .modern-report.report-density-compact .rpt-chart .rpt-chart-value { font-size: 5.2pt !important; }
 
   /* Outcome + note */
   .modern-report .rpt-outcome-banner {
@@ -2228,7 +2236,7 @@
    table header groups inside flex items during PDF pagination. The report
    therefore uses ordinary block flow in print. */
 @media print {
-  @page { size: A4 portrait; margin: 8mm 10mm; }
+  @page { size: A4 portrait; margin: 6mm 8mm; }
 
   html, body {
     margin:0 !important;
@@ -3521,35 +3529,60 @@ function applySettingsToUI() {
   }
 }
 
+/** تنظيف أخطاء الفاصلة العائمة مثل 77.600000000001 → 77.6 */
+function formatNiceNumber(n, maxDecimals) {
+  const d = (typeof maxDecimals === "number") ? maxDecimals : 2;
+  if (typeof n !== "number" || !isFinite(n)) return "—";
+  const factor = Math.pow(10, d);
+  let rounded = Math.round((n + Number.EPSILON) * factor) / factor;
+  if (Object.is(rounded, -0)) rounded = 0;
+  // إزالة أصفار زائدة: 77.60 → 77.6 ، 80.00 → 80
+  return String(parseFloat(rounded.toFixed(d)));
+}
+
 function parseCellValue(v) {
   if (v === undefined || v === null || v === "") return { display: "—", raw: "", type: "empty" };
-  if (typeof v === "number" && isFinite(v)) return { display: String(v), raw: v, type: "number" };
+  if (typeof v === "number" && isFinite(v)) {
+    return { display: formatNiceNumber(v), raw: v, type: "number" };
+  }
   let str = String(v).trim();
   // صيغة "565/600" أو "565 / 600"
   const ratio = str.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
   if (ratio) {
     const raw = parseFloat(ratio[1]);
     const max = parseFloat(ratio[2]);
-    if (isFinite(raw) && isFinite(max) && max > 0) return { display: str, raw, type: "number", max };
+    if (isFinite(raw) && isFinite(max) && max > 0) {
+      return {
+        display: formatNiceNumber(raw) + "/" + formatNiceNumber(max),
+        raw,
+        type: "number",
+        max,
+      };
+    }
   }
   let num = parseFloat(str);
-  if (!isNaN(num) && isFinite(num) && /^-?\d+(\.\d+)?$/.test(str)) return { display: str, raw: num, type: "number" };
+  if (!isNaN(num) && isFinite(num) && /^-?\d+(\.\d+)?$/.test(str)) {
+    return { display: formatNiceNumber(num), raw: num, type: "number" };
+  }
   return { display: str, raw: str, type: "text" };
 }
 
 /** تطبيع قيمة مادة قادمة من السحابة أو الإكسيل إلى شكل موحّد */
 function normalizeSubjectVal(val) {
   if (val == null || val === "") return { display: "—", raw: "", type: "empty" };
-  if (typeof val === "number" && isFinite(val)) return { display: String(val), raw: val, type: "number" };
+  if (typeof val === "number" && isFinite(val)) {
+    return { display: formatNiceNumber(val), raw: val, type: "number" };
+  }
   if (typeof val === "string") return parseCellValue(val);
   if (typeof val === "object") {
     if (val.type === "number" && typeof val.raw === "number" && isFinite(val.raw)) {
       const max = (typeof val.max === "number" && val.max > 0) ? val.max : undefined;
-      return max ? { ...val, max } : { ...val };
+      const display = formatNiceNumber(val.raw);
+      return max ? { ...val, display, max } : { ...val, display };
     }
     if (typeof val.raw === "number" && isFinite(val.raw)) {
       return {
-        display: val.display != null ? String(val.display) : String(val.raw),
+        display: formatNiceNumber(val.raw),
         raw: val.raw,
         type: "number",
         max: (typeof val.max === "number" && val.max > 0) ? val.max : undefined,
@@ -3701,7 +3734,35 @@ window.printReport = async function () {
   if (typeof ensurePrintFontsReady === "function") {
     try { await ensurePrintFontsReady(); } catch (e) {}
   }
+  const el = document.getElementById("printSection");
+  const cleanup = () => {
+    if (!el) return;
+    el.style.transform = "";
+    el.style.transformOrigin = "";
+    el.style.width = "";
+    el.style.marginBottom = "";
+  };
+  // تصغير التقرير ليتناسب مع ارتفاع صفحة A4 واحدة عند الحاجة
+  if (el) {
+    try {
+      const printableHeightPx = Math.floor((297 - 12) * (96 / 25.4)); // ~1077px
+      const h = el.scrollHeight || el.offsetHeight || 0;
+      if (h > printableHeightPx + 8) {
+        const scale = Math.max(0.70, Math.min(1, printableHeightPx / h));
+        el.style.transformOrigin = "top center";
+        el.style.transform = "scale(" + scale + ")";
+        el.style.width = (100 / scale) + "%";
+        el.style.marginBottom = ((scale - 1) * h) + "px";
+      }
+    } catch (e) { /* تجاهل */ }
+  }
+  const after = () => {
+    cleanup();
+    window.removeEventListener("afterprint", after);
+  };
+  window.addEventListener("afterprint", after);
   window.print();
+  setTimeout(cleanup, 2500);
 };
 
 // ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
@@ -4092,7 +4153,8 @@ function renderFullData(nationalId, row) {
   // يتحدد تلقائيًا بحسب عدد المواد بدل تثبيت ارتفاع واحد لكل الصفوف.
   const extraCount = extraEntries.length;
   const totalSubjectCount = countedEntries.length + extraEntries.length;
-  const reportDensity = totalSubjectCount >= 17 ? "report-density-dense" : (totalSubjectCount >= 15 ? "report-density-compact" : "report-density-normal");
+  // عتبات أقل لضمان صفحة طباعة واحدة عند كثرة المواد
+  const reportDensity = totalSubjectCount >= 14 ? "report-density-dense" : (totalSubjectCount >= 11 ? "report-density-compact" : "report-density-normal");
   const extraDensity = extraCount <= 6 ? "comfortable" : (extraCount <= 12 ? "compact" : "dense");
   // للتوافق مع أي مرجع قديم
   const subjectRowsHtml = countedRowsHtml + extraRowsHtml;
@@ -4116,8 +4178,8 @@ function renderFullData(nationalId, row) {
       const band = getGradeBand(pct);
       const barColor = (band && band.color) ? band.color : "#0a496b";
       return `<div class="rpt-chart-row">
-        <div class="rpt-chart-value" dir="ltr">${pct.toFixed(1).replace(/\.0$/, "")}%</div>
-        <div class="rpt-chart-track"><div class="rpt-chart-bar" style="width:${pct}%;background:${barColor};"></div></div>
+        <div class="rpt-chart-value" dir="ltr">${formatNiceNumber(pct, 1)}%</div>
+        <div class="rpt-chart-track"><div class="rpt-chart-bar" style="width:${Math.min(100, Math.max(0, Number(pct.toFixed(2))))}%;background:${barColor};"></div></div>
         <div class="rpt-chart-name">${esc(cleanSubjectLabel(sub))}</div>
       </div>`;
     }).join("");
@@ -4219,13 +4281,13 @@ function renderFullData(nationalId, row) {
           <div class="rpt-sum-item rpt-sum-total">
             <div class="rpt-sum-body">
               <span class="rpt-sum-label">المجموع الكلي</span>
-              <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${Number(totalRaw.toFixed(2))} / ${totalMax}` : "—"}</span>
+              <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${formatNiceNumber(totalRaw)} / ${formatNiceNumber(totalMax)}` : "—"}</span>
             </div>
             <div class="rpt-sum-icon"><i class="fas fa-clipboard-list"></i></div>
           </div>
           <div class="rpt-sum-item rpt-sum-pct">
             <span class="rpt-sum-label">النسبة المئوية</span>
-            <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? pctOverall.toFixed(2) + "%" : "—"}</span>
+            <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? formatNiceNumber(pctOverall) + "%" : "—"}</span>
             <span class="rpt-sum-band">${overallBand ? esc(overallBand.label) : ""}</span>
           </div>
         </div>
