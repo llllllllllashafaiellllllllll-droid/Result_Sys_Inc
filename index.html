@@ -2242,6 +2242,8 @@
     margin:0 !important;
     padding:0 !important;
     background:#fff !important;
+    width:100% !important;
+    height:auto !important;
   }
 
   #resultContainer {
@@ -2262,15 +2264,22 @@
     height:auto !important;
     min-height:0 !important;
     max-height:none !important;
-    margin:0 !important;
-    padding:2.5mm !important;
+    margin:0 auto !important;
+    padding:2mm !important;
     box-sizing:border-box !important;
     overflow:visible !important;
     border:.7pt solid #b8c5d1 !important;
-    border-radius:4mm !important;
+    border-radius:3mm !important;
     box-shadow:none !important;
     page-break-after:avoid !important;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
     break-after:avoid-page !important;
+  }
+
+  /* عند التحجيم عبر JS: اترك transform يعمل دون قص */
+  .modern-report.rpt-sheet#printSection[data-print-scaled="1"] {
+    transform-origin: top center !important;
   }
 
   /* Every major section is ordinary block flow. */
@@ -3735,34 +3744,63 @@ window.printReport = async function () {
     try { await ensurePrintFontsReady(); } catch (e) {}
   }
   const el = document.getElementById("printSection");
-  const cleanup = () => {
-    if (!el) return;
+  if (!el) {
+    window.print();
+    return;
+  }
+
+  const clearScale = () => {
     el.style.transform = "";
     el.style.transformOrigin = "";
     el.style.width = "";
+    el.style.height = "";
+    el.style.maxWidth = "";
+    el.style.margin = "";
     el.style.marginBottom = "";
+    el.style.marginLeft = "";
+    el.style.marginRight = "";
+    el.removeAttribute("data-print-scaled");
   };
-  // تصغير التقرير ليتناسب مع ارتفاع صفحة A4 واحدة عند الحاجة
-  if (el) {
-    try {
-      const printableHeightPx = Math.floor((297 - 12) * (96 / 25.4)); // ~1077px
-      const h = el.scrollHeight || el.offsetHeight || 0;
-      if (h > printableHeightPx + 8) {
-        const scale = Math.max(0.70, Math.min(1, printableHeightPx / h));
-        el.style.transformOrigin = "top center";
-        el.style.transform = "scale(" + scale + ")";
-        el.style.width = (100 / scale) + "%";
-        el.style.marginBottom = ((scale - 1) * h) + "px";
-      }
-    } catch (e) { /* تجاهل */ }
+
+  clearScale();
+  // انتظر إعادة الرسم لقياس الحجم الطبيعي بدقة
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  try {
+    // منطقة الطباعة الفعلية = A4 ناقص هوامش @page (6mm رأسي، 8mm أفقي)
+    const mm = 96 / 25.4;
+    const targetW = (210 - 16) * mm; // ≈ 194mm
+    const targetH = (297 - 12) * mm; // ≈ 285mm
+
+    const w = Math.max(el.scrollWidth, el.offsetWidth, 1);
+    const h = Math.max(el.scrollHeight, el.offsetHeight, 1);
+
+    // تحجيم مستقل للعرض والارتفاع لملء صفحة A4 بالكامل
+    let sx = targetW / w;
+    let sy = targetH / h;
+    sx = Math.min(1.5, Math.max(0.6, sx));
+    sy = Math.min(1.5, Math.max(0.6, sy));
+
+    el.setAttribute("data-print-scaled", "1");
+    el.style.transformOrigin = "top center";
+    el.style.transform = "scale(" + sx + ", " + sy + ")";
+    el.style.width = w + "px";
+    el.style.maxWidth = "none";
+    el.style.marginLeft = "auto";
+    el.style.marginRight = "auto";
+    // تعويض المساحة بعد scale حتى لا تُنشأ صفحة فارغة / قص
+    el.style.marginBottom = ((sy - 1) * h) + "px";
+  } catch (e) {
+    console.warn("print scale failed:", e);
   }
+
   const after = () => {
-    cleanup();
+    clearScale();
     window.removeEventListener("afterprint", after);
   };
   window.addEventListener("afterprint", after);
   window.print();
-  setTimeout(cleanup, 2500);
+  setTimeout(after, 3000);
 };
 
 // ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
