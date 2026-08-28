@@ -3035,39 +3035,31 @@
 </style>
 <style id="print-a4-final-lock">
 /* ================================================================
-   PRINT LOCK — صفحة A4 واحدة، بدون أزرار شاشة، تخطيط ثابت للصورة والكروت
-   أولوية أعلى من قواعد الموبايل وأي @media print سابقة
+   PDF / PRINT — تخطيط A4 كامل من الصفر
+   هدف: 7 إلى 17 مادة دائمًا على صفحة واحدة فقط
+   الكثافة: normal (≤10) | compact (11–13) | dense (14–17)
    ================================================================ */
 @media print {
-  @page { size: A4 portrait; margin: 5mm 7mm; }
+  @page { size: A4 portrait; margin: 4mm 6mm; }
 
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     background: #fff !important;
+    color: #162536 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    font-family: 'Cairo', 'Tahoma', Arial, sans-serif !important;
   }
 
-  /* إخفاء قاطع لكل عناصر الشاشة — حتى لو فرض الموبايل display:flex */
-  .student-photo-actions,
-  .student-photo-actions *,
-  .photo-src-btn,
-  label.photo-src-btn,
-  .student-photo-hint,
-  .action-buttons,
-  .action-buttons *,
-  #studentPhotoInput,
-  .student-photo-file,
-  .toast-container,
-  .theme-toggle-fixed,
-  .modal-overlay,
+  /* شاشة فقط — لا تظهر في PDF */
+  .student-photo-actions, .student-photo-actions *,
+  .photo-src-btn, label.photo-src-btn,
+  .student-photo-hint, .action-buttons, .action-buttons *,
+  #studentPhotoInput, .student-photo-file,
+  .toast-container, .theme-toggle-fixed, .modal-overlay,
   .page-wrapper > *:not(#resultContainer),
-  .school-emblem-header,
-  .topbar,
-  .hero,
-  .search-card,
-  .search-section {
+  .school-emblem-header, .topbar, .hero, .search-card, .search-section {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
@@ -3078,11 +3070,10 @@
     border: 0 !important;
   }
 
-  html.print-fit-a4,
-  body.print-fit-a4 {
+  html.print-fit-a4, body.print-fit-a4 {
     width: 100% !important;
-    height: 287mm !important;
-    max-height: 287mm !important;
+    height: 289mm !important;
+    max-height: 289mm !important;
     overflow: hidden !important;
   }
 
@@ -3091,10 +3082,10 @@
     display: block !important;
     visibility: visible !important;
     position: relative !important;
-    width: 196mm !important;
-    max-width: 196mm !important;
-    height: 287mm !important;
-    max-height: 287mm !important;
+    width: 198mm !important;
+    max-width: 198mm !important;
+    height: 289mm !important;
+    max-height: 289mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
     overflow: hidden !important;
@@ -3103,39 +3094,89 @@
     break-inside: avoid !important;
   }
 
-  .modern-report.rpt-sheet#printSection,
-  .modern-report.rpt-sheet#printSection[data-print-scaled="1"] {
-    display: block !important;
+  .modern-report.rpt-sheet#printSection {
+    display: flex !important;
+    flex-direction: column !important;
     visibility: visible !important;
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
+    width: 198mm !important;
+    max-width: 198mm !important;
+    height: auto !important;
+    min-height: 0 !important;
     margin: 0 !important;
-    padding: 2mm !important;
+    padding: 2.2mm !important;
     box-sizing: border-box !important;
     background: #fff !important;
-    border: 0.6pt solid #b8c5d1 !important;
-    border-radius: 2.5mm !important;
+    border: 0.55pt solid #b8c5d1 !important;
+    border-radius: 2mm !important;
     box-shadow: none !important;
-    max-width: none !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     transform-origin: top left !important;
+    gap: 0 !important;
   }
 
-  /* صورة + كروت: تخطيط سطح المكتب الثابت في الطباعة (يتجاوز قواعد الموبايل) */
-  .modern-report .rpt-student {
+  /* ——— الترويسة ——— */
+  .modern-report .rpt-header {
+    flex: 0 0 auto !important;
     display: grid !important;
-    grid-template-columns: 28mm 1fr !important;
+    grid-template-columns: 14mm 1fr 14mm !important;
+    align-items: center !important;
+    gap: 2mm !important;
+    padding: 1mm 1.5mm 1.5mm !important;
+    margin: 0 0 1.5mm !important;
+    background: #fff !important;
+    border-bottom: 1pt solid #c9973f !important;
+  }
+  .modern-report .rpt-header::after { display: none !important; }
+  .modern-report .rpt-header-emblem {
+    width: 13mm !important; height: 13mm !important;
+    border: 0 !important; background: transparent !important;
+  }
+  .modern-report .rpt-header-emblem img { object-fit: contain !important; }
+  .modern-report .rpt-school-name {
+    font-size: 11pt !important; font-weight: 900 !important;
+    color: #0a496b !important; line-height: 1.15 !important;
+    white-space: nowrap !important;
+  }
+  .modern-report .rpt-school-motto {
+    font-size: 7.5pt !important; font-weight: 800 !important;
+    color: #bd8d2c !important; margin-top: 0.3mm !important;
+  }
+  .modern-report .rpt-term-title {
+    font-size: 8.5pt !important; font-weight: 900 !important;
+    color: #173e5b !important; margin-top: 0.4mm !important;
+  }
+
+  .modern-report .rpt-section-heading {
+    flex: 0 0 auto !important;
+    width: fit-content !important;
+    margin: 0 auto 1.2mm !important;
+    padding: 0.7mm 4mm !important;
+    border-radius: 4mm !important;
+    background: #0a496b !important;
+    color: #fff !important;
+    font-size: 8pt !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+  }
+
+  /* ——— صورة + 6 كروت ——— */
+  .modern-report .rpt-student {
+    flex: 0 0 auto !important;
+    display: grid !important;
+    grid-template-columns: 26mm 1fr !important;
     direction: ltr !important;
-    gap: 2.5mm !important;
-    padding: 1.5mm 0 2mm !important;
-    align-items: start !important;
+    gap: 2mm !important;
+    padding: 0 0 1.5mm !important;
+    align-items: stretch !important;
   }
   .modern-report .rpt-photo-col {
     order: 1 !important;
-    width: 28mm !important;
+    width: 26mm !important;
     margin: 0 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -3143,38 +3184,57 @@
     gap: 0 !important;
   }
   .modern-report .rpt-photo-frame {
-    width: 26mm !important;
-    height: 34mm !important;
+    width: 24mm !important;
+    height: 32mm !important;
     aspect-ratio: auto !important;
-    border: 1pt solid #0a496b !important;
-    border-radius: 1.5mm !important;
+    border: 0.9pt solid #0a496b !important;
+    border-radius: 1.2mm !important;
   }
   .modern-report .rpt-cards-grid {
     order: 2 !important;
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 1.2mm !important;
-    width: 100% !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+    gap: 1mm !important;
     direction: rtl !important;
   }
   .modern-report .rpt-card {
     min-height: 0 !important;
-    padding: 1.2mm 1.5mm !important;
+    padding: 0.9mm 1.3mm !important;
+    border: 0.5pt solid #c8d2dc !important;
+    border-radius: 1.2mm !important;
+    background: #f8fafc !important;
   }
+  .modern-report .rpt-card-icon {
+    width: 5mm !important; height: 5mm !important;
+    flex: 0 0 5mm !important;
+  }
+  .modern-report .rpt-card-icon img { width: 4.2mm !important; height: 4.2mm !important; }
+  .modern-report .rpt-card-label { font-size: 6pt !important; margin-bottom: 0.2mm !important; }
+  .modern-report .rpt-card-value { font-size: 7.5pt !important; line-height: 1.2 !important; }
+  .modern-report .rpt-card-result { font-size: 7pt !important; }
 
-  /* المواد في الطباعة: جدول صفوف (ليس كروت الموبايل) */
+  /* ——— جداول المواد (ليست كروت الموبايل) ——— */
+  .modern-report .rpt-subjects {
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    margin: 0 0 1.2mm !important;
+  }
+  .modern-report .rpt-table-wrap {
+    overflow: visible !important;
+    border: 0.55pt solid #b8c7d4 !important;
+    border-radius: 1.2mm !important;
+  }
   .modern-report .rpt-table {
     display: table !important;
     width: 100% !important;
+    table-layout: fixed !important;
     border-collapse: collapse !important;
     border-spacing: 0 !important;
+    font-size: 7.2pt !important;
   }
-  .modern-report .rpt-table thead {
-    display: table-header-group !important;
-  }
-  .modern-report .rpt-table tbody {
-    display: table-row-group !important;
-  }
+  .modern-report .rpt-table thead { display: table-header-group !important; }
+  .modern-report .rpt-table tbody { display: table-row-group !important; }
   .modern-report .rpt-table tr {
     display: table-row !important;
     background: transparent !important;
@@ -3186,34 +3246,222 @@
     grid-template-columns: none !important;
     grid-template-areas: none !important;
   }
-  .modern-report .rpt-table th,
-  .modern-report .rpt-table td {
+  .modern-report .rpt-table th {
     display: table-cell !important;
-    border-bottom: 0.4pt solid #e0e6ec !important;
-    padding: 0.7mm 1.2mm !important;
-    height: auto !important;
-  }
-  .modern-report .rpt-table .col-num,
-  .modern-report .rpt-table .col-max,
-  .modern-report .rpt-table .col-score,
-  .modern-report .rpt-table .col-est {
+    background: #0a496b !important;
+    color: #fff !important;
+    font-size: 6.5pt !important;
+    font-weight: 900 !important;
+    padding: 0.65mm 1mm !important;
+    border: 0 !important;
     text-align: center !important;
   }
-  .modern-report .rpt-table .col-subject {
-    text-align: right !important;
+  .modern-report .rpt-table td {
+    display: table-cell !important;
+    border-bottom: 0.35pt solid #e0e6ec !important;
+    padding: 0.55mm 1mm !important;
+    height: 3.8mm !important;
+    font-size: 7pt !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
   }
+  .modern-report .rpt-table tbody tr:nth-child(even) { background: #f7fafc !important; }
+  .modern-report .rpt-table .col-num { width: 6% !important; text-align: center !important; }
+  .modern-report .rpt-table .col-subject { width: 42% !important; text-align: right !important; }
+  .modern-report .rpt-table .col-max { width: 16% !important; text-align: center !important; }
+  .modern-report .rpt-table .col-score { width: 17% !important; text-align: center !important; }
+  .modern-report .rpt-table .col-est { width: 19% !important; text-align: center !important; }
   .modern-report .rpt-table .col-max::before,
-  .modern-report .rpt-table .col-score::before {
-    content: none !important;
-  }
-  .modern-report .rpt-table-wrap {
-    overflow: visible !important;
-    border: 0.6pt solid #b8c7d4 !important;
+  .modern-report .rpt-table .col-score::before { content: none !important; }
+  .modern-report .score-pill, .modern-report .est-label { font-size: 7pt !important; }
+  .modern-report .est-action { font-size: 5.5pt !important; }
+
+  /* ——— الملخص ——— */
+  .modern-report .rpt-summary {
+    flex: 0 0 auto !important;
+    margin: 0 0 1.2mm !important;
+    padding: 0 !important;
+    border: 0.55pt solid #c8d2dc !important;
     border-radius: 1.5mm !important;
+    overflow: hidden !important;
+  }
+  .modern-report .rpt-summary-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 !important;
+    height: auto !important;
+  }
+  .modern-report .rpt-sum-item {
+    min-height: 12mm !important;
+    height: auto !important;
+    padding: 1.5mm 2mm !important;
+    border: 0 !important;
+    border-left: 0.5pt solid #d0dae6 !important;
+  }
+  .modern-report .rpt-sum-item:last-child { border-left: 0 !important; }
+  .modern-report .rpt-sum-label { font-size: 6.2pt !important; }
+  .modern-report .rpt-sum-value { font-size: 11pt !important; }
+  .modern-report .rpt-sum-band { font-size: 7pt !important; }
+  .modern-report .rpt-status { display: none !important; }
+
+  /* ——— مواد إضافية: شبكة عمودين ——— */
+  .modern-report .subjects-extra .extra-table-screen { display: none !important; }
+  .modern-report .subjects-extra .extra-print-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.7mm !important;
+    direction: rtl !important;
+  }
+  .modern-report .subjects-extra .extra-print-grid .subject-card,
+  .modern-report .subjects-extra .extra-print-grid .subject-card-span {
+    display: grid !important;
+    grid-template-columns: 4mm minmax(0,1fr) auto auto !important;
+    align-items: center !important;
+    gap: 0.4mm 0.8mm !important;
+    min-height: 3.6mm !important;
+    padding: 0.4mm 0.9mm !important;
+    border: 0.45pt solid #d2dbe4 !important;
+    border-radius: 1mm !important;
+    background: #f8fafc !important;
+    font-size: 6pt !important;
   }
 
-  .modern-report .extra-print-grid { display: grid !important; }
-  .modern-report .subjects-extra .extra-table-screen { display: none !important; }
+  /* ——— الرسم: يُخفى عند compact/dense لتوفير مساحة ——— */
+  .modern-report.report-density-compact .rpt-chart,
+  .modern-report.report-density-dense .rpt-chart {
+    display: none !important;
+  }
+  .modern-report.report-density-normal .rpt-chart.chart-container {
+    flex: 0 0 auto !important;
+    margin: 0 0 1.2mm !important;
+    padding: 1mm 1.5mm !important;
+    border: 0.55pt solid #b8c7d4 !important;
+    border-radius: 1.2mm !important;
+  }
+  .modern-report .rpt-html-chart { gap: 0.6mm !important; }
+  .modern-report .rpt-chart-row {
+    grid-template-columns: 11mm minmax(0,1fr) 32mm !important;
+    gap: 1mm !important;
+    min-height: 2.6mm !important;
+  }
+  .modern-report .rpt-chart-value,
+  .modern-report .rpt-chart-name { font-size: 5.5pt !important; }
+  .modern-report .rpt-chart-track { height: 2.2mm !important; }
+
+  /* ——— الحالة + تنويه + توقيع ——— */
+  .modern-report .rpt-outcome-banner {
+    flex: 0 0 auto !important;
+    margin: 0 0 1mm !important;
+    padding: 1.2mm 2mm !important;
+    font-size: 7.5pt !important;
+    border-radius: 1.2mm !important;
+  }
+  .modern-report .rpt-notice {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 1.2mm !important;
+    padding: 0.9mm 1.5mm !important;
+    font-size: 6pt !important;
+    border-radius: 1mm !important;
+  }
+  .modern-report .rpt-heading-sign {
+    flex: 0 0 auto !important;
+    margin: 0 auto 1mm !important;
+  }
+  .modern-report .rpt-signature.signature-section {
+    flex: 0 0 auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    align-items: center !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 1.2mm 1.5mm !important;
+    min-height: 11mm !important;
+    height: auto !important;
+    border: 0.55pt solid #b8c7d4 !important;
+    border-radius: 1.2mm !important;
+    direction: ltr !important;
+  }
+  .modern-report .rpt-stamp-circle,
+  .modern-report .rpt-date-icon { display: none !important; }
+  .modern-report .rpt-stamp-title,
+  .modern-report .rpt-signature-label { font-size: 6.5pt !important; }
+  .modern-report .rpt-print-date { font-size: 5.5pt !important; }
+
+  /* ——— كثافة حسب عدد المواد (7–17) ——— */
+  .modern-report.report-density-compact .rpt-table td {
+    height: 3.4mm !important;
+    padding: 0.4mm 0.8mm !important;
+    font-size: 6.5pt !important;
+  }
+  .modern-report.report-density-compact .rpt-table th {
+    padding: 0.5mm 0.8mm !important;
+    font-size: 6pt !important;
+  }
+  .modern-report.report-density-compact .rpt-photo-frame {
+    width: 22mm !important; height: 29mm !important;
+  }
+  .modern-report.report-density-compact .rpt-student {
+    grid-template-columns: 24mm 1fr !important;
+  }
+  .modern-report.report-density-compact .rpt-sum-item {
+    min-height: 10mm !important;
+    padding: 1mm 1.5mm !important;
+  }
+  .modern-report.report-density-compact .rpt-sum-value { font-size: 10pt !important; }
+
+  .modern-report.report-density-dense .rpt-table td {
+    height: 3.05mm !important;
+    padding: 0.3mm 0.7mm !important;
+    font-size: 6pt !important;
+  }
+  .modern-report.report-density-dense .rpt-table th {
+    padding: 0.4mm 0.7mm !important;
+    font-size: 5.7pt !important;
+  }
+  .modern-report.report-density-dense .rpt-header {
+    padding: 0.6mm 1mm 1mm !important;
+    margin-bottom: 1mm !important;
+  }
+  .modern-report.report-density-dense .rpt-school-name { font-size: 9.5pt !important; }
+  .modern-report.report-density-dense .rpt-photo-frame {
+    width: 20mm !important; height: 26mm !important;
+  }
+  .modern-report.report-density-dense .rpt-student {
+    grid-template-columns: 22mm 1fr !important;
+    padding-bottom: 1mm !important;
+  }
+  .modern-report.report-density-dense .rpt-card {
+    padding: 0.6mm 1mm !important;
+  }
+  .modern-report.report-density-dense .rpt-card-value { font-size: 6.8pt !important; }
+  .modern-report.report-density-dense .rpt-sum-item {
+    min-height: 9mm !important;
+    padding: 0.8mm 1.2mm !important;
+  }
+  .modern-report.report-density-dense .rpt-sum-value { font-size: 9.5pt !important; }
+  .modern-report.report-density-dense .subjects-extra .extra-print-grid {
+    gap: 0.5mm !important;
+  }
+  .modern-report.report-density-dense .subjects-extra .extra-print-grid .subject-card,
+  .modern-report.report-density-dense .subjects-extra .extra-print-grid .subject-card-span {
+    min-height: 3.2mm !important;
+    padding: 0.25mm 0.7mm !important;
+    font-size: 5.5pt !important;
+  }
+  .modern-report.report-density-dense .rpt-signature.signature-section {
+    min-height: 9mm !important;
+    padding: 0.8mm 1mm !important;
+  }
+  .modern-report.report-density-dense .rpt-outcome-banner {
+    padding: 0.9mm 1.5mm !important;
+    font-size: 7pt !important;
+  }
+  .modern-report.report-density-dense .rpt-notice {
+    font-size: 5.5pt !important;
+    padding: 0.6mm 1.2mm !important;
+  }
 }
 </style>
 </head>
@@ -4001,19 +4249,23 @@ window.printReport = async function () {
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   try {
-    // منطقة الطباعة ≈ A4 − هوامش 5mm/7mm
+    // A4 − هوامش 4mm/6mm = منطقة طباعة واحدة
     const mm = 96 / 25.4;
-    const targetW = (210 - 14) * mm;
-    const targetH = (297 - 10) * mm;
+    const targetW = (210 - 12) * mm;
+    const targetH = (297 - 8) * mm;
+
+    // temporarily force print-like width for accurate measure
+    el.style.width = targetW + "px";
+    el.style.maxWidth = targetW + "px";
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     const w = Math.max(el.scrollWidth, el.offsetWidth, 1);
     const h = Math.max(el.scrollHeight, el.offsetHeight, 1);
 
-    // ملء العرض والارتفاع معًا داخل صفحة واحدة (القص في الحاوية يمنع صفحة ثانية)
-    let sx = targetW / w;
-    let sy = targetH / h;
-    sx = Math.min(1.55, Math.max(0.55, sx));
-    sy = Math.min(1.55, Math.max(0.55, sy));
+    // مقياس موحّد: يدخل كامل التقرير في صفحة واحدة (7–17 مادة)
+    // إن كان قصيرًا يكبر ليملأ الصفحة؛ إن كان طويلًا يُصغَّر — بدون صفحة ثانية
+    let scale = Math.min(targetW / w, targetH / h);
+    scale = Math.min(1.4, Math.max(0.52, scale));
 
     document.documentElement.classList.add("print-fit-a4");
     document.body.classList.add("print-fit-a4");
@@ -4033,7 +4285,7 @@ window.printReport = async function () {
     el.style.left = "0";
     el.style.top = "0";
     el.style.transformOrigin = "top left";
-    el.style.transform = "scale(" + sx + ", " + sy + ")";
+    el.style.transform = "scale(" + scale + ")";
     el.style.width = w + "px";
     el.style.maxWidth = "none";
     el.style.margin = "0";
@@ -4438,9 +4690,9 @@ function renderFullData(nationalId, row) {
   // يتحدد تلقائيًا بحسب عدد المواد بدل تثبيت ارتفاع واحد لكل الصفوف.
   const extraCount = extraEntries.length;
   const totalSubjectCount = countedEntries.length + extraEntries.length;
-  // عتبات أقل لضمان صفحة طباعة واحدة عند كثرة المواد
+  // كثافة الطباعة حسب عدد المواد (7–17): normal ≤10 | compact 11–13 | dense ≥14
   const reportDensity = totalSubjectCount >= 14 ? "report-density-dense" : (totalSubjectCount >= 11 ? "report-density-compact" : "report-density-normal");
-  const extraDensity = extraCount <= 6 ? "comfortable" : (extraCount <= 12 ? "compact" : "dense");
+  const extraDensity = extraCount <= 6 ? "comfortable" : (extraCount <= 10 ? "compact" : "dense");
   // للتوافق مع أي مرجع قديم
   const subjectRowsHtml = countedRowsHtml + extraRowsHtml;
   const subjectCardsHtml = countedCardsHtml;
