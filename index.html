@@ -4277,6 +4277,14 @@ html body .result-card.rpt-en .not-available-apology { unicode-bidi: plaintext; 
   }
 }
 </style>
+<style id="printFitSafety">
+/* هامش أمان: تصغير بسيط (4%) لمحتوى التقرير في الطباعة حتى لا يُقص الجزء السفلي
+   عند زيادة سطر واحد (اسم طويل، حالة نجاح طويلة...) */
+@media print {
+  html body #resultContainer[data-print-fit="1"] #printSection { zoom: 0.96 !important; }
+  html body #printSection .rpt-name-value { line-height: 1.15 !important; }
+}
+</style>
 </head>
 <body>
 <div class="page-wrapper">
@@ -5794,7 +5802,7 @@ function renderFullData(nationalId, row) {
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.user}" alt=""></div>
             <div class="rpt-card-body">
               <span class="rpt-card-label">${L.studentName}</span>
-              <span class="rpt-card-value">${esc(studentNameFor(row, EN))}</span>
+              <span class="rpt-card-value rpt-name-value" style="${(function(){ const n = studentNameFor(row, EN).length; return n > 40 ? 'font-size:.74em;' : (n > 32 ? 'font-size:.84em;' : ''); })()}">${esc(studentNameFor(row, EN))}</span>
             </div>
           </div>
           <div class="rpt-card">
