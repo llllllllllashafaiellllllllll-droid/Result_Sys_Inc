@@ -4224,6 +4224,59 @@
   color: #ffffff !important;
 }
 </style>
+
+<style id="reportEnglishStyles">
+/* =====================================================================
+   نسخة الإنجليزية لطلاب قسم اللغات — نفس بنية البطاقة والطباعة،
+   مع اتجاه كتابة LTR (التفاصيل الشكلية فقط). القسم العربي لا يتأثر.
+   ===================================================================== */
+html body .result-card.rpt-en,
+html body .result-card.rpt-en * { direction: ltr !important; }
+html body .result-card.rpt-en { font-family: 'Cairo', 'Segoe UI', Arial, sans-serif; }
+html body .result-card.rpt-en .rpt-card-value.ltr { text-align: left; }
+html body .result-card.rpt-en .col-subject { text-align: left; }
+/* الطباعة: قواعد الطباعة الحالية تثبّت RTL بأولوية أعلى، فنرفع الأولوية بمعرّف البطاقة */
+html body #printSection.rpt-en,
+html body #printSection.rpt-en * { direction: ltr !important; }
+/* الرسم البياني: اسم المادة يساراً والقيمة يميناً في الإنجليزية (الشبكة معكوسة، والنص نفسه LTR) */
+html body .result-card.rpt-en .rpt-chart-row,
+html body #printSection.rpt-en .rpt-chart-row { direction: rtl !important; }
+html body .result-card.rpt-en .rpt-chart-row > *,
+html body #printSection.rpt-en .rpt-chart-row > * { direction: ltr !important; }
+html body .result-card.rpt-en .rpt-chart-name,
+html body #printSection.rpt-en .rpt-chart-name { text-align: left !important; }
+html body .result-card.rpt-en .rpt-chart-value,
+html body #printSection.rpt-en .rpt-chart-value { text-align: right !important; }
+html body .result-card.rpt-en .rpt-card-body,
+html body #printSection.rpt-en .rpt-card-body { text-align: left !important; }
+html body #printSection.rpt-en .col-subject { text-align: left !important; }
+html body #printSection.rpt-en .rpt-card-value.ltr { text-align: left !important; }
+html body .result-card.rpt-en .est-label,
+html body .result-card.rpt-en .sc-est,
+html body #printSection.rpt-en .est-label,
+html body #printSection.rpt-en .sc-est { white-space: nowrap !important; }
+html body .result-card.rpt-en .rpt-notice-text,
+html body .result-card.rpt-en .rpt-sum-value,
+html body .result-card.rpt-en .not-available-note,
+html body .result-card.rpt-en .not-available-apology { unicode-bidi: plaintext; }
+</style>
+<style id="printIconFontFix">
+/* قاعدة الطباعة العامة (body * { font-family: ... !important }) كانت تلغي خط الأيقونات فتظهر مربعات.
+   نعيد خط Font Awesome للأيقونات فقط، بخصوصية أعلى حتى تتغلب على القاعدة العامة. */
+@media print {
+  html body .fas, html body .fa-solid, html body i.fas, html body i.fa-solid,
+  html body #printSection .fas, html body .result-card .fas, html body .modern-report .fas {
+    font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important;
+    font-style: normal !important; -webkit-font-smoothing: antialiased;
+  }
+  html body .far, html body .fa-regular, html body i.far, html body #printSection .far, html body .modern-report .far {
+    font-family: "Font Awesome 6 Free" !important; font-weight: 400 !important; font-style: normal !important;
+  }
+  html body .fab, html body .fa-brands, html body i.fab, html body #printSection .fab, html body .modern-report .fab {
+    font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; font-style: normal !important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="page-wrapper">
@@ -4462,7 +4515,19 @@ function chunkArray(arr, size) {
  * 1) عمود عنوانه نتيجة / الحالة النهائية
  * 2) آخر عمود إذا كان نص نتيجة (ناجح/منقول/…) وليس درجة رقمية
  */
+/** عمود الاسم بالإنجليزية (اختياري) — يُقرأ كبيان للطالب ولا يُعدّ مادة ولا نتيجة */
+const EN_NAME_HEADER_RE = /^(english\s*name|name\s*_?en(glish)?|الاسم\s*(ب|بال)ا?[إا]نجليز(ي|ية)?)$/i;
+function findEnglishNameIndex(headers) {
+  for (let i = 0; i < headers.length; i++) {
+    if (EN_NAME_HEADER_RE.test(String(headers[i] || "").trim())) return i;
+  }
+  return -1;
+}
+/** مفتاح محجوز داخل subjects لتخزين الاسم الإنجليزي بدون تغيير بنية قاعدة البيانات */
+const NAME_EN_KEY = "__name_en";
+
 function extractResultColumnFromExcelRow(headers, row) {
+  const _enIdx = findEnglishNameIndex(headers);
   const isOutcomeVal = (v) => /ناجح|منقول|دور\s*ثان|رسوب|راسب|اجتاز|مقبول|التمنيات|نجاح/.test(String(v || ""));
   const isPureNumber = (v) => /^\d+([.,]\d+)?$/.test(String(v || "").trim());
   // من اليمين لليسار: أولوية لعمود بعنوان نتيجة
@@ -4474,7 +4539,8 @@ function extractResultColumnFromExcelRow(headers, row) {
     }
   }
   // آخر عمود (بعد الأعمدة الأساسية) إن كان نص حالة وليس رقم درجة
-  const lastIdx = headers.length - 1;
+  let lastIdx = headers.length - 1;
+  if (lastIdx === _enIdx) lastIdx--;
   if (lastIdx >= 6) {
     const v = String(row[lastIdx] != null ? row[lastIdx] : "").trim();
     if (v && !isPureNumber(v) && (isOutcomeVal(v) || !/^\d/.test(v))) {
@@ -4483,6 +4549,7 @@ function extractResultColumnFromExcelRow(headers, row) {
   }
   // ابحث في كل الأعمدة بعد السادس عن قيمة تشبه النتيجة
   for (let i = headers.length - 1; i >= 6; i--) {
+    if (i === _enIdx) continue;
     const v = String(row[i] != null ? row[i] : "").trim();
     if (v && isOutcomeVal(v)) return { value: v, index: i };
   }
@@ -4503,6 +4570,7 @@ async function parseExcelRecords(file) {
         if (!rows || rows.length < 2) throw new Error(`ملف فارغ أو غير صالح: ${file.name}`);
 
         const headers = rows[0].map((h) => String(h || "").trim());
+        const enIdx = findEnglishNameIndex(headers);
         const records = [];
 
         for (let r = 1; r < rows.length; r++) {
@@ -4535,7 +4603,7 @@ async function parseExcelRecords(file) {
           let subjectOrder = 0;
           const subjectEnd = headers.length;
           for (let ci = 6; ci < subjectEnd; ci++) {
-            if (ci === resultColIdx) continue; // لا تُدرج عمود النتيجة ضمن المواد
+            if (ci === resultColIdx || ci === enIdx) continue; // لا تُدرج عمود النتيجة/الاسم الإنجليزي ضمن المواد
             const h = headers[ci];
             if (h && h.trim() && row[ci] !== undefined && row[ci] !== null && String(row[ci]).trim() !== "") {
               const cell = parseCellValue(row[ci]);
@@ -4545,6 +4613,9 @@ async function parseExcelRecords(file) {
               subjects[h] = cell;
             }
           }
+
+          const nameEn = enIdx >= 0 && row[enIdx] ? String(row[enIdx]).replace(/\s+/g, " ").trim() : "";
+          if (nameEn) subjects[NAME_EN_KEY] = nameEn;
 
           records.push({
             national_id: nid, name, seat_number: seatNumber, grade,
@@ -4736,6 +4807,199 @@ const termNames = {
   april: "شهر أبريل",
   final: "نتيجة آخر العام"
 };
+
+/* =====================================================================
+   اللغة حسب قسم الطالب: طالب قسم اللغات ⇒ النتيجة (عرض + طباعة + واتساب)
+   بالإنجليزية. القسم العربي يبقى كما هو بلا أي تغيير.
+   تحديد القسم: من نص الصف القادم من ملف الإكسيل (مثل: الصف الخامس الابتدائي (لغات)).
+   ===================================================================== */
+const EN_SCHOOL_TITLE = "Shabban Muslimeen Private Schools Complex — Banha";
+const EN_SCHOOL_MOTTO = "Faith • Knowledge • Morals";
+
+function getStudentSection(row) {
+  const g = String((row && (row.grade || row.class_name)) || "");
+  return /لغات|languages?\b|\blang\b/i.test(g) ? "lang" : "ar";
+}
+function isEnglishStudent(row) { return getStudentSection(row) === "lang"; }
+
+const TERM_NAMES_EN = {
+  october: "October", november: "November", term1: "First Term",
+  march: "March", april: "April", final: "End-of-Year Result"
+};
+function termLabelFor(termKey, en) {
+  return en ? (TERM_NAMES_EN[termKey] || termKey || "—") : (termNames[termKey] || termKey || "—");
+}
+
+const I18N = {
+  ar: {
+    dir: "rtl", lang: "ar", dateLocale: "ar-EG",
+    reportTitle: "بيان نتيجة الطالب", studentDataTitle: "بيانات الطالب",
+    studentPhoto: "صورة الطالب", camera: "كاميرا", gallery: "المعرض", browse: "استعراض", remove: "إزالة",
+    photoHint: "الصورة للطباعة على جهازك فقط ولا تُرفع للخادم",
+    studentName: "اسم الطالب", nationalId: "الرقم القومي", grade: "الصف", seatNo: "رقم الجلوس",
+    termResult: "نتيجة الفترة", status: "الحالة",
+    subjectsHeading: "درجات المواد", thNum: "م", thSubject: "المادة", thMax: "الدرجة العظمى", thScore: "درجة الطالب", thEst: "التقدير",
+    noSubjects: "لا توجد مواد مسجلة لهذه الفترة", chartTitle: "الرسم البياني للدرجات",
+    extraLabel: "مواد لا تُضاف للمجموع",
+    finalStatus: "الحالة النهائية", percentage: "النسبة المئوية", totalScore: "المجموع الكلي",
+    note: "تنويه:", noteText: "يتطلب النجاح في مادة التربية الدينية حصول الطالب على نسبة 70% على الأقل من الدرجة الكلية",
+    stamp: "ختم المدرسة", signature: "توقيع الإدارة", printDate: "تاريخ الطباعة",
+    printBtn: "طباعة / حفظ PDF", whatsappBtn: "مشاركة واتساب",
+    emblemKaaba: "شعار الكعبة", emblemSchool: "شعار المدرسة", photoAlt: "صورة الطالب",
+    basicInfo: "البيانات الأساسية", pubStatus: "موقف النشر", notAvailable: "غير متاحة",
+    apologyNote: "لأي استفسار، برجاء التكرم بمراجعة إدارة المدرسة.",
+    apologyGeneric: "عذرًا، النتيجة غير متاحة حاليًا. برجاء التكرم بمراجعة إدارة المدرسة."
+  },
+  en: {
+    dir: "ltr", lang: "en", dateLocale: "en-GB",
+    reportTitle: "Student Result Report", studentDataTitle: "Student Data",
+    studentPhoto: "Student Photo", camera: "Camera", gallery: "Gallery", browse: "Browse", remove: "Remove",
+    photoHint: "The photo is for printing on your device only and is not uploaded to the server",
+    studentName: "Student Name", nationalId: "National ID", grade: "Grade", seatNo: "Seat Number",
+    termResult: "Term", status: "Status",
+    subjectsHeading: "Subject Grades", thNum: "#", thSubject: "Subject", thMax: "Max Score", thScore: "Student Score", thEst: "Rating",
+    noSubjects: "No subjects recorded for this period", chartTitle: "Performance Chart",
+    extraLabel: "Subjects not added to the total",
+    finalStatus: "Final Status", percentage: "Percentage", totalScore: "Total Score",
+    note: "Note:", noteText: "Passing Religious Education requires the student to score at least 70% of the total mark.",
+    stamp: "School Stamp", signature: "Administration Signature", printDate: "Print Date",
+    printBtn: "Print / Save PDF", whatsappBtn: "Share on WhatsApp",
+    emblemKaaba: "Emblem", emblemSchool: "School logo", photoAlt: "Student photo",
+    basicInfo: "Basic Information", pubStatus: "Publication Status", notAvailable: "Not Available",
+    apologyNote: "For any inquiry, please contact the school administration.",
+    apologyGeneric: "Sorry, the result is not available at the moment. Please contact the school administration."
+  }
+};
+
+function arNorm(str) {
+  return String(str || "").replace(/[\u064B-\u065F\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").trim();
+}
+const HAS_ARABIC = /[\u0600-\u06FF]/;
+
+/** الصف: «الصف الخامس الابتدائي (لغات)» → «Primary 5 (Languages)» */
+function translateGradeEn(grade) {
+  const raw = String(grade || "").trim();
+  if (!raw) return "—";
+  if (!HAS_ARABIC.test(raw)) return raw;
+  const s = arNorm(raw);
+  const sec = /لغات/.test(s) ? " (Languages)" : (/عربي/.test(s) ? " (Arabic)" : "");
+  const stage = /ابتد/.test(s) ? "Primary" : /اعداد/.test(s) ? "Preparatory" : /ثانو/.test(s) ? "Secondary"
+    : /روضه|حضانه|رياض الاطفال|تمهيد/.test(s) ? "KG" : "";
+  const ORD = [["الاول", 1], ["اول", 1], ["الثاني", 2], ["ثاني", 2], ["الثالث", 3], ["ثالث", 3], ["الرابع", 4], ["رابع", 4], ["الخامس", 5], ["خامس", 5], ["السادس", 6], ["سادس", 6]];
+  let n = 0;
+  const d = s.match(/[1-6١-٦]/);
+  if (d) n = Number(String(d[0]).replace(/[١-٦]/, (c) => c.charCodeAt(0) - 1632));
+  if (!n) { for (const [k, v] of ORD) { if ((" " + s + " ").indexOf(" " + k + " ") !== -1) { n = v; break; } } }
+  if (stage && n) return `${stage} ${n}${sec}`;
+  if (stage) return `${stage}${sec}`;
+  return raw;
+}
+
+const SUBJECT_EN_RULES = [
+  [/قران/, "Holy Quran"],
+  [/تكنولوج|^ict$/, "ICT"],
+  [/توكاتسو|tokatsu/, "Tokatsu"],
+  [/حاله\s*(ال)?طالب/, "Student Status"],
+  [/لغه\s*(ال)?طالب\s*(ال)?ثانيه/, "Student's Second Language"],
+  [/^(ال)?لغه\s*(ال)?ثانيه/, "Second Language"],
+  [/انجليز.*مستوي/, "English (Level)"],
+  [/تربيه\s*(ال)?(بدنيه|رياضيه)|رياضه\s*(ال)?بدنيه|^بدنيه/, "Physical Education"],
+  [/مسيحي/, "Christian Education"],
+  [/تربيه\s*(ال)?دينيه|تربيه\s*(ال)?اسلاميه|^(ال)?دين(\s|$)|دين اسلامي/, "Religious Education"],
+  [/وطنيه|قوميه/, "National Education"],
+  [/اجنبي\w*\s*(ال)?ثاني/, "Second Foreign Language"],
+  [/اجنبي/, "First Foreign Language"],
+  [/انجليز|english/, "English"],
+  [/فرنس|french/, "French"],
+  [/الماني|german/, "German"],
+  [/علوم متكامله/, "Integrated Science"],
+  [/فيزياء/, "Physics"], [/كيمياء/, "Chemistry"], [/احياء|بيولوج/, "Biology"], [/جيولوج/, "Geology"],
+  [/علوم/, "Science"],
+  [/دراسات\s*(ال)?اجتماعيه|اجتماعيات/, "Social Studies"],
+  [/تاريخ/, "History"], [/جغراف/, "Geography"],
+  [/فلسفه.*منطق/, "Philosophy and Logic"], [/فلسفه/, "Philosophy"], [/منطق/, "Logic"],
+  [/علم نفس.*اجتماع/, "Psychology and Sociology"], [/علم نفس/, "Psychology"],
+  [/حاسب|كمبيوتر|حاسوب|معلومات/, "Computer"],
+  [/موسيق/, "Music"], [/فني|رسم/, "Art Education"], [/زراع/, "Agriculture"],
+  [/مهارات\s*(ال)?حياتيه/, "Life Skills"], [/مهارات\s*(ال)?مهنيه|مهني/, "Vocational Skills"],
+  [/سلوك|انضباط/, "Conduct"], [/قيم/, "Values"], [/نشاط|انشطه/, "Activities"],
+  [/اقتصاد/, "Economics"], [/احصاء/, "Statistics"], [/تفاضل/, "Calculus"], [/جبر/, "Algebra"], [/هندسه/, "Geometry"],
+  [/رياضيات|حساب|math/, "Mathematics"],
+  [/عربي|نحو|قواعد/, "Arabic"]
+];
+function translateSubjectEn(name) {
+  const raw = String(name || "").trim();
+  if (!raw || !HAS_ARABIC.test(raw)) return raw;
+  const s = arNorm(raw);
+  for (const [re, en] of SUBJECT_EN_RULES) { if (re.test(s)) return en; }
+  return raw;
+}
+
+function translateOutcomeEn(text) {
+  const raw = String(text || "").trim();
+  if (!raw || !HAS_ARABIC.test(raw)) return raw;
+  const s = arNorm(raw);
+  if (/التمنيات/.test(s)) return "With best wishes for success";
+  const m = s.match(/ناجح\s*و?\s*منقول(?:\s*(?:الي|الى)\s*(.+))?$/);
+  if (m) return "Passed and promoted" + (m[1] ? " to " + translateGradeEn(m[1]) : "");
+  const mp = s.match(/ناجح\s*و?\s*منقول\s*(?:الي|الى)?\s*(?:لل|ال|ل)?صف\s*(.+)$/);
+  if (mp) return "Passed and promoted to " + translateGradeEn(mp[1]);
+  if (/ناجح.*دور\s*ثان/.test(s)) return "Passed after the Second Round";
+  const mr = s.match(/دور\s*ثان\s*(?:في|فى|فيي)?\s*(.*)$/);
+  if (mr) {
+    const subs = [];
+    const re = /\(((?:[^()]|\([^()]*\))*)\)/g;
+    let m;
+    while ((m = re.exec(mr[1])) !== null) {
+      const inner = m[1].trim();
+      if (inner) subs.push(translateSubjectEn(inner));
+    }
+    return subs.length ? "Second Round in: " + subs.join(", ") : "Second Round";
+  }
+  if (/دور\s*ثان/.test(s)) return "Second Round";
+  if (/راسب|رسوب/.test(s)) return "Failed";
+  if (/ناجح|اجتاز/.test(s)) return "Passed";
+  if (/مقبول/.test(s)) return "Acceptable";
+  return raw;
+}
+function translateResultTypeEn(text) {
+  const raw = String(text || "").trim();
+  if (!raw || !HAS_ARABIC.test(raw)) return raw;
+  const s = arNorm(raw);
+  if (/سداد.*(مصروف|رسوم)|(مصروف|رسوم).*سداد/.test(s)) return "Please pay the remaining school fees to view the result.";
+  if (/^غير\s*متاح/.test(s)) return "Not Available";
+  if (/^متاح/.test(s)) return "Available";
+  return raw;
+}
+function translateCellEn(text) {
+  const raw = String(text == null ? "" : text).trim();
+  // رمز لغة الطالب الثانية: f = فرنساوي ، g = ألماني
+  if (/^f$/i.test(raw)) return "French";
+  if (/^g$/i.test(raw)) return "German";
+  if (HAS_ARABIC.test(raw) && /ناجح|دور\s*ثان|راسب|رسوب/.test(arNorm(raw)) && raw.length > 12) return translateOutcomeEn(raw);
+  if (!raw || !HAS_ARABIC.test(raw)) return raw;
+  const s = arNorm(raw);
+  const MAP = [[/^اجتاز/, "Passed"], [/غير\s*مقرر/, "Not Required"], [/معفي|معفى/, "Exempt"], [/غائب|غياب/, "Absent"], [/حرمان/, "Barred"],
+    [/^ممتاز/, "Excellent"], [/^جيد\s*جدا/, "Very Good"], [/^جيد/, "Good"], [/^مقبول/, "Acceptable"], [/^ضعيف/, "Weak"],
+    [/^راسب/, "Failed"], [/^ناجح/, "Passed"]];
+  for (const [re, en] of MAP) { if (re.test(s)) return en; }
+  return raw;
+}
+/** الاسم الإنجليزي: من حقل مباشر أو من المفتاح المحجوز داخل subjects (قادم من عمود English Name) */
+function getEnglishNameFromRow(row) {
+  if (!row) return "";
+  const direct = row.name_en || row.english_name || row.nameEn;
+  if (direct) return String(direct).trim();
+  let bag = row.subjects || row.allData || {};
+  if (typeof bag === "string") { try { bag = JSON.parse(bag); } catch (e) { bag = {}; } }
+  const v = bag && bag[NAME_EN_KEY];
+  return v ? String(v).trim() : "";
+}
+function studentNameFor(row, en) {
+  if (!en) return String(row.name || "");
+  // لو الاسم الإنجليزي غير مكتوب نعرض الاسم العربي بدل ترك فراغ
+  return getEnglishNameFromRow(row) || String(row.name || "");
+}
 
 /** عند تجاوز هذا العدد تتحول مواد الطباعة إلى كروت عمودين (الشاشة تبقى جدولًا) */
 const SUBJECTS_PRINT_CARDS_THRESHOLD = 12;
@@ -5030,11 +5294,11 @@ window.printReport = async function () {
 // ===== نطاقات تقدير الدرجات — وفق معايير المرحلة الابتدائية (عربي ولغات) =====
 // النسبة المئوية → المستوى → الإجراء المقترح
 const GRADE_BANDS = [
-  { min: 85, label: "ممتاز",       action: "أنشطة إثرائية",  color: "#2563eb" },
-  { min: 75, label: "جيد جدا",     action: "رعاية وتحفيز",   color: "#16a34a" },
-  { min: 65, label: "جيد",         action: "رفع كفاءة",      color: "#f97316" },
-  { min: 50, label: "مقبول",       action: "رفع مستوى",      color: "#eab308" },
-  { min: -Infinity, label: "دون المستوى", action: "أنشطة علاجية", color: "#dc2626" },
+  { min: 85, label: "ممتاز",       action: "أنشطة إثرائية",  color: "#2563eb", labelEn: "Excellent",  actionEn: "Enrichment activities" },
+  { min: 75, label: "جيد جدا",     action: "رعاية وتحفيز",   color: "#16a34a", labelEn: "Very Good",  actionEn: "Care and motivation" },
+  { min: 65, label: "جيد",         action: "رفع كفاءة",      color: "#f97316", labelEn: "Good",       actionEn: "Efficiency boost" },
+  { min: 50, label: "مقبول",       action: "رفع مستوى",      color: "#eab308", labelEn: "Acceptable", actionEn: "Level improvement" },
+  { min: -Infinity, label: "دون المستوى", action: "أنشطة علاجية", color: "#dc2626", labelEn: "Below Standard", actionEn: "Remedial activities" },
 ];
 
 function getGradeBand(score) {
@@ -5171,7 +5435,7 @@ function drawSubjectsChart(numericEntries, retry = 0) {
 // نفس منطق الفرز في كل مكان.
 function getSortedSubjectEntries(row) {
   const subjects = row.subjects || {};
-  return Object.entries(subjects).map(([k, v]) => [k, normalizeSubjectVal(v)]).sort((a, b) => {
+  return Object.entries(subjects).filter(([k]) => !String(k).startsWith("__")).map(([k, v]) => [k, normalizeSubjectVal(v)]).sort((a, b) => {
     const oa = a[1] && typeof a[1].order === "number" ? a[1].order : 0;
     const ob = b[1] && typeof b[1].order === "number" ? b[1].order : 0;
     return oa - ob;
@@ -5306,6 +5570,8 @@ const REPORT_ICONS = {
 function renderFullData(nationalId, row) {
   const entries = getDisplaySubjectEntries(row);
   const isElem = isElementaryStage(row.grade);
+  const EN = isEnglishStudent(row);            // طالب لغات ⇒ تقرير إنجليزي
+  const L = I18N[EN ? "en" : "ar"];
   const { counted: _countedEarly, extra: _extraEarly } = getSubjectGroups(row);
   // الرسم فقط لمواد المجموع
   const numericEntries = _countedEarly.filter(([, val]) => val && val.type === "number");
@@ -5359,12 +5625,14 @@ function renderFullData(nationalId, row) {
   const outcomeSource = resultFromLast || statusUseful || rtUseful || "";
   const outcome = classifyResultOutcome(outcomeSource);
   const DEFAULT_OUTCOME_MSG = "مع أطيب التمنيات بالنجاح والتوفيق";
-  const outcomeLabel = outcomeSource || DEFAULT_OUTCOME_MSG;
+  const outcomeLabel = EN
+    ? (outcomeSource ? translateOutcomeEn(outcomeSource) : "With best wishes for success")
+    : (outcomeSource || DEFAULT_OUTCOME_MSG);
   let outcomeKind = outcomeSource ? outcome.kind : "neutral";
-  if (outcomeKind === "neutral" && /ناجح|منقول|دور\s*ثان|رسوب|راسب|اجتاز|مقبول/.test(outcomeLabel)) {
-    outcomeKind = /دور\s*ثان|رسوب|راسب/.test(outcomeLabel) ? "second" : "pass";
+  if (outcomeKind === "neutral" && /ناجح|منقول|دور\s*ثان|رسوب|راسب|اجتاز|مقبول/.test(outcomeSource || DEFAULT_OUTCOME_MSG)) {
+    outcomeKind = /دور\s*ثان|رسوب|راسب/.test(outcomeSource || DEFAULT_OUTCOME_MSG) ? "second" : "pass";
   }
-  const termLabel = termNames[row.term_key] || row.term_key || "—";
+  const termLabel = termLabelFor(row.term_key, EN);
 
   // تقسيم: مواد المجموع | مواد بعد المجموع
   const { counted: countedEntries, extra: extraEntries } = getSubjectGroups(row);
@@ -5375,27 +5643,28 @@ function renderFullData(nationalId, row) {
     return list.map(([sub, val], index) => {
       const label = cleanSubjectLabel(sub);
       const icon = getSubjectIcon(label);
-      const subjectCell = `<td class="col-subject"><span class="subject-emoji" aria-hidden="true">${icon}</span> <span class="subject-name">${esc(label)}</span></td>`;
+      const shownLabel = EN ? translateSubjectEn(label) : label;
+      const subjectCell = `<td class="col-subject"><span class="subject-emoji" aria-hidden="true">${icon}</span> <span class="subject-name">${esc(shownLabel)}</span></td>`;
       const rowNumber = startNum + index;
       const trClass = [rowClass, (/غير\s*مقرر|معفى|exempt/i.test(String(val.display || "")) ? "row-exempt" : "")].filter(Boolean).join(" ");
       if (val.type === "number") {
         const max = (typeof val.max === "number" && val.max > 0) ? val.max : 100;
         const pct = Math.max(0, Math.min(100, (val.raw / max) * 100));
         const band = getGradeBand(pct);
-        const estExtra = isElem && band.action ? `<span class="est-action">${esc(band.action)}</span>` : "";
+        const estExtra = isElem && band.action ? `<span class="est-action">${esc(EN ? band.actionEn : band.action)}</span>` : "";
         return `<tr class="${trClass}">
           <td class="col-num">${rowNumber}</td>
           ${subjectCell}
           <td class="col-max" dir="ltr">${max}</td>
           <td class="col-score" dir="ltr"><span class="score-pill" style="color:${band.color}">${esc(val.display)}</span></td>
-          <td class="col-est"><span class="est-label" style="color:${band.color}">${esc(band.label)}</span>${estExtra}</td>
+          <td class="col-est"><span class="est-label" style="color:${band.color}">${esc(EN ? band.labelEn : band.label)}</span>${estExtra}</td>
         </tr>`;
       }
       return `<tr class="${trClass}">
         <td class="col-num">${rowNumber}</td>
         ${subjectCell}
         <td class="col-max">—</td>
-        <td class="col-score"><span class="score-pill">${esc(val.display)}</span></td>
+        <td class="col-score"><span class="score-pill">${esc(EN ? translateCellEn(val.display) : val.display)}</span></td>
         <td class="col-est">—</td>
       </tr>`;
     }).join("");
@@ -5405,6 +5674,7 @@ function renderFullData(nationalId, row) {
     return list.map(([sub, val], index) => {
       const label = cleanSubjectLabel(sub);
       const icon = getSubjectIcon(label);
+      const shownLabel = EN ? translateSubjectEn(label) : label;
       const rowNumber = startNum + index;
       const isLastOdd = useCardsLayout && (list.length % 2 === 1) && index === list.length - 1;
       const spanClass = isLastOdd ? " subject-card-span" : "";
@@ -5414,16 +5684,16 @@ function renderFullData(nationalId, row) {
         const band = getGradeBand(pct);
         return `<div class="subject-card${spanClass}">
           <span class="sc-num">${rowNumber}</span>
-          <span class="sc-name"><span class="subject-emoji" aria-hidden="true">${icon}</span> ${esc(label)}</span>
+          <span class="sc-name"><span class="subject-emoji" aria-hidden="true">${icon}</span> ${esc(shownLabel)}</span>
           <span class="sc-score" dir="ltr" style="color:${band.color}">${esc(val.display)}<small>/${max}</small></span>
-          <span class="sc-est" style="color:${band.color}">${esc(band.label)}</span>
+          <span class="sc-est" style="color:${band.color}">${esc(EN ? band.labelEn : band.label)}</span>
         </div>`;
       }
       const isExempt = /غير\s*مقرر|معفى|exempt/i.test(String(val.display || ""));
       return `<div class="subject-card${spanClass}${isExempt ? " subject-card-exempt" : ""}">
         <span class="sc-num">${rowNumber}</span>
-        <span class="sc-name"><span class="subject-emoji" aria-hidden="true">${icon}</span> ${esc(label)}</span>
-        <span class="sc-score">${esc(val.display || "—")}</span>
+        <span class="sc-name"><span class="subject-emoji" aria-hidden="true">${icon}</span> ${esc(shownLabel)}</span>
+        <span class="sc-score">${esc(EN ? translateCellEn(val.display || "—") : (val.display || "—"))}</span>
         <span class="sc-est">—</span>
       </div>`;
     }).join("");
@@ -5445,13 +5715,13 @@ function renderFullData(nationalId, row) {
   const subjectRowsHtml = countedRowsHtml + extraRowsHtml;
   const subjectCardsHtml = countedCardsHtml;
 
-  const printDate = new Date().toLocaleDateString("ar-EG", { year:"numeric", month:"long", day:"numeric" });
-  const subTitle = appSettings.subTitle || "الإيمان • العلم • الأخلاق";
+  const printDate = new Date().toLocaleDateString(L.dateLocale, { year:"numeric", month:"long", day:"numeric" });
+  const subTitle = EN ? EN_SCHOOL_MOTTO : (appSettings.subTitle || "الإيمان • العلم • الأخلاق");
   const rightEmblem = appSettings.kaabaLogo
-    ? `<img src="${appSettings.kaabaLogo}" alt="شعار الكعبة">`
+    ? `<img src="${appSettings.kaabaLogo}" alt="${L.emblemKaaba}">`
     : `<i class="fas fa-kaaba" style="color:var(--report-gold)"></i>`;
   const leftEmblem = appSettings.schoolLogo
-    ? `<img src="${appSettings.schoolLogo}" alt="شعار المدرسة">`
+    ? `<img src="${appSettings.schoolLogo}" alt="${L.emblemSchool}">`
     : `<i class="fas fa-shield-alt" style="color:var(--report-navy)"></i>`;
 
   // رسم بياني HTML/CSS بدل Canvas/Chart.js لضمان ظهوره على الشاشة والطباعة وPDF
@@ -5465,84 +5735,84 @@ function renderFullData(nationalId, row) {
       return `<div class="rpt-chart-row">
         <div class="rpt-chart-value" dir="ltr">${formatNiceNumber(pct, 1)}%</div>
         <div class="rpt-chart-track"><div class="rpt-chart-bar" style="width:${Math.min(100, Math.max(0, Number(pct.toFixed(2))))}%;background:${barColor};"></div></div>
-        <div class="rpt-chart-name">${esc(cleanSubjectLabel(sub))}</div>
+        <div class="rpt-chart-name">${esc(EN ? translateSubjectEn(cleanSubjectLabel(sub)) : cleanSubjectLabel(sub))}</div>
       </div>`;
     }).join("");
     return `
     <section class="rpt-chart chart-container">
-      <div class="rpt-section-title">الرسم البياني للدرجات</div>
-      <div class="rpt-html-chart" role="img" aria-label="الرسم البياني للدرجات">${chartItems}</div>
+      <div class="rpt-section-title">${L.chartTitle}</div>
+      <div class="rpt-html-chart" role="img" aria-label="${L.chartTitle}">${chartItems}</div>
     </section>`;
   })() : "";
 
   return `
-    <div class="result-card rpt-sheet modern-report ${reportDensity}" id="printSection" data-subject-count="${totalSubjectCount}">
+    <div class="result-card rpt-sheet modern-report ${reportDensity}${EN ? " rpt-en" : ""}" id="printSection" dir="${L.dir}" lang="${L.lang}" data-subject-count="${totalSubjectCount}">
       <header class="rpt-header">
-        <div class="rpt-header-emblem">${rightEmblem}</div>
+        <div class="rpt-header-emblem">${EN ? leftEmblem : rightEmblem}</div>
         <div class="rpt-header-text">
-          <div class="rpt-school-name">${esc(appSettings.mainTitle)}</div>
+          <div class="rpt-school-name">${esc(EN ? EN_SCHOOL_TITLE : appSettings.mainTitle)}</div>
           <div class="rpt-school-motto">${esc(subTitle)}</div>
-          <div class="rpt-term-title">بيان نتيجة الطالب — ${esc(termNames[row.term_key] || row.term_key)}</div>
+          <div class="rpt-term-title">${L.reportTitle} — ${esc(termLabelFor(row.term_key, EN))}</div>
         </div>
-        <div class="rpt-header-emblem">${leftEmblem}</div>
+        <div class="rpt-header-emblem">${EN ? rightEmblem : leftEmblem}</div>
       </header>
 
       <section class="rpt-student">
         <div class="rpt-photo-col" id="reportPhotoArea">
           <div class="rpt-photo-frame" id="reportPhotoFrame">
-            <div class="photo-placeholder"><i class="fas fa-user-graduate"></i><span>صورة الطالب</span></div>
-            <img id="studentPhotoPreview" class="student-photo-preview" alt="صورة الطالب">
+            <div class="photo-placeholder"><i class="fas fa-user-graduate"></i><span>${L.studentPhoto}</span></div>
+            <img id="studentPhotoPreview" class="student-photo-preview" alt="${L.photoAlt}">
           </div>
           <div class="student-photo-actions">
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-camera"></i> كاميرا<input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-images"></i> المعرض<input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-folder-open"></i> استعراض<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
-            <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()"><i class="fas fa-times"></i> إزالة</button>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-camera"></i> ${L.camera}<input type="file" class="student-photo-file" accept="image/*" capture="environment" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-images"></i> ${L.gallery}<input type="file" class="student-photo-file" accept="image/*" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <label class="action-btn photo-src-btn" style="cursor:pointer;margin:0;"><i class="fas fa-folder-open"></i> ${L.browse}<input type="file" class="student-photo-file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="onStudentPhotoSelected(this)"></label>
+            <button type="button" class="action-btn" onclick="clearStudentPrintPhoto()"><i class="fas fa-times"></i> ${L.remove}</button>
           </div>
-          <div class="student-photo-hint">الصورة للطباعة على جهازك فقط ولا تُرفع للخادم</div>
+          <div class="student-photo-hint">${L.photoHint}</div>
         </div>
 
         <div class="rpt-cards-grid">
           <div class="rpt-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.user}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">اسم الطالب</span>
-              <span class="rpt-card-value">${esc(row.name)}</span>
+              <span class="rpt-card-label">${L.studentName}</span>
+              <span class="rpt-card-value">${esc(studentNameFor(row, EN))}</span>
             </div>
           </div>
           <div class="rpt-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.id}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">الرقم القومي</span>
+              <span class="rpt-card-label">${L.nationalId}</span>
               <span class="rpt-card-value ltr">${esc(nationalId)}</span>
             </div>
           </div>
           <div class="rpt-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.grad}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">الصف</span>
-              <span class="rpt-card-value">${esc(row.grade || "—")}</span>
+              <span class="rpt-card-label">${L.grade}</span>
+              <span class="rpt-card-value">${esc(EN ? translateGradeEn(row.grade) : (row.grade || "—"))}</span>
             </div>
           </div>
           <div class="rpt-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.chair}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">رقم الجلوس</span>
+              <span class="rpt-card-label">${L.seatNo}</span>
               <span class="rpt-card-value" dir="ltr">${esc(row.seat_number || "—")}</span>
             </div>
           </div>
           <div class="rpt-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.cal}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">نتيجة الفترة</span>
+              <span class="rpt-card-label">${L.termResult}</span>
               <span class="rpt-card-value rpt-card-result">${esc(termLabel)}</span>
             </div>
           </div>
           <div class="rpt-card status-card">
             <div class="rpt-card-icon"><img src="${REPORT_ICONS.clip}" alt=""></div>
             <div class="rpt-card-body">
-              <span class="rpt-card-label">الحالة</span>
-              <span class="rpt-card-value rpt-card-result">${esc(resultTypeText)}</span>
+              <span class="rpt-card-label">${L.status}</span>
+              <span class="rpt-card-value rpt-card-result">${esc(EN ? translateResultTypeEn(resultTypeText) : resultTypeText)}</span>
             </div>
           </div>
         </div>
@@ -5550,17 +5820,17 @@ function renderFullData(nationalId, row) {
 
       <!-- مواد أساسية تُضاف إلى المجموع -->
       <section class="rpt-subjects subjects-counted">
-        <div class="rpt-section-heading rpt-heading-core">درجات المواد</div>
+        <div class="rpt-section-heading rpt-heading-core">${L.subjectsHeading}</div>
         <div class="rpt-table-wrap">
           <table class="rpt-table">
             <thead><tr>
-              <th class="col-num">م</th>
-              <th class="col-subject">المادة</th>
-              <th class="col-max">الدرجة العظمى</th>
-              <th class="col-score">درجة الطالب</th>
-              <th class="col-est">التقدير</th>
+              <th class="col-num">${L.thNum}</th>
+              <th class="col-subject">${L.thSubject}</th>
+              <th class="col-max">${L.thMax}</th>
+              <th class="col-score">${L.thScore}</th>
+              <th class="col-est">${L.thEst}</th>
             </tr></thead>
-            <tbody>${countedRowsHtml || `<tr><td colspan="5" class="rpt-empty">لا توجد مواد مسجلة لهذه الفترة</td></tr>`}</tbody>
+            <tbody>${countedRowsHtml || `<tr><td colspan="5" class="rpt-empty">${L.noSubjects}</td></tr>`}</tbody>
           </table>
         </div>
       </section>
@@ -5571,17 +5841,17 @@ function renderFullData(nationalId, row) {
       <section class="rpt-summary">
         <div class="rpt-summary-grid rpt-summary-3">
           <div class="rpt-sum-item rpt-sum-status outcome-${outcomeKind}">
-            <span class="rpt-sum-label">الحالة النهائية</span>
+            <span class="rpt-sum-label">${L.finalStatus}</span>
             <span class="rpt-sum-value rpt-status-text">${esc(outcomeLabel)}</span>
             <span class="rpt-sum-check" aria-hidden="true">${outcomeKind === 'pass' ? '✓' : outcomeKind === 'second' ? '!' : 'i'}</span>
           </div>
           <div class="rpt-sum-item rpt-sum-pct">
-            <span class="rpt-sum-label">النسبة المئوية</span>
+            <span class="rpt-sum-label">${L.percentage}</span>
             <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? formatNiceNumber(pctOverall, 2) + "%" : "—"}</span>
-            <span class="rpt-sum-band">${overallBand ? esc(overallBand.label) : ""}</span>
+            <span class="rpt-sum-band">${overallBand ? esc(EN ? overallBand.labelEn : overallBand.label) : ""}</span>
           </div>
           <div class="rpt-sum-item rpt-sum-total">
-            <span class="rpt-sum-label">المجموع الكلي</span>
+            <span class="rpt-sum-label">${L.totalScore}</span>
             <span class="rpt-sum-value" dir="ltr">${totalMax > 0 ? `${formatNiceNumber(totalRaw)} / ${formatNiceNumber(totalMax)}` : "—"}</span>
             <span class="rpt-sum-icon" aria-hidden="true"><i class="fas fa-clipboard-list"></i></span>
           </div>
@@ -5591,34 +5861,34 @@ function renderFullData(nationalId, row) {
       <!-- منطقة مرنة: مواد خارج المجموع — عمودان أو ثلاثة حسب العدد -->
       <section class="rpt-flex-zone subjects-extra ${extraEntries.length ? "has-extra" : "is-empty"}" data-extra-count="${extraEntries.length}">
         ${extraEntries.length ? `
-        <div class="extra-print-grid extra-cols-3 extra-density-${extraDensity}" aria-label="مواد لا تُضاف للمجموع">
+        <div class="extra-print-grid extra-cols-3 extra-density-${extraDensity}" aria-label="${L.extraLabel}">
           ${extraCardsHtml}
         </div>` : `<div class="rpt-flex-spacer" aria-hidden="true"></div>`}
       </section>
 
       <div class="rpt-notice">
         <span class="rpt-notice-icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></span>
-        <span class="rpt-notice-text"><strong>تنويه:</strong> يتطلب النجاح في مادة التربية الدينية حصول الطالب على نسبة 70% على الأقل من الدرجة الكلية</span>
+        <span class="rpt-notice-text"><strong>${L.note}</strong> ${L.noteText}</span>
       </div>
 
       <footer class="rpt-signature signature-section">
         <div class="rpt-stamp-block">
-          <div class="rpt-stamp-title">ختم المدرسة</div>
+          <div class="rpt-stamp-title">${L.stamp}</div>
         </div>
         <div class="rpt-signature-box">
-          <div class="rpt-signature-label">توقيع الإدارة</div>
+          <div class="rpt-signature-label">${L.signature}</div>
           <div class="rpt-signature-line"></div>
         </div>
         <div class="rpt-print-date">
           <div class="rpt-date-icon" aria-hidden="true"><i class="fas fa-calendar-alt"></i></div>
-          <div class="rpt-date-label">تاريخ الطباعة</div>
+          <div class="rpt-date-label">${L.printDate}</div>
           <div class="rpt-date-value">${printDate}</div>
         </div>
       </footer>
 
       <div class="action-buttons">
-        <button class="action-btn" onclick="printReport()"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
-        <button class="action-btn" onclick="window.shareWhatsApp()"><i class="fab fa-whatsapp"></i> مشاركة واتساب</button>
+        <button class="action-btn" onclick="printReport()"><i class="fas fa-print"></i> ${L.printBtn}</button>
+        <button class="action-btn" onclick="window.shareWhatsApp()"><i class="fab fa-whatsapp"></i> ${L.whatsappBtn}</button>
       </div>
     </div>
   `;
@@ -5633,6 +5903,9 @@ function renderBasicDataOnly(nationalId, row) {
   // العائد من دالة قاعدة البيانات السحابية (get_student_result).
   const rawNote = row.result_type ?? row.resultType ?? row.ResultType ?? row.result_Type ?? "";
   const noteText = String(rawNote).trim();
+  const EN = isEnglishStudent(row);
+  const L = I18N[EN ? "en" : "ar"];
+  const noteShown = EN ? translateResultTypeEn(noteText) : noteText;
   if (!noteText && typeof console !== "undefined") {
     console.warn(
       "[نظام النتائج] حقل result_type غير موجود ضمن الصف العائد من get_student_result — " +
@@ -5641,11 +5914,11 @@ function renderBasicDataOnly(nationalId, row) {
     );
   }
   const noteHtml = noteText
-    ? `<div class="not-available-note"><i class="fas fa-circle-info"></i> ${esc(noteText)}</div>
-       <div class="not-available-apology">لأي استفسار، برجاء التكرم بمراجعة إدارة المدرسة.</div>`
-    : `<div class="not-available-apology"><i class="fas fa-circle-info"></i> عذرًا، النتيجة غير متاحة حاليًا. برجاء التكرم بمراجعة إدارة المدرسة.</div>`;
+    ? `<div class="not-available-note"><i class="fas fa-circle-info"></i> ${esc(noteShown)}</div>
+       <div class="not-available-apology">${L.apologyNote}</div>`
+    : `<div class="not-available-apology"><i class="fas fa-circle-info"></i> ${L.apologyGeneric}</div>`;
 
-  const subTitle = appSettings.subTitle || "الإيمان • العلم • الأخلاق";
+  const subTitle = EN ? EN_SCHOOL_MOTTO : (appSettings.subTitle || "الإيمان • العلم • الأخلاق");
   const rightEmblem = appSettings.kaabaLogo
     ? `<img src="${appSettings.kaabaLogo}" alt="شعار">`
     : `<i class="fas fa-kaaba" style="color:var(--accent);"></i>`;
@@ -5654,24 +5927,24 @@ function renderBasicDataOnly(nationalId, row) {
     : `<i class="fas fa-shield-alt" style="color:var(--primary);"></i>`;
 
   return `
-    <div class="result-card">
+    <div class="result-card${EN ? " rpt-en" : ""}" dir="${L.dir}" lang="${L.lang}">
       <div class="result-header">
-        <div class="result-header-emblem">${rightEmblem}</div>
+        <div class="result-header-emblem">${EN ? leftEmblem : rightEmblem}</div>
         <div class="result-title-group">
-          <div class="result-school-name">${esc(appSettings.mainTitle)}</div>
+          <div class="result-school-name">${esc(EN ? EN_SCHOOL_TITLE : appSettings.mainTitle)}</div>
           <div class="result-school-sub">${esc(subTitle)}</div>
-          <div class="result-term-line">بيانات الطالب - ${esc(termNames[row.term_key] || "")}</div>
+          <div class="result-term-line">${L.studentDataTitle} - ${esc(EN ? termLabelFor(row.term_key, true) : (termNames[row.term_key] || ""))}</div>
         </div>
-        <div class="result-header-emblem">${leftEmblem}</div>
+        <div class="result-header-emblem">${EN ? rightEmblem : leftEmblem}</div>
       </div>
       <div class="basic-data-section" style="padding:1rem;">
-        <div class="section-heading"><i class="fas fa-address-card"></i><span>البيانات الأساسية</span></div>
+        <div class="section-heading"><i class="fas fa-address-card"></i><span>${L.basicInfo}</span></div>
         <div class="basic-info-grid">
-          ${infoCard("🆔 الرقم القومي", `<span dir="ltr">${esc(nationalId)}</span>`)}
-          ${infoCard("📚 الصف", esc(row.grade||"—"))}
-          ${infoCard("👤 اسم الطالب", esc(row.name))}
-          ${infoCard("🎫 رقم الجلوس", esc(row.seat_number||"—"))}
-          ${infoCard("📋 موقف النشر", `<span class="status-badge status-not-available">غير متاحة</span>`)}
+          ${infoCard("🆔 " + L.nationalId, `<span dir="ltr">${esc(nationalId)}</span>`)}
+          ${infoCard("📚 " + L.grade, esc(EN ? translateGradeEn(row.grade) : (row.grade||"—")))}
+          ${infoCard("👤 " + L.studentName, esc(studentNameFor(row, EN)))}
+          ${infoCard("🎫 " + L.seatNo, esc(row.seat_number||"—"))}
+          ${infoCard("📋 " + L.pubStatus, `<span class="status-badge status-not-available">${L.notAvailable}</span>`)}
         </div>
       </div>
       <div class="not-available-message">${noteHtml}</div>
@@ -5810,18 +6083,35 @@ async function searchStudent() {
 window.shareWhatsApp = function() {
   if (!lastSearchResult) return;
   const { row } = lastSearchResult;
-  let msg = `🌟 *${appSettings.mainTitle}* 🌟\n`;
+  const EN = isEnglishStudent(row);
+  let msg, subjectEntries;
+  if (EN) {
+    msg = `🌟 *${EN_SCHOOL_TITLE}* 🌟\n`;
+    msg += `📌 *Result for:* ${termLabelFor(row.term_key, true)}\n`;
+    msg += `👤 *Student Name:* ${studentNameFor(row, true)}\n`;
+    msg += `📚 *Grade:* ${translateGradeEn(row.grade)}\n`;
+    msg += `📊 *Result:* ${translateOutcomeEn(row.result_column1) || "—"}\n`;
+    subjectEntries = getSortedSubjectEntries(row);
+    if (subjectEntries.length) {
+      msg += `\n📝 *Grade details:*\n`;
+      subjectEntries.forEach(([sub, val]) => {
+        msg += `• ${translateSubjectEn(cleanSubjectLabel(sub))}: ${translateCellEn(val.display)}\n`;
+      });
+    }
+  } else {
+  msg = `🌟 *${appSettings.mainTitle}* 🌟\n`;
   msg += `📌 *نتيجة الطالب عن الفترة:* ${termNames[row.term_key]}\n`;
   msg += `👤 *اسم الطالب:* ${row.name}\n`;
   msg += `📚 *الصف:* ${row.grade || "—"}\n`;
   msg += `📊 *النتيجة:* ${row.result_column1 || "—"}\n`;
 
-  const subjectEntries = getSortedSubjectEntries(row);
+  subjectEntries = getSortedSubjectEntries(row);
   if (subjectEntries.length) {
     msg += `\n📝 *تفاصيل الدرجات:*\n`;
     subjectEntries.forEach(([sub, val]) => {
       msg += `• ${sub}: ${val.display}\n`;
     });
+  }
   }
 
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
@@ -5859,13 +6149,15 @@ async function processExcelFile(file, targetTerm) {
           const extracted = extractResultColumnFromExcelRow(headers, row);
           const resultColumn1 = extracted.value;
           const resultColIdx = extracted.index;
+          const enIdxLocal = findEnglishNameIndex(headers);
+          const nameEnLocal = enIdxLocal >= 0 && row[enIdxLocal] ? String(row[enIdxLocal]).replace(/\s+/g, " ").trim() : "";
           const isAvailable = statusCol === "متاح" || statusCol === "متاحة"
             || resultType === "متاح" || resultType === "متاحة";
           
           const allData = {};
           let allDataOrder = 0;
           for (let ci = 6; ci < headers.length; ci++) {
-            if (ci === resultColIdx) continue;
+            if (ci === resultColIdx || ci === enIdxLocal) continue;
             const h = headers[ci];
             if (h && h.trim() && row[ci] !== undefined && row[ci] !== null && String(row[ci]).trim() !== "") {
               const cell = parseCellValue(row[ci]);
@@ -5877,11 +6169,12 @@ async function processExcelFile(file, targetTerm) {
           }
           
           if (!studentsDB[nid]) {
-            studentsDB[nid] = { nationalId: nid, name, seatNumber, grade, terms: {} };
+            studentsDB[nid] = { nationalId: nid, name, nameEn: nameEnLocal, seatNumber, grade, terms: {} };
             added++;
           } else {
             updated++;
             if(name) studentsDB[nid].name = name;
+            if(nameEnLocal) studentsDB[nid].nameEn = nameEnLocal;
             if(seatNumber) studentsDB[nid].seatNumber = seatNumber;
             if(grade) studentsDB[nid].grade = grade;
           }
