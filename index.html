@@ -4525,6 +4525,9 @@ function findEnglishNameIndex(headers) {
 }
 /** مفتاح محجوز داخل subjects لتخزين الاسم الإنجليزي بدون تغيير بنية قاعدة البيانات */
 const NAME_EN_KEY = "__name_en";
+/** الاسم الإنجليزي يُحفظ أيضًا بجانب الاسم العربي في حقل الاسم (عربي | English) ليصل حتى لو لم تُعرض المواد */
+const NAME_SEP = " | ";
+function arabicNameOf(row) { return String((row && row.name) || "").split(NAME_SEP)[0].trim(); }
 
 function extractResultColumnFromExcelRow(headers, row) {
   const _enIdx = findEnglishNameIndex(headers);
@@ -4618,7 +4621,7 @@ async function parseExcelRecords(file) {
           if (nameEn) subjects[NAME_EN_KEY] = nameEn;
 
           records.push({
-            national_id: nid, name, seat_number: seatNumber, grade,
+            national_id: nid, name, name_en: nameEn, seat_number: seatNumber, grade,
             result_column1: resultColumn1, result_type: resultType,
             status_text: statusCol, is_available: isAvailable, subjects,
           });
@@ -4650,7 +4653,7 @@ async function pushRecordsToSupabase(records, termKey, fileId) {
       const prev = existingMap.get(r.national_id);
       return {
         national_id: r.national_id,
-        name: r.name,
+        name: r.name_en ? (r.name + NAME_SEP + r.name_en) : r.name,
         seat_number: r.seat_number || (prev && prev.seat_number) || "",
         grade: r.grade || (prev && prev.grade) || "",
       };
@@ -4940,6 +4943,10 @@ function translateOutcomeEn(text) {
   if (!raw || !HAS_ARABIC.test(raw)) return raw;
   const s = arNorm(raw);
   if (/التمنيات/.test(s)) return "With best wishes for success";
+  const mt = s.match(/^(?:اخر|نهايه)\s*(?:ال)?عام\s*(.*)$/);
+  if (mt) return "End of Year" + (mt[1] ? " " + mt[1] : "");
+  const mh = s.match(/^نصف\s*(?:ال)?عام\s*(.*)$/);
+  if (mh) return "Mid-Year" + (mh[1] ? " " + mh[1] : "");
   const m = s.match(/ناجح\s*و?\s*منقول(?:\s*(?:الي|الى)\s*(.+))?$/);
   if (m) return "Passed and promoted" + (m[1] ? " to " + translateGradeEn(m[1]) : "");
   const mp = s.match(/ناجح\s*و?\s*منقول\s*(?:الي|الى)?\s*(?:لل|ال|ل)?صف\s*(.+)$/);
@@ -4990,15 +4997,17 @@ function getEnglishNameFromRow(row) {
   if (!row) return "";
   const direct = row.name_en || row.english_name || row.nameEn;
   if (direct) return String(direct).trim();
+  const parts = String(row.name || "").split(NAME_SEP);
+  if (parts.length > 1 && parts[1].trim()) return parts.slice(1).join(NAME_SEP).trim();
   let bag = row.subjects || row.allData || {};
   if (typeof bag === "string") { try { bag = JSON.parse(bag); } catch (e) { bag = {}; } }
   const v = bag && bag[NAME_EN_KEY];
   return v ? String(v).trim() : "";
 }
 function studentNameFor(row, en) {
-  if (!en) return String(row.name || "");
+  if (!en) return arabicNameOf(row);
   // لو الاسم الإنجليزي غير مكتوب نعرض الاسم العربي بدل ترك فراغ
-  return getEnglishNameFromRow(row) || String(row.name || "");
+  return getEnglishNameFromRow(row) || arabicNameOf(row);
 }
 
 /** عند تجاوز هذا العدد تتحول مواد الطباعة إلى كروت عمودين (الشاشة تبقى جدولًا) */
@@ -6046,7 +6055,7 @@ async function searchStudent() {
     }
 
     lastSearchResult = { nationalId: raw, row };
-    msgDiv.innerHTML = `<span style="color:var(--success);">✅ تم العثور على طالب: ${esc(row.name)}</span>`;
+    msgDiv.innerHTML = `<span style="color:var(--success);">✅ تم العثور على طالب: ${esc(arabicNameOf(row))}</span>`;
     // is_visible من دالة السحابة؛ إن غاب الحقل نرجع إلى is_available كاحتياط
     const showFull = (row.is_visible === true) || (row.is_visible == null && row.is_available === true);
     resDiv.innerHTML = showFull ? renderFullData(raw, row) : renderBasicDataOnly(raw, row);
@@ -6101,7 +6110,7 @@ window.shareWhatsApp = function() {
   } else {
   msg = `🌟 *${appSettings.mainTitle}* 🌟\n`;
   msg += `📌 *نتيجة الطالب عن الفترة:* ${termNames[row.term_key]}\n`;
-  msg += `👤 *اسم الطالب:* ${row.name}\n`;
+  msg += `👤 *اسم الطالب:* ${arabicNameOf(row)}\n`;
   msg += `📚 *الصف:* ${row.grade || "—"}\n`;
   msg += `📊 *النتيجة:* ${row.result_column1 || "—"}\n`;
 
