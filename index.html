@@ -4917,6 +4917,8 @@ const SUBJECT_EN_RULES = [
   [/قران/, "Holy Quran"],
   [/تكنولوج|^ict$/, "ICT"],
   [/توكاتسو|tokatsu/, "Tokatsu"],
+  [/تحديد\s*(ال)?لغه\s*(ال)?ثانيه/, "Second Language Selection"],
+  [/برمج.*ذكاء/, "Programming & AI"],
   [/حاله\s*(ال)?طالب/, "Student Status"],
   [/لغه\s*(ال)?طالب\s*(ال)?ثانيه/, "Student's Second Language"],
   [/^(ال)?لغه\s*(ال)?ثانيه/, "Second Language"],
@@ -4949,7 +4951,9 @@ function translateSubjectEn(name) {
   const raw = String(name || "").trim();
   if (!raw || !HAS_ARABIC.test(raw)) return raw;
   const s = arNorm(raw);
-  for (const [re, en] of SUBJECT_EN_RULES) { if (re.test(s)) return en; }
+  for (const [re, en] of SUBJECT_EN_RULES) {
+    if (re.test(s)) return (/مستوي/.test(s) && !/level/i.test(en)) ? en + " (Level)" : en;
+  }
   return raw;
 }
 
@@ -4958,6 +4962,9 @@ function translateOutcomeEn(text) {
   if (!raw || !HAS_ARABIC.test(raw)) return raw;
   const s = arNorm(raw);
   if (/التمنيات/.test(s)) return "With best wishes for success";
+  const MONTHS_EN = { يناير:"January", فبراير:"February", مارس:"March", ابريل:"April", مايو:"May", يونيو:"June", يوليو:"July", اغسطس:"August", سبتمبر:"September", اكتوبر:"October", نوفمبر:"November", ديسمبر:"December" };
+  const mm = s.match(/^(?:نتيجه\s*)?(?:اختبار|امتحان)\s*(?:شهر)?\s*(\S+)\s*(.*)$/);
+  if (mm && MONTHS_EN[mm[1]]) return MONTHS_EN[mm[1]] + " Exam" + (mm[2] ? " " + mm[2] : "");
   const mt = s.match(/^(?:اخر|نهايه)\s*(?:ال)?عام\s*(.*)$/);
   if (mt) return "End of Year" + (mt[1] ? " " + mt[1] : "");
   const mh = s.match(/^نصف\s*(?:ال)?عام\s*(.*)$/);
