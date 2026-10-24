@@ -7159,6 +7159,66 @@ document.getElementById("searchBtn").addEventListener("click", searchStudent);
 document.getElementById("searchInput").addEventListener("input", e => { e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 14); });
 document.getElementById("searchInput").addEventListener("keydown", e => { if(e.key==="Enter") searchStudent(); });
 
+/* ============================================================
+   دعم مسح QR من نظام الكنترول:
+   ?nid=الرقم_القومي&term=1|2|term1|final|october...
+   term=1 → الفصل الدراسي الأول (term1)
+   term=2 → نتيجة آخر العام / الفصل الثاني (final)
+   ============================================================ */
+(function applyQrQueryParams() {
+  try {
+    const q = new URLSearchParams(location.search);
+    const nidRaw = (q.get("nid") || q.get("national_id") || q.get("id") || "").replace(/\D/g, "").slice(0, 14);
+    let termRaw = (q.get("term") || q.get("period") || "").toString().trim().toLowerCase();
+
+    const TERM_MAP = {
+      "1": "term1",
+      "term1": "term1",
+      "first": "term1",
+      "اول": "term1",
+      "الأول": "term1",
+      "الفصل الأول": "term1",
+      "2": "final",
+      "term2": "final",
+      "second": "final",
+      "ثانى": "final",
+      "ثاني": "final",
+      "الثاني": "final",
+      "الفصل الثاني": "final",
+      "final": "final",
+      "october": "october",
+      "november": "november",
+      "march": "march",
+      "april": "april"
+    };
+
+    const termSelect = document.getElementById("searchTermSelect");
+    const searchInput = document.getElementById("searchInput");
+    if (!termSelect || !searchInput) return;
+
+    if (termRaw) {
+      const mapped = TERM_MAP[termRaw] || (TERM_MAP[decodeURIComponent(termRaw)] || termRaw);
+      const allowed = ["october", "november", "term1", "march", "april", "final"];
+      if (allowed.indexOf(mapped) >= 0) {
+        termSelect.value = mapped;
+      }
+    }
+
+    if (nidRaw) {
+      searchInput.value = nidRaw;
+    }
+
+    // بحث تلقائي عند وجود رقم قومي كامل 14 خانة
+    if (nidRaw.length === 14) {
+      setTimeout(function () {
+        if (typeof searchStudent === "function") searchStudent();
+      }, 400);
+    }
+  } catch (err) {
+    console.warn("QR query params:", err);
+  }
+})();
+
 // تسلسل النقر على الشعارات (الشعار الأيمن ثم الأيسر خلال 3 ثوانٍ)
 let lastRightClickTime = 0;
 document.getElementById("rightEmblemBox").addEventListener("click", () => {
