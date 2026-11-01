@@ -4285,6 +4285,91 @@ html body .result-card.rpt-en .not-available-apology { unicode-bidi: plaintext; 
   html body #printSection .rpt-name-value { line-height: 1.15 !important; }
 }
 </style>
+<style id="certificateLargerText">
+/* =====================================================================
+   تكبير نصوص الشهادة قدر ما تسمح به الخلايا (بدون تغيير أبعاد الخلايا).
+   الطباعة فقط؛ يأتي أخيراً وبمعرّف #printSection ليتغلب على القواعد السابقة.
+   ===================================================================== */
+@media print {
+  /* الترويسة */
+  html body #printSection .rpt-school-name { font-size: 11.5pt !important; }
+  html body #printSection .rpt-school-motto { font-size: 9.5pt !important; }
+  html body #printSection .rpt-term-title { font-size: 12pt !important; }
+
+  /* عناوين الأقسام (Subject Grades ...) */
+  html body #printSection .rpt-section-heading { font-size: 10.5pt !important; }
+
+  /* بطاقات بيانات الطالب */
+  html body #printSection .rpt-card-label { font-size: 7.6pt !important; line-height: 1.15 !important; }
+  html body #printSection .rpt-card-value { font-size: 9.2pt !important; line-height: 1.15 !important; }
+  html body #printSection .rpt-card-result { font-size: 8.6pt !important; }
+  html body #printSection .rpt-photo-frame .photo-placeholder,
+  html body #printSection .rpt-photo-frame .photo-placeholder span { font-size: 7.5pt !important; }
+
+  /* جدول المواد */
+  html body #printSection .rpt-table thead th,
+  html body #printSection .rpt-table thead .col-num,
+  html body #printSection .rpt-table thead .col-subject,
+  html body #printSection .rpt-table thead .col-max,
+  html body #printSection .rpt-table thead .col-score,
+  html body #printSection .rpt-table thead .col-est { font-size: 9.5pt !important; }
+  html body #printSection .rpt-table tbody td,
+  html body #printSection .rpt-table td {
+    font-size: 10.5pt !important; line-height: 1.15 !important; padding-top: 2.2mm !important; padding-bottom: 2.2mm !important;
+  }
+  html body #printSection .rpt-table .col-subject { font-size: 10.5pt !important; }
+  html body #printSection .rpt-table .col-score .score-pill,
+  html body #printSection .rpt-table .score-pill { font-size: 15pt !important; }
+  html body #printSection .rpt-table .est-label { font-size: 9.5pt !important; }
+  html body #printSection .rpt-table .subject-emoji,
+  html body #printSection .rpt-table .subject-icon { font-size: 9.5pt !important; }
+
+  /* الملخص: الحالة النهائية / النسبة / المجموع */
+  html body #printSection .rpt-sum-label { font-size: 8pt !important; }
+  html body #printSection .rpt-sum-value { font-size: 15pt !important; }
+  html body #printSection .rpt-sum-pct .rpt-sum-value { font-size: 16pt !important; }
+  html body #printSection .rpt-sum-total .rpt-sum-value { font-size: 16pt !important; }
+  html body #printSection .rpt-sum-band { font-size: 9.5pt !important; }
+  html body #printSection .rpt-sum-status .rpt-status-text,
+  html body #printSection .rpt-sum-status .rpt-sum-value,
+  html body #printSection .rpt-sum-status.outcome-pass .rpt-status-text,
+  html body #printSection .rpt-sum-status.outcome-second .rpt-status-text { font-size: 9pt !important; }
+
+  /* المواد الإضافية (بطاقات 7 وما بعدها): السماح بسطرين للاسم داخل ارتفاع الخلية الثابت */
+  html body #printSection .subjects-extra .extra-print-grid .sc-num { font-size: 7.5pt !important; }
+  html body #printSection .subjects-extra .extra-print-grid .sc-name {
+    font-size: 8pt !important; line-height: 1.12 !important;
+    white-space: normal !important; overflow: hidden !important; text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+  }
+  html body #printSection .subjects-extra .extra-print-grid .subject-emoji { font-size: 7.5pt !important; }
+  html body #printSection .subjects-extra .extra-print-grid .sc-score { font-size: 8.5pt !important; }
+  html body #printSection .subjects-extra .extra-print-grid .sc-score small { font-size: 6.5pt !important; }
+  html body #printSection .subjects-extra .extra-print-grid .sc-est { font-size: 7.6pt !important; }
+
+  /* الملاحظة الصفراء */
+  html body #printSection .rpt-notice,
+  html body #printSection .rpt-notice-text { font-size: 8.6pt !important; line-height: 1.25 !important; }
+
+  /* التوقيع والختم والتاريخ */
+  html body #printSection .rpt-stamp-title,
+  html body #printSection .rpt-signature-label,
+  html body #printSection .rpt-date-label { font-size: 10pt !important; }
+  html body #printSection .rpt-date-value { font-size: 9.5pt !important; }
+  html body #printSection .rpt-stamp-line { font-size: 7pt !important; }
+  html body #printSection .rpt-stamp-sub { font-size: 6.5pt !important; }
+}
+
+/* العرض على الشاشة: رفع أصغر النصوص فقط */
+@media screen {
+  .modern-report .rpt-card-label { font-size: .76rem; }
+  .modern-report .rpt-sum-label { font-size: .78rem; }
+  .modern-report .rpt-signature-label,
+  .modern-report .rpt-stamp-title { font-size: .8rem; }
+  .modern-report .rpt-stamp-line { font-size: .62rem; }
+  .modern-report .rpt-stamp-sub { font-size: .56rem; }
+}
+</style>
 </head>
 <body>
 <div class="page-wrapper">
