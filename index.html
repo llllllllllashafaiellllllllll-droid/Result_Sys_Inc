@@ -4347,6 +4347,14 @@ html body .result-card.rpt-en .not-available-apology { unicode-bidi: plaintext; 
   html body #printSection .subjects-extra .extra-print-grid .sc-score small { font-size: 6.5pt !important; }
   html body #printSection .subjects-extra .extra-print-grid .sc-est { font-size: 7.6pt !important; }
 
+  /* الإنجليزية: اسم المادة الفرعية يُحاذى لليسار (العربية تبقى لليمين) */
+  html body #printSection.rpt-en .subjects-extra .extra-print-grid .sc-name {
+    text-align: left !important; direction: ltr !important; justify-self: stretch !important;
+  }
+  html body #printSection.rpt-en .subjects-extra .extra-print-grid .subject-emoji {
+    margin-left: 0 !important; margin-right: .8mm !important;
+  }
+
   /* الملاحظة الصفراء */
   html body #printSection .rpt-notice,
   html body #printSection .rpt-notice-text { font-size: 8.6pt !important; line-height: 1.25 !important; }
