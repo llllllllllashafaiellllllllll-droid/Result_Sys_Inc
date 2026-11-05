@@ -5008,12 +5008,14 @@ function translateGradeEn(grade) {
 
 const SUBJECT_EN_RULES = [
   [/^(ال)?مسار/, "Track"],
+  [/اداره\s*(ال)?اعمال/, "Business Administration"],
   [/ماده\s*(ال)?تخصص|^(ال)?تخصص/, "Specialization Subject"],
   [/قران/, "Holy Quran"],
   [/تكنولوج|^ict$/, "ICT"],
   [/توكاتسو|tokatsu/, "Tokatsu"],
   [/تحديد\s*(ال)?لغه\s*(ال)?ثانيه/, "Second Language Selection"],
   [/برمج.*ذكاء/, "Programming & AI"],
+  [/برمج/, "Programming"],
   [/حاله\s*(ال)?طالب/, "Student Status"],
   [/لغه\s*(ال)?طالب\s*(ال)?ثانيه/, "Student's Second Language"],
   [/^(ال)?لغه\s*(ال)?ثانيه/, "Second Language"],
@@ -5097,8 +5099,8 @@ function translateResultTypeEn(text) {
 }
 function translateCellEn(text) {
   const raw = String(text == null ? "" : text).trim();
-  const TRACK_MAP = [[/الاداب\s*(و)?\s*(ال)?فنون/, "Arts and Humanities"], [/الطب\s*(و)?\s*(ال)?علوم\s*(ال)?حياتيه/, "Medicine and Life Sciences"],
-    [/الهندسه\s*(و)?\s*علوم\s*(ال)?حاسب/, "Engineering and Computer Science"], [/(ال)?اعمال/, "Business"], [/(ال)?مسار\s*(ال)?عام/, "General Track"]];
+  const TRACK_MAP = [[/الاداب\s*(و)?\s*(ال)?فنون/, "Arts and Humanities"], [/الطب\s*(و)?\s*(ال)?علوم\s*(ال)?(حياتيه|حياه)/, "Medicine and Life Sciences"],
+    [/الهندسه\s*(و)?\s*علوم\s*(ال)?حاسب/, "Engineering and Computer Science"], [/^(ال)?اعمال$/, "Business"], [/(ال)?مسار\s*(ال)?عام/, "General Track"]];
   if (HAS_ARABIC.test(raw)) { const sT = arNorm(raw); for (const [re, en] of TRACK_MAP) { if (re.test(sT)) return en; } }
   // رمز لغة الطالب الثانية: f = فرنساوي ، g = ألماني
   if (/^f$/i.test(raw)) return "French";
