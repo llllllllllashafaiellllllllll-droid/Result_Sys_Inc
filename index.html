@@ -6951,20 +6951,9 @@ window.openEditStudentModal = function(nid) {
           </div>
           <div id="editTermFields" style="display:grid;gap:0.6rem;">
             <div>
-              <label style="font-size:0.72rem;font-weight:700;color:var(--text2);display:block;margin-bottom:0.25rem;">الحالة (النص الظاهر لولي الأمر):</label>
+              <label style="font-size:0.72rem;font-weight:700;color:var(--text2);display:block;margin-bottom:0.25rem;">الحالة:</label>
               <input type="text" id="editTermStatus" class="modal-input" list="editTermStatusList" placeholder="متاح / محجوب / سداد مبلغ / أي عبارة">
               <datalist id="editTermStatusList"><option value="متاح"><option value="محجوب"><option value="غير متاح"><option value="سداد مبلغ"><option value="تواصل مع إدارة المدرسة"></datalist>
-            </div>
-            <div>
-              <label style="font-size:0.72rem;font-weight:700;color:var(--text2);display:block;margin-bottom:0.25rem;">إتاحة الدرجات:</label>
-              <select id="editTermAvail" class="modal-input">
-                <option value="1">متاحة — تظهر الدرجات لولي الأمر</option>
-                <option value="0">محجوبة — لا تظهر الدرجات</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size:0.72rem;font-weight:700;color:var(--text2);display:block;margin-bottom:0.25rem;">النتيجة النهائية (اختياري):</label>
-              <input type="text" id="editTermResult" class="modal-input">
             </div>
           </div>
         </div>
@@ -6983,22 +6972,13 @@ window.openEditStudentModal = function(nid) {
   // حقول الفترة: تُملأ من الفترة المختارة، وتتغير الإتاحة تلقائياً مع عبارات متاح/محجوب
   const termSel = ov.querySelector("#editTermSelect");
   const stEl = ov.querySelector("#editTermStatus");
-  const avEl = ov.querySelector("#editTermAvail");
-  const rsEl = ov.querySelector("#editTermResult");
   const fillTerm = () => {
     const t = s.terms && s.terms[termSel.value];
     ov.querySelector("#editTermFields").style.display = t ? "grid" : "none";
     if (!t) return;
     stEl.value = t.resultType || (t.isAvailable ? "متاح" : "غير متاح");
-    avEl.value = t.isAvailable ? "1" : "0";
-    rsEl.value = t.resultColumn1 || "";
   };
   termSel.addEventListener("change", fillTerm);
-  stEl.addEventListener("input", () => {
-    const v = stEl.value.trim();
-    if (/^(متاح|متاحة)$/.test(v)) avEl.value = "1";
-    else if (/^(محجوب|محجوبة|غير متاح|غير متاحة)$/.test(v)) avEl.value = "0";
-  });
   fillTerm();
 };
 
@@ -7012,10 +6992,11 @@ async function saveStudentEdit(oldNid, ov) {
   const newSeat = ov.querySelector("#editSeatInput").value.trim();
   const termKeyEdit = ov.querySelector("#editTermSelect").value;
   const termEdit = termKeyEdit && studentsDB[oldNid] && studentsDB[oldNid].terms ? studentsDB[oldNid].terms[termKeyEdit] : null;
+  const termStatusText = termEdit ? ov.querySelector("#editTermStatus").value.trim() : "";
   const termNew = termEdit ? {
-    resultType: ov.querySelector("#editTermStatus").value.trim(),
-    isAvailable: ov.querySelector("#editTermAvail").value === "1",
-    resultColumn1: ov.querySelector("#editTermResult").value.trim(),
+    resultType: termStatusText,
+    isAvailable: /^(متاح|متاحة)$/.test(termStatusText),
+    resultColumn1: termEdit.resultColumn1 || "",
   } : null;
   msgEl.textContent = "";
 
