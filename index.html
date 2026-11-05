@@ -5007,6 +5007,8 @@ function translateGradeEn(grade) {
 }
 
 const SUBJECT_EN_RULES = [
+  [/^(ال)?مسار/, "Track"],
+  [/ماده\s*(ال)?تخصص|^(ال)?تخصص/, "Specialization Subject"],
   [/قران/, "Holy Quran"],
   [/تكنولوج|^ict$/, "ICT"],
   [/توكاتسو|tokatsu/, "Tokatsu"],
@@ -5095,6 +5097,9 @@ function translateResultTypeEn(text) {
 }
 function translateCellEn(text) {
   const raw = String(text == null ? "" : text).trim();
+  const TRACK_MAP = [[/الاداب\s*(و)?\s*(ال)?فنون/, "Arts and Humanities"], [/الطب\s*(و)?\s*(ال)?علوم\s*(ال)?حياتيه/, "Medicine and Life Sciences"],
+    [/الهندسه\s*(و)?\s*علوم\s*(ال)?حاسب/, "Engineering and Computer Science"], [/(ال)?اعمال/, "Business"], [/(ال)?مسار\s*(ال)?عام/, "General Track"]];
+  if (HAS_ARABIC.test(raw)) { const sT = arNorm(raw); for (const [re, en] of TRACK_MAP) { if (re.test(sT)) return en; } }
   // رمز لغة الطالب الثانية: f = فرنساوي ، g = ألماني
   if (/^f$/i.test(raw)) return "French";
   if (/^g$/i.test(raw)) return "German";
@@ -5105,7 +5110,7 @@ function translateCellEn(text) {
     [/^ممتاز/, "Excellent"], [/^جيد\s*جدا/, "Very Good"], [/^جيد/, "Good"], [/^مقبول/, "Acceptable"], [/^ضعيف/, "Weak"],
     [/^راسب/, "Failed"], [/^ناجح/, "Passed"]];
   for (const [re, en] of MAP) { if (re.test(s)) return en; }
-  return raw;
+  return translateSubjectEn(raw);
 }
 /** الاسم الإنجليزي: من حقل مباشر أو من المفتاح المحجوز داخل subjects (قادم من عمود English Name) */
 function getEnglishNameFromRow(row) {
